@@ -1,82 +1,71 @@
-# BEAM inspection tools
+# Generic BEAM operator client
 
-This directory contains the optional runtime tools used by `gleam-inspect`.
-Copy them into a service only when its existing release commands lack these
-capabilities. The [operator guide](../../docs/beam-inspection.md) covers setup,
-investigation, Voyager MCP and database ownership. The skill remains useful on
-its own.
+Use existing release/native tools first. This optional client provides one-shot
+RPC and dynamic expressions when the runtime lacks a convenient client command.
+It belongs to the operator's tooling, not the application's diagnostic API.
+The [guide](../../docs/beam-inspection.md) describes minimal runtime setup.
 
-## Build and ship
-
-Use the consumer's selected OTP:
+Compile once with the selected OTP:
 
 ```sh
 mkdir -p ebin
 erlc -Werror -o ebin beam_tool.erl
 ```
 
-Ship `beam-tool`, `ebin/beam_tool.beam` and `LICENSE` together. Runtime calls need `erl`,
-not this source file or `erlc`. IEx needs compatible client and target Elixir/IEx
-runtime modules. Recon must be a target runtime dependency when used.
-
-## Commands
+Keep `beam-tool`, `ebin/beam_tool.beam` and `LICENSE` together. They can be used
+from a development tool directory or copied temporarily to a selected remote
+host. No application source, dependency or image change is required just to
+supply this client. The target needs the existing functions being called;
+`eval` uses OTP stdlib's interpreter without compiling a target module.
 
 | Command | Behavior |
 | --- | --- |
-| `./beam-tool run NODE ERL_ARGS...` | Names the existing service bootstrap and binds distribution to loopback. |
-| `./beam-tool console NODE` | Confirms the exact target, then attaches Erlang. |
-| `./beam-tool iex NODE` | Checks target IEx availability, then attaches IEx. |
-| `./beam-tool rpc NODE MODULE FUNCTION 'ERLANG_LIST' [TIMEOUT_MS]` | Confirms the exact target and invokes one exported function. |
-| `./beam-tool cookie` | Imports a private file or platform secret into the service user's cookie home. |
+| `./beam-tool console NODE` | Confirm the target, then attach Erlang. |
+| `./beam-tool iex NODE` | Attach IEx when compatible client and target modules exist. |
+| `./beam-tool rpc NODE MODULE FUNCTION 'ERLANG_LIST' [TIMEOUT_MS]` | Call one existing exported function. |
+| `./beam-tool eval NODE [TIMEOUT_MS] < PRIVATE_EXPRESSION_FILE` | Interpret ad hoc Erlang expressions on the target. |
+| `./beam-tool run NODE ERL_ARGS...` | Optional naming/loopback wrapper around an existing bootstrap. |
+| `./beam-tool cookie` | Optional private-cookie import for deployment setup. |
 
-The default naming mode is long, with names ending in `@127.0.0.1`.
-`BEAM_NAMING=short` supports an existing short-name deployment. Clients receive
-unique hidden names. Service arguments must not contain another naming or cookie
-option. Inherited `ERL_FLAGS`, `ERL_AFLAGS` and `ERL_ZFLAGS` are refused.
-Migrations, builds and recovery helpers do not use `run`.
+`eval` reads at most 64 KiB of source from stdin. Expressions end with a period
+and may use bindings, anonymous functions and existing APIs. Form the expression
+for the current question; do not install a fixed set of application probes.
+This is full operator access, including arbitrary effects and I/O, not a sandbox.
+Never evaluate untrusted input. Select bounded, non-sensitive evidence yourself.
 
-RPC arguments are parsed as an Erlang list term, without expression evaluation.
-Quote generated module names and `$`-suffixed process names appropriately for
-the shell. Timeouts default to 5000 ms and must be 1–30000 ms. Target confirmation
-has a separate timeout capped at 2000 ms. Timeout does not cancel a remote effect.
+Both `rpc` and `eval` confirm the exact target before execution. Per-call timeouts
+are 1–30000 ms (default 5000), with a separate confirmation timeout capped at
+2000 ms. Timeout does not cancel a remote effect. Returned values have a depth
+limit of 20 and formatted output cap of 64 KiB; these do not bound remote work,
+prevent expression I/O, or redact results. Top-level `{error, _}` results and
+invocation failures exit nonzero; raw exception payloads are suppressed.
 
-The client prints target confirmation to stderr. Results have depth 20 and a
-64 KiB formatted-output ceiling. Connection faults, exceptions and top-level
-`{error, _}` results exit nonzero with private error details suppressed. Other
-application result shapes need caller checks. Successful results are not
-redacted: automated calls must select reviewed metadata projections. This is a
-trusted operator tool with arbitrary exported-function access, not a read-only
-server or a sandbox.
+Default names are long names ending in `@127.0.0.1`; `BEAM_NAMING=short` supports
+an existing short-name service. Client names are unique and hidden. Match the
+service user's cookie home. Working same-user cookies need no provisioning.
+`cookie` accepts either `BEAM_COOKIE_FILE` (service-owned, non-symlink, mode
+0400/0600) or a platform-provided `BEAM_COOKIE`. It writes `.erlang.cookie` with
+mode 0600. Never pass cookie values in argv. Secret-source variables are removed
+from child runtimes; privileged mounts need service-owned private copies first.
 
-For cookie import, supply `BEAM_COOKIE_FILE` or `BEAM_COOKIE`, never both. File
-sources must be regular, non-symlink files owned by the service user with mode
-0400/0600. The tool writes that user's `.erlang.cookie` with mode 0600. It strips
-secret-source variables from launched runtimes. A root-owned secret mount needs
-a private service-owned copy before privilege drop. Working same-user local
-cookies need no import.
+`run` is optional. Prefer adding naming flags to the host's existing runtime
+configuration when that is smaller. Do not route compilers, migrations or
+recovery helpers through it. Shared `ERL_FLAGS`/`ERL_AFLAGS`/`ERL_ZFLAGS` are
+refused. New distribution/EPMD listeners use loopback; check existing listeners.
 
-## Verify
-
-Inside an environment supplying the consumer's OTP and Python 3:
+Test only against disposable services:
 
 ```sh
 sh ./check.sh
 python3 ./check-consoles.py --client ./beam-tool --node service@127.0.0.1 --iex
 ```
 
-`check.sh` owns a disposable VM and verifies Erlang attachment, RPC, disconnect
-survival, wrong-cookie/stopped-node failures, timeout bounds, missing modules
-and error-payload privacy. The second command additionally checks IEx against
-an existing disposable service with compatible target modules.
+The first check owns its fixture VM. The second uses an existing test VM with
+IEx available. It verifies real console attachment and disconnect survival via
+a PTY; operational automation uses one-shot commands. Neither requires a database
+or installs application probes.
 
-For container console acceptance, add
-`--prefix '["docker","exec","-it","--user","app","CONTAINER"]'` and use the
-container's client path. This PTY test only validates attachment and disconnect;
-operational automation uses RPC. It bounds waits and transcript size and prints
-no raw transcript. Host database and tracing lifecycles need their own checks.
-
-Imported byte-for-byte from `lostbean/skills` commit
-`ce969335b4c94d3129217280c1c77081e55aa193`. This repository carries the runnable
-files directly; no checkout of that project is required. The accompanying
-[MIT license](LICENSE) applies to the imported code. See the
-[validation record](../../research/live-inspection.md) for consumer evidence.
+The client originated in `lostbean/skills` commit
+`ce969335b4c94d3129217280c1c77081e55aa193`; this version adds dynamic expression
+evaluation. Its [MIT notice](LICENSE) remains included. See
+[current evidence](../../research/live-inspection.md) for scope and limitations.

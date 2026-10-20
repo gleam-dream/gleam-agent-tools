@@ -37,6 +37,28 @@ done
   exit 1
 }
 python3 "$here/check-consoles.py" --client "$work/beam-tool" --node "$node"
+# Dynamic expressions execute on the existing target using only OTP stdlib.
+printf "{node() =:= '%s', lists:sum([N || N <- [1,2,3]])}.\n" "$node" >"$work/inspect.erl"
+"$work/beam-tool" eval "$node" <"$work/inspect.erl" | grep -qx '{true,6}'
+cat >"$work/metadata.erl" <<'ERLANG'
+[{memory, Bytes}, {message_queue_len, Queue}] =
+    erlang:process_info(whereis(code_server), [memory, message_queue_len]),
+Children = supervisor:which_children(kernel_sup),
+Tables = [{ets:info(T, owner), ets:info(T, size)} || T <- lists:sublist(ets:all(), 3)],
+is_integer(Bytes) andalso is_integer(Queue) andalso is_list(Children) andalso length(Tables) > 0.
+ERLANG
+"$work/beam-tool" eval "$node" <"$work/metadata.erl" | grep -qx true
+"$work/beam-tool" rpc "$node" erlang module_loaded '[compile]' | grep -qx false
+printf '%s\n' 'erlang:error(<<"private_eval_payload_must_not_print">>).' >"$work/private.erl"
+if "$work/beam-tool" eval "$node" <"$work/private.erl" >"$work/eval-error.log" 2>&1; then exit 1; fi
+if grep -q private_eval_payload_must_not_print "$work/eval-error.log"; then exit 1; fi
+printf '%s\n' 'receive after 200 -> done end.' >"$work/slow.erl"
+if "$work/beam-tool" eval "$node" 50 <"$work/slow.erl" >"$work/eval-timeout.log" 2>&1; then exit 1; fi
+grep -q rpc_timeout "$work/eval-timeout.log"
+printf '%s\n' 'node(.' >"$work/invalid.erl"
+if "$work/beam-tool" eval "$node" <"$work/invalid.erl" >"$work/eval-invalid.log" 2>&1; then exit 1; fi
+python3 -c 'print(" " * 65537 + "node().")' >"$work/oversized.erl"
+if "$work/beam-tool" eval "$node" <"$work/oversized.erl" >"$work/eval-oversized.log" 2>&1; then exit 1; fi
 "$work/beam-tool" rpc "$node" erlang is_alive '[]' | grep -qx true
 if "$work/beam-tool" rpc "absent_$$@127.0.0.1" erlang node '[]' 1000 >"$work/stopped.log" 2>&1; then exit 1; fi
 grep -q node_unreachable "$work/stopped.log"
@@ -51,4 +73,4 @@ if grep -q private_test_payload_must_not_print "$work/private.log"; then exit 1;
 # Code-loading failure must be an actionable nonzero result.
 if "$work/beam-tool" rpc "$node" code ensure_loaded '[inspection_deliberately_missing]' >"$work/module.log" 2>&1; then exit 1; fi
 "$work/beam-tool" rpc "$node" erlang is_alive '[]' | grep -qx true
-printf '%s\n' 'PASS: node confirmation, RPC, disconnect survival, stopped node, wrong cookie, timeout bounds, missing module'
+printf '%s\n' 'PASS: node confirmation, RPC, dynamic expressions, expression bounds/privacy, disconnect survival, stopped node, wrong cookie, timeout bounds, missing module'

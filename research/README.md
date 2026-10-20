@@ -10,7 +10,7 @@ Refreshed October 20, 2026 after the collection's scope and compact format were 
 | [Data and execution](data-execution.md) | `grind`, `saga`, `sinal`, `json-blueprint`, `gleam-sql`, `gleam-pubsub` |
 | [Transport, identity, and email](transport-identity.md) | `http-gun`, `warden`, `correio` |
 | [Agents and replay](agents-replay.md) | `llm-wire`, `fabric`, `relay`, `retrace` |
-| [Live inspection](live-inspection.md) | `gleam-inspect`, source-toolkit integration, Dash local/image checks and authenticated Fly evidence |
+| [Live inspection](live-inspection.md) | `gleam-inspect`, dynamic client checks, rejected Dash pilot and deployment limits |
 | [Source identities](source-identities.json) | Local and remote revisions, clean-state observations, and actual consumer manifest digests |
 
 The earlier [research corpus](../../gleam-agent-tools-research/README.md) and [second pass](../../gleam-agent-tools-research/second-pass/README.md) remain supporting evidence. Findings were checked against actual sources before entering the new skills. Old test results remain historical observations unless explicitly rerun below.
@@ -53,7 +53,7 @@ The subsequent [behavioral evaluation](behavioral-evaluation.md) used fresh agen
 
 ## Checks
 
-The subsequent [live-inspection addition](live-inspection.md) extends the collection to 20 skills. It reuses the source framework's existing setup/diagnosis boundaries, adds reproducible console checks, and distinguishes passed local/image evidence from the actual Fly deployment's missing distribution setup. Earlier 19-skill reviews and evaluation results below retain their original scope.
+The subsequent [live-inspection addition](live-inspection.md) extends the collection to 20 skills. The current guide follows the owner's corrected scope: minimal runtime access and dynamic investigation. The instrumented Dash pilot was rejected and reverted; its earlier passing checks do not justify application inspection APIs. Earlier 19-skill reviews and evaluation results below retain their original scope.
 
 The structural check verifies the exact 19-skill catalog, matching names/directories, portable two-field metadata, direct discovery verbs, one file per skill, decision sections, red flags, source links, balanced fences, size limits, whitespace, and existing relative links. Individual skill budgets are 80 lines and 650 whitespace-delimited words, including metadata and sources.
 

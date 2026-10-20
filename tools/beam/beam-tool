@@ -1,5 +1,5 @@
 #!/bin/sh
-# Build beam_tool.erl into ebin once; ship this directory with the service.
+# Compile the operator client into ebin once; keep it beside this launcher.
 set -eu
 here=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 export ERL_CRASH_DUMP=/dev/null
@@ -64,7 +64,7 @@ fi
 node=${1:-}
 [ "$#" -gt 0 ] && shift
 [ -n "$node" ] || {
-  echo 'Usage: beam-tool {run|console|iex|rpc} NODE [runtime args | MODULE FUNCTION ARGS [TIMEOUT_MS]]; beam-tool cookie' >&2
+  echo 'Usage: beam-tool {run|console|iex|rpc|eval} NODE [runtime args | MODULE FUNCTION ARGS [TIMEOUT_MS] | TIMEOUT_MS]; eval reads expressions from stdin; beam-tool cookie' >&2
   exit 2
 }
 case "$naming:$node" in long:*@127.0.0.1) ;; short:*@*) ;; *)
@@ -83,6 +83,10 @@ case "$mode" in
 rpc)
   unset BEAM_COOKIE BEAM_COOKIE_FILE
   exec erl "$flag" "$client" -kernel inet_dist_use_interface '{127,0,0,1}' -noshell -hidden -pa "$here/ebin" -s beam_tool main -extra "$node" "$@"
+  ;;
+eval)
+  unset BEAM_COOKIE BEAM_COOKIE_FILE
+  exec erl "$flag" "$client" -kernel inet_dist_use_interface '{127,0,0,1}' -noshell -hidden -pa "$here/ebin" -s beam_tool eval -extra "$node" "$@"
   ;;
 console | iex)
   "$0" rpc "$node" erlang node '[]' 2000 >/dev/null
