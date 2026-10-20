@@ -10,7 +10,7 @@ Refreshed October 20, 2026 after the collection's scope and compact format were 
 | [Data and execution](data-execution.md) | `grind`, `saga`, `sinal`, `json-blueprint`, `gleam-sql`, `gleam-pubsub` |
 | [Transport, identity, and email](transport-identity.md) | `http-gun`, `warden`, `correio` |
 | [Agents and replay](agents-replay.md) | `llm-wire`, `fabric`, `relay`, `retrace` |
-| [Live inspection](live-inspection.md) | `gleam-inspect`, dynamic client checks, rejected Dash pilot and deployment limits |
+| [Live inspection](live-inspection.md) | `gleam-inspect`, native runtime command checks, rejected Dash pilot and deployment limits |
 | [Source identities](source-identities.json) | Local and remote revisions, clean-state observations, and actual consumer manifest digests |
 
 The earlier [research corpus](../../gleam-agent-tools-research/README.md) and [second pass](../../gleam-agent-tools-research/second-pass/README.md) remain supporting evidence. Findings were checked against actual sources before entering the new skills. Old test results remain historical observations unless explicitly rerun below.

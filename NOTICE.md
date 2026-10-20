@@ -2,7 +2,7 @@
 
 The foundation skills adapt portable language, library API, FFI ownership, and runtime-inspection guidance from [lostbean/skills](https://github.com/lostbean/skills/tree/477c0cd3bdfc3837e0d347c8e4607ea118ad6008). The original permission notice follows.
 
-The bundled `tools/beam` implementation and checks originated in `lostbean/skills` commit `ce969335b4c94d3129217280c1c77081e55aa193`. The operator guide adapts that revision's setup, diagnosis and Gleam runtime guidance. Its MIT notice is also included alongside the tools. This repository adds dynamic expression evaluation to that client. The rejected Dash integration patch has been removed.
+The runtime-inspection guidance also adapts `lostbean/skills` commit `ce969335b4c94d3129217280c1c77081e55aa193`. Its MIT notice is retained below. Previously bundled runtime tooling has been removed; this collection distributes inspection guidance only.
 
 The compact decision-tree and red-flag structure was informed by [George Guimarães's Elixir Agent Tools](https://github.com/georgeguimaraes/elixir-agent-tools/tree/ac3a5a1661a087158b39d5eb742b3c25fe3c7b44), licensed under Apache-2.0. Elixir-specific instructions and source code were not copied into this collection.
 

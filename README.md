@@ -35,7 +35,7 @@ Package skills serve applications consuming those packages. `gleam-lib` covers c
 
 Each directory under `skills/` is an independent Agent Skills entry point. Install the desired directories through your agent's supported skill mechanism. No skill requires another file or a particular editor, host, Nix environment, or hook.
 
-For live service work, optional [generic console/RPC/expression tools](tools/beam/README.md) and a [lightweight operator guide](docs/beam-inspection.md) support `gleam-inspect`. Setup should normally change only runtime naming, cookie access and private connectivity. Investigations use ad hoc expressions and existing APIs; they do not create application inspection modules, diagnostic SQL files or migrations.
+For live service work, the [operator guide](docs/beam-inspection.md) illustrates standard Erlang, IEx and optional Voyager workflows. No runtime client or launcher is bundled. Setup should normally change only runtime naming, cookie access and private connectivity. Investigations use ad hoc expressions and existing APIs.
 
 The format follows the [Agent Skills specification](https://agentskills.io/specification). The decision-focused structure is informed by [Elixir Agent Tools](https://github.com/georgeguimaraes/elixir-agent-tools). Technical guidance was written against Gleam and package sources rather than translating Elixir APIs.
 

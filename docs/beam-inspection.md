@@ -2,8 +2,8 @@
 
 The service supplies a reachable BEAM node. The operator supplies the question
 and ad hoc expressions. Start with its existing release console/RPC commands.
-The optional [generic client](../tools/beam/README.md) fills a missing client
-surface without application inspection modules, diagnostic SQL files or routes.
+Use standard Erlang/IEx commands or optional Voyager. This collection supplies
+no runtime client, launcher or code to install in the application.
 
 ## Minimal service setup
 
@@ -33,34 +33,49 @@ For Fly, for example:
 flyctl ssh console --app APP --machine EXISTING_MACHINE_ID --user SERVICE_USER
 ```
 
-Inside that selected host, use native Erlang/IEx attachment or a generic client.
-A compiled operator client may be copied temporarily to the host; it need not
-be added to the application's source tree or image. Match the selected OTP and
-keep client names unique. Verify `node()` after attachment.
+Inside that selected host, use its runtime tools with the service user's cookie.
+Match the selected OTP and keep client names unique. For an existing long-name
+service, Erlang attachment looks like:
+
+```sh
+export TARGET_NODE=service@127.0.0.1
+ERL_EPMD_ADDRESS=127.0.0.1 erl -name "console_$$_$(date +%s)@127.0.0.1" \
+  -hidden -kernel inet_dist_use_interface '{127,0,0,1}' -remsh "$TARGET_NODE"
+```
+
+Verify `node().` inside the Erlang console. IEx can attach with `--name`,
+`--hidden` and `--remsh` when compatible target modules are present. Disconnect
+Erlang with Ctrl-G then `q`, or IEx with Ctrl-C twice; never halt the target.
 
 ## One-shot dynamic investigation
 
-For a single exported function:
+Use a temporary named Erlang VM and `erpc` directly. This command confirms the
+exact target, evaluates a small metadata expression there, and exits the client:
 
 ```sh
-./beam-tool rpc service@127.0.0.1 erlang system_info '[process_count]' 2000
+ERL_EPMD_ADDRESS=127.0.0.1 ERL_CRASH_DUMP=/dev/null \
+erl -name "inspect_$$_$(date +%s)@127.0.0.1" -hidden \
+  -kernel inet_dist_use_interface '{127,0,0,1}' -noshell -eval '
+  try
+    Target = list_to_atom(os:getenv("TARGET_NODE")),
+    Target = erpc:call(Target, erlang, node, [], 2000),
+    Value = erpc:call(Target, fun() ->
+      erlang:process_info(whereis(code_server),
+        [memory, message_queue_len, reductions, current_function])
+    end, 2000),
+    io:format("~P~n", [Value, 10]),
+    halt(0)
+  catch _:_ ->
+    io:format(standard_error, "Inspection failed~n", []), halt(1)
+  end.'
 ```
 
-For an ad hoc expression, send its source on stdin to a one-shot client:
-
-```sh
-./beam-tool eval service@127.0.0.1 2000 <<'ERLANG'
-Pid = whereis(code_server),
-erlang:process_info(Pid, [memory, message_queue_len, reductions, current_function]).
-ERLANG
-```
-
-Expressions run on the confirmed target through OTP's `erl_eval`; no application
-module is created or compiled. Temporary expression files can be private operator
-input. They are not a catalogue of probes to commit to the application. The client
-has full operator authority, including mutation; it is not a sandbox. Select safe
-fields in each expression. Value/output caps do not redact sensitive data, and
-an expression can perform I/O. Never send untrusted input for evaluation.
+For one existing export, use `erpc:call(Target, Module, Function, Arguments, 2000)`.
+Form expressions for the current question. They are private operator input, not
+a catalogue of probes to commit to the application. Runtime access has full
+operator authority, including effects and I/O. Never evaluate untrusted input.
+Choose bounded, non-sensitive results; formatting depth does not redact values
+or bound remote work. The `halt` calls above run in the client after RPC returns.
 
 Use existing OTP/library APIs to discover processes, supervision, stack MFAs and
 ETS ownership dynamically. Keep credentials, message bodies and customer state

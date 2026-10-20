@@ -1,7 +1,7 @@
 {
   "research_date": "2026-10-20",
   "skills": 20,
-  "total_words": 12123,
+  "total_words": 12122,
   "min_lines": 50,
   "max_lines": 67,
   "min_words": 532,
@@ -36,8 +36,8 @@
     {
       "name": "gleam-inspect",
       "lines": 50,
-      "words": 645,
-      "bytes": 4994
+      "words": 644,
+      "bytes": 4995
     },
     {
       "name": "gleam-lib",
