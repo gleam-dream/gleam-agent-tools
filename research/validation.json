@@ -1,8 +1,8 @@
 {
   "research_date": "2026-10-20",
-  "skills": 19,
-  "total_words": 11473,
-  "min_lines": 55,
+  "skills": 20,
+  "total_words": 12127,
+  "min_lines": 47,
   "max_lines": 67,
   "min_words": 532,
   "max_words": 649,
@@ -34,6 +34,12 @@
       "bytes": 4533
     },
     {
+      "name": "gleam-inspect",
+      "lines": 47,
+      "words": 649,
+      "bytes": 5120
+    },
+    {
       "name": "gleam-lib",
       "lines": 67,
       "words": 649,
@@ -42,8 +48,8 @@
     {
       "name": "gleam-otp",
       "lines": 62,
-      "words": 566,
-      "bytes": 4052
+      "words": 571,
+      "bytes": 4094
     },
     {
       "name": "gleam-pubsub",
@@ -123,5 +129,11 @@
       "words": 565,
       "bytes": 4157
     }
+  ],
+  "live_inspection_evidence": "live-inspection.md",
+  "remote_source_paths_not_available_in_local_git": [
+    "https://github.com/gleam-dream/retrace/tree/31352e53c7673fd948540e2f7cbe921a9903b203/examples",
+    "https://github.com/gleam-dream/retrace/blob/31352e53c7673fd948540e2f7cbe921a9903b203/src/retrace.gleam",
+    "https://github.com/gleam-dream/retrace/blob/31352e53c7673fd948540e2f7cbe921a9903b203/packages/retrace_server/README.md"
   ]
 }

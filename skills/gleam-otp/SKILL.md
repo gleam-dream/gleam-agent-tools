@@ -1,6 +1,6 @@
 ---
 name: gleam-otp
-description: Design and debug typed BEAM processes with gleam_otp and gleam_erlang. Use for actors, subjects, selectors, message protocols, names, supervision, restart dependencies, timeouts, and bounded runtime inspection. Use grind for durable jobs and saga for dependent workflows.
+description: Design and debug typed BEAM processes with gleam_otp and gleam_erlang. Use for actors, subjects, selectors, message protocols, names, supervision, restart dependencies, and timeouts. Use grind for durable jobs and saga for dependent workflows.
 ---
 
 # Gleam OTP
@@ -47,7 +47,7 @@ What runtime responsibility exists?
 
 Exercise the protocol's failure path, timeout, restart, and retained client handle where relevant. Confirm that a restarted process can recover the state its caller expects.
 
-When inspecting actors, check system-operation support against the pinned implementation. In `gleam_otp` 1.3.0, the focused probe reads state but `sys:trace` times out. Use bounded diagnostics; treat inspected state as private and mutate through the owning public API.
+When inspecting actors, check system-operation support against the pinned implementation. In `gleam_otp` 1.3.0, the focused probe reads state but `sys:trace` times out. Use bounded diagnostics; treat inspected state as private and mutate through the owning public API. Live attachment and investigation use `gleam-inspect` when available.
 
 ## Red flags
 

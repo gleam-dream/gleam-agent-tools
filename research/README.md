@@ -10,6 +10,7 @@ Refreshed October 20, 2026 after the collection's scope and compact format were 
 | [Data and execution](data-execution.md) | `grind`, `saga`, `sinal`, `json-blueprint`, `gleam-sql`, `gleam-pubsub` |
 | [Transport, identity, and email](transport-identity.md) | `http-gun`, `warden`, `correio` |
 | [Agents and replay](agents-replay.md) | `llm-wire`, `fabric`, `relay`, `retrace` |
+| [Live inspection](live-inspection.md) | `gleam-inspect`, source-toolkit integration, Dash local/image checks and authenticated Fly evidence |
 | [Source identities](source-identities.json) | Local and remote revisions, clean-state observations, and actual consumer manifest digests |
 
 The earlier [research corpus](../../gleam-agent-tools-research/README.md) and [second pass](../../gleam-agent-tools-research/second-pass/README.md) remain supporting evidence. Findings were checked against actual sources before entering the new skills. Old test results remain historical observations unless explicitly rerun below.
@@ -51,6 +52,8 @@ Astra High independently reread all 19 revisions and the baseline diff. It found
 The subsequent [behavioral evaluation](behavioral-evaluation.md) used fresh agents and actual Oversight maintenance tasks. Its accepted follow-up clarified Retrace core/capture timing, Grind transactional resolution, Saga reporting lifetime, and Sinal producer-side encoding failures. Six affected tasks were rerun with new agents; the report retains inputs, answers, independent grading, lifecycle regression evidence and limits. All 19 current files still pass the size/structure checks, now with 23 unique local exact-revision source paths. Oversight's separately repaired shutdown passed 26 application tests and the repeated-lifetime probe; these later results do not broaden the earlier authoring-pass claims below.
 
 ## Checks
+
+The subsequent [live-inspection addition](live-inspection.md) extends the collection to 20 skills. It reuses the source framework's existing setup/diagnosis boundaries, adds reproducible console checks, and distinguishes passed local/image evidence from the actual Fly deployment's missing distribution setup. Earlier 19-skill reviews and evaluation results below retain their original scope.
 
 The structural check verifies the exact 19-skill catalog, matching names/directories, portable two-field metadata, direct discovery verbs, one file per skill, decision sections, red flags, source links, balanced fences, size limits, whitespace, and existing relative links. Individual skill budgets are 80 lines and 650 whitespace-delimited words, including metadata and sources.
 

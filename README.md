@@ -11,7 +11,8 @@ Use the guides that fit the task. Agents compose their responsibilities. Include
 | [gleam](skills/gleam/SKILL.md) | Language conventions, types, errors, functions, and modules |
 | [gleam-lib](skills/gleam-lib/SKILL.md) | Bounded libraries, public APIs, ownership, and compatibility |
 | [gleam-ffi](skills/gleam-ffi/SKILL.md) | Thin native capabilities, checked representations, and lifetimes |
-| [gleam-otp](skills/gleam-otp/SKILL.md) | Typed processes, protocols, supervision, and runtime inspection |
+| [gleam-otp](skills/gleam-otp/SKILL.md) | Typed processes, protocols, supervision, and recovery |
+| [gleam-inspect](skills/gleam-inspect/SKILL.md) | Existing BEAM service inspection, RPC, Voyager MCP, and deliberate repair boundaries |
 | [lustre](skills/lustre/SKILL.md) | Interface state, views, effects, and component lifetimes |
 | [wisp](skills/wisp/SKILL.md) | Inbound HTTP, middleware, and Mist integration |
 | [http-gun](skills/http-gun/SKILL.md) | Outbound HTTP, owned bodies, deadlines, and retry evidence |
