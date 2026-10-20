@@ -1,0 +1,101 @@
+#!/bin/sh
+# Build beam_tool.erl into ebin once; ship this directory with the service.
+set -eu
+here=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+export ERL_CRASH_DUMP=/dev/null
+# These global variables also affect compilers and unrelated helper VMs.
+if [ -n "${ERL_FLAGS:-}${ERL_AFLAGS:-}${ERL_ZFLAGS:-}" ]; then
+  echo 'Refusing inherited ERL_FLAGS/ERL_AFLAGS/ERL_ZFLAGS; use runtime arguments' >&2
+  exit 2
+fi
+mode=${1:-}
+[ "$#" -gt 0 ] && shift
+cookie_home=$HOME
+export ERL_EPMD_ADDRESS=127.0.0.1
+naming=${BEAM_NAMING:-long}
+case "$naming" in long) flag=-name ;; short) flag=-sname ;; *)
+  echo 'BEAM_NAMING must be long or short' >&2
+  exit 2
+  ;;
+esac
+if [ "$mode" = cookie ]; then
+  [ -d "$cookie_home" ] && [ -w "$cookie_home" ] || {
+    echo 'Cookie home must exist and be writable by the service user' >&2
+    exit 2
+  }
+  if [ -n "${BEAM_COOKIE_FILE:-}" ] && [ -n "${BEAM_COOKIE:-}" ]; then
+    echo 'Choose BEAM_COOKIE_FILE or BEAM_COOKIE' >&2
+    exit 2
+  fi
+  umask 077
+  cookie_tmp=$(mktemp "$cookie_home/.beam-cookie.XXXXXX")
+  trap 'rm -f "$cookie_tmp"' 0 HUP INT TERM
+  if [ -n "${BEAM_COOKIE_FILE:-}" ]; then
+    [ -f "$BEAM_COOKIE_FILE" ] && [ ! -L "$BEAM_COOKIE_FILE" ] || {
+      echo 'Cookie source must be a regular private file' >&2
+      exit 2
+    }
+    cookie_mode=$(stat -c %a "$BEAM_COOKIE_FILE" 2>/dev/null || stat -f %Lp "$BEAM_COOKIE_FILE")
+    cookie_owner=$(stat -c %u "$BEAM_COOKIE_FILE" 2>/dev/null || stat -f %u "$BEAM_COOKIE_FILE")
+    case "$cookie_mode" in 400 | 600) ;; *)
+      echo 'Cookie source must have mode 400 or 600' >&2
+      exit 2
+      ;;
+    esac
+    [ "$cookie_owner" = "$(id -u)" ] || {
+      echo 'Copy a privileged cookie mount to a service-owned private file before switching users' >&2
+      exit 2
+    }
+    cat "$BEAM_COOKIE_FILE" >"$cookie_tmp"
+  elif [ -n "${BEAM_COOKIE:-}" ]; then
+    printf '%s' "$BEAM_COOKIE" >"$cookie_tmp"
+  else
+    echo 'No deployment cookie supplied; local same-user Erlang creates its normal cookie automatically' >&2
+    exit 2
+  fi
+  [ -s "$cookie_tmp" ] || {
+    echo 'Empty cookie refused' >&2
+    exit 2
+  }
+  chmod 600 "$cookie_tmp"
+  mv "$cookie_tmp" "$cookie_home/.erlang.cookie"
+  exit 0
+fi
+node=${1:-}
+[ "$#" -gt 0 ] && shift
+[ -n "$node" ] || {
+  echo 'Usage: beam-tool {run|console|iex|rpc} NODE [runtime args | MODULE FUNCTION ARGS [TIMEOUT_MS]]; beam-tool cookie' >&2
+  exit 2
+}
+case "$naming:$node" in long:*@127.0.0.1) ;; short:*@*) ;; *)
+  echo 'Use an exact target node; long names must use @127.0.0.1' >&2
+  exit 2
+  ;;
+esac
+if [ "$mode" = run ]; then
+  # Only the service invocation receives the service name.
+  unset BEAM_COOKIE BEAM_COOKIE_FILE
+  exec erl "$flag" "$node" -kernel inet_dist_use_interface '{127,0,0,1}' "$@"
+fi
+client="inspect_$$_$(date +%s)@127.0.0.1"
+if [ "$naming" = short ]; then client="inspect_$$_$(date +%s)"; fi
+case "$mode" in
+rpc)
+  unset BEAM_COOKIE BEAM_COOKIE_FILE
+  exec erl "$flag" "$client" -kernel inet_dist_use_interface '{127,0,0,1}' -noshell -hidden -pa "$here/ebin" -s beam_tool main -extra "$node" "$@"
+  ;;
+console | iex)
+  "$0" rpc "$node" erlang node '[]' 2000 >/dev/null
+  unset BEAM_COOKIE BEAM_COOKIE_FILE
+  if [ "$mode" = console ]; then
+    exec erl "$flag" "$client" -kernel inet_dist_use_interface '{127,0,0,1}' -hidden -remsh "$node"
+  fi
+  "$0" rpc "$node" code ensure_loaded "['Elixir.IEx']" 2000 >/dev/null
+  if [ "$naming" = short ]; then iex_flag=--sname; else iex_flag=--name; fi
+  exec iex --erl "-kernel inet_dist_use_interface {127,0,0,1}" "$iex_flag" "$client" --hidden --remsh "$node"
+  ;;
+*)
+  echo 'Unknown mode' >&2
+  exit 2
+  ;;
+esac

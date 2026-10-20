@@ -72,3 +72,17 @@ SSH explicitly selected `--machine 287e355a7e2e98 --user app`. It confirmed UID 
 This establishes an actual deployed configuration gap, not a passing deployed attachment. No deployed console, RPC, tracing or pool query was possible through the intended surface. No Machine was created, restarted or deployed, no secret changed, and no customer query or deployed write ran. Deploying the prepared configuration and provisioning its cookie are separate mutating actions.
 
 Voyager was source-reviewed at the revision above. The desktop application is not installed here; no live MCP session or Voyager-to-Fly tunnel is qualified. Its tools supplement the tested RPC workflow. No new fresh-agent behavioral evaluation or independent-review result is claimed for this skill.
+
+## Self-contained repository distribution
+
+The owner subsequently requested that the complete capability be available in this repository. The runnable launcher, RPC client, console acceptance tool and disposable client check now live in [`tools/beam`](../tools/beam/README.md), together with their MIT license. They were imported byte-for-byte from source framework commit `ce969335b4c94d3129217280c1c77081e55aa193`. The [operator guide](../docs/beam-inspection.md) carries setup, provider-independent instance selection, private attachment, optional Voyager MCP, bounded diagnosis, database investigation and repair boundaries. Neither runtime operation nor reading that guide requires another source-framework checkout. Each skill still consists of one small `SKILL.md`.
+
+The exact [Dash integration patch](dash-inspection.patch) preserves consumer commit `4e650211f85119e456ecff4df043b10dcd85055b`, including its application-owned diagnostic projections, Squirrel queries, runtime/container integration, checks and evidence. Patch SHA-256: `586385f20dc0491ffb25bbdd7a53ff112141ad90382305e455c5d8f68141c84a`. It is a reference consumer artifact, not another generic runtime implementation. It applies to its exact parent tree, verified with a disposable Git index. It preserves original bytes, including patch whitespace. The earlier commits in the source framework and Dash remain intact.
+
+Validation against the files bundled here passed on 2026-10-20:
+
+- `sh tools/beam/check.sh` under Dash's selected Nix OTP/Python: exact-node RPC, actual Erlang attachment, disconnect survival, stopped-node/wrong-cookie failures, timeout bounds, missing modules and private-error suppression.
+- Both SQL blocks extracted from the operator guide ran against a disposable PostgreSQL instance. The first verified READ ONLY. The second verified a fresh temporary table, one exact-key/expected-value update with RETURNING, zero rows for the stale expected value, and table absence after rollback. The temporary database was stopped and removed.
+- Imported runtime/test files matched their source bytes; Python syntax and all new local documentation links passed. The raw Dash patch matched the committed source and passed application checks against its parent. Session logs are `/private/tmp/gleam-inspect-bundled-client.log` and `/private/tmp/gleam-inspect-bundled-sql.log`.
+
+These checks qualify the imported distribution and the new guide examples. They do not turn the earlier Voyager source review or Fly configuration gap into successful live attachment evidence.

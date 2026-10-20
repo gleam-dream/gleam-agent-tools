@@ -35,6 +35,8 @@ Package skills serve applications consuming those packages. `gleam-lib` covers c
 
 Each directory under `skills/` is an independent Agent Skills entry point. Install the desired directories through your agent's supported skill mechanism. No skill requires another file or a particular editor, host, Nix environment, or hook.
 
+For live service work, this repository also includes optional [BEAM console/RPC tools and executable checks](tools/beam/README.md) and a complete [operator guide](docs/beam-inspection.md). These support the compact `gleam-inspect` skill without requiring the separate source skills framework. Applications retain their own bootstrap, diagnostics, database access and repair APIs. The [Dash pilot patch](research/dash-inspection.patch) retains the validated consumer integration here.
+
 The format follows the [Agent Skills specification](https://agentskills.io/specification). The decision-focused structure is informed by [Elixir Agent Tools](https://github.com/georgeguimaraes/elixir-agent-tools). Technical guidance was written against Gleam and package sources rather than translating Elixir APIs.
 
 The [research index](research/README.md) records source identities, claim evidence, review corrections, and verification limits. These records are maintainer material; they are not additional skill loads. Preserve source distinctions when updating a guide: a published release, a Git checkout, and a consumer's lock may expose different APIs.
