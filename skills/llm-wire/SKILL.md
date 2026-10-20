@@ -5,7 +5,7 @@ description: Call LLM providers and handle typed answers, tool requests, streami
 
 # LLM Wire
 
-Use `llm_wire` for provider calls on Erlang/OTP. Built-in generation adapters cover OpenAI Responses, Anthropic Messages, and Google GenerateContent. Keep conversation policy, tool execution, HTTP client lifetime, and retries in the application. Preserve an existing provider library when it already fits.
+Choose LLM Wire on Erlang/OTP for common typed provider outcomes, preflight validation, and streaming while the application owns history, tools, and retries. A narrow provider client suffices without these shared contracts; Fabric adds retained execution. Generation adapters cover OpenAI Responses, Anthropic Messages, and Google GenerateContent.
 
 ## Abstraction decision tree
 
@@ -14,7 +14,7 @@ Need model-selected tool execution with retained recovery? → Fabric
 Need a provider call controlled by the application? → LLM Wire
 ├── Text, structured answer, or tools → request → prepare → run
 ├── Incremental generation → stream → next until Done
-├── Native question answering → classification request family
+├── Typed choices, scores, or question batches → classify request family
 └── Bounded inline audio → transcription request family
 ```
 
@@ -43,7 +43,7 @@ Use `with_output(name, codec)` for decoded answers. Its codec must have a record
 - Inspect `sent`, `partial_output`, and optional usage. `MaybeSent` can mean paid remote work; missing usage does not mean zero tokens.
 - Bound attempts, backoff, and provider delay by one application deadline. `ProviderDelay` is uncapped advice; do not sleep beyond the remaining budget.
 
-Classification and transcription have separate contracts. Do not infer generation streaming, uploaded-audio lifecycle, or diarization from their existence.
+Classification maps authored alternatives into native answers, such as `Publish` or `Revise`; confidence is provider evidence, not correctness. Classification and transcription have separate contracts; neither implies generation streaming, uploaded-audio lifecycle, or diarization.
 
 ## Red flags
 

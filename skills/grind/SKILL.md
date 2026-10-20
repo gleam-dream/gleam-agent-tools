@@ -5,7 +5,9 @@ description: Build and debug durable PostgreSQL jobs with Grind. Use for typed w
 
 # Grind
 
-Run durable jobs while keeping admission, business commit, and external effects distinct.
+Choose Grind when work must survive its request, become available on a schedule, and retain typed outcomes, with Erlang/OTP and PostgreSQL fitting that lifecycle. Preserve a suitable existing queue. Use supervised in-memory work when loss is acceptable, and a workflow for dependent effects.
+
+Its recovery model preserves uncertainty: an abandoned effect can require investigation and an attributed resolution before replay. Plan that operational responsibility alongside durable admission.
 
 ## Abstraction decision tree
 

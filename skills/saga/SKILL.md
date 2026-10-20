@@ -5,14 +5,17 @@ description: Build and debug typed workflows with Saga. Use for dependent steps,
 
 # Saga
 
-Connect typed steps and preserve the evidence needed to recover partial effects.
+Choose Saga when dependent effects need coordinated scheduling, parallel branches, undo, compensation, or retained partial progress. Use ordinary `Result` sequencing for short operations and one database transaction for changes it can cover.
+
+For example, reserve inventory, charge, then release a known reservation if the charge fails. Typed ports connect outputs to inputs without a result-name dictionary; unknown charge outcomes still require evidence before recovery.
 
 ## Abstraction decision tree
 
 ```text
 Does the operation need workflow coordination?
-├─ Short sequential calculation → Result composition
-└─ Typed dependencies or partial-effect recovery → Saga
+├─ Short sequence → Result composition
+├─ All changes fit one database transaction → Transaction
+└─ Coordinated effects or partial-effect recovery → Saga
    ├─ Owner-bound execution → saga/execution; no storage or codecs
    └─ Execution must outlive its owner → saga/durable
       ├─ Store lifetime only → Memory storage

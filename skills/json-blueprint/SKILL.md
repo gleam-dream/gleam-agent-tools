@@ -5,31 +5,30 @@ description: Define JSON codecs and schema contracts with JSON Blueprint. Use fo
 
 # JSON Blueprint
 
-Choose the installed API before defining a typed JSON boundary.
+Choose a modern Blueprint codec when one native type and definition should keep JSON encoding, decoding, and schema aligned. An ordinary `gleam/json` decoder suffices for one-way input without a schema. Check installed source before choosing imports: published 1.7.1 lacks the checkout's modern codec API despite the same version field.
 
 ## Abstraction decision tree
 
 ```text
 What JSON boundary does the application need?
 ├─ Decode known input without schema/encoding → Existing gleam/json decoder
-├─ Published 1.7.1 or recursive legacy decoder → json/blueprint
-└─ Explicit unreleased codec source → json/blueprint/codec
-   ├─ Typed values ↔ JSON and schema → Codec
-   ├─ Exact JSON numbers → number
-   ├─ Runtime schema within supported profile → contract
-   └─ Generated native types → Separate development-time generator
+├─ Existing legacy wire format or recursive decoding → json/blueprint
+│  └─ Legacy Decoder is one-way; encoding uses separate helpers
+├─ Typed values ↔ JSON and schema → json/blueprint/codec, unreleased source
+├─ Exact JSON numbers → Modern number API
+├─ Runtime schema within supported profile → Modern contract API
+└─ Generated native types → Separate development-time generator
 ```
 
 ## Establish the API and wire contract
 
 - Inspect the dependency source, revision, and imports. The researched checkout still declares 1.7.1 but contains unreleased work toward 2.0. Installing published 1.7.1 does not supply that modern codec API.
 - Preserve an existing 1.x wire contract unless migration is intended. Legacy unions use `type`/`data` and enums use `enum`; modern unions use `tag`/`value`, with tag-only unit variants.
-- Use modern `field`, `optional_field`, and `success` for records; pass getters with `get:`. Keep construction callbacks pure: schema description evaluates them with placeholders.
+- Use modern `field`, `optional_field`, and `success` for records; pass getters with `get:`. Keep callbacks synchronous and pure: schema description evaluates construction with placeholders. Perform I/O outside codecs; callback types enforce neither purity nor resource lifetime.
 - Distinguish omission, null, and a value. `optional_field` accepts absence and delegates present values to its inner codec. For a non-null inner codec, wrapping it in `nullable` preserves all three as `None`, `Some(None)`, and `Some(Some(value))`.
 - Expect built-in modern record codecs to reject undeclared fields. Strict text decoding also rejects duplicate keys and wrong types; treat those failures as boundary decisions.
 - Check runtime-derived definitions with `codec.check`. Static duplicate field names, repeated enum labels, and invalid bounds are definition errors that otherwise panic when used.
 - Keep domain validation in pure Gleam `try_map` or conversion functions. Schema metadata cannot express every predicate performed by custom callbacks.
-- Keep conversion callbacks synchronous and pure; perform application I/O before or after codec use. Callback types do not enforce purity or manage hidden resource lifetimes.
 
 ## Bounds, numbers, and schemas
 

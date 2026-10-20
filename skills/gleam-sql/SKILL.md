@@ -5,7 +5,7 @@ description: Build and debug PostgreSQL data access with Squirrel, Pog, and Cigo
 
 # Gleam SQL
 
-Keep authored SQL, runtime connections, and migration history under explicit ownership.
+Choose Squirrel when authored SQL should remain visible while generated typed functions keep parameters and row decoding aligned with the schema. Pog alone suits a few handwritten queries; Cigogne independently owns ordered migrations. Preserve an existing persistence approach that fits.
 
 ## Abstraction decision tree
 
@@ -22,7 +22,7 @@ Does PostgreSQL fit the application's persistence contract?
 ## Generate against the intended schema
 
 - Check package versions and targets. Research covered Squirrel 4.7.0, Pog 4.1.0, and Cigogne 5.0.6. Squirrel supports PostgreSQL >=16; Pog and Cigogne execute on Erlang.
-- Recommend this SQL-first lane when its contract fits. Respect existing persistence choices; a JavaScript app can use migration tooling without gaining a JavaScript database runtime.
+- A JavaScript application can use migration tooling without gaining a JavaScript database runtime.
 - Add Squirrel as a development dependency. Author one statement per `.sql` file in `src/**/sql/`; run `gleam run -m squirrel` to generate the neighboring `sql.gleam` module.
 - Apply the intended migrations before generating or checking. The generator interrogates a live database; use the same schema baseline in CI and deployment planning.
 - Edit SQL, then regenerate. Run `gleam run -m squirrel check` to detect stale generated access. Keep database credentials in the environment.
@@ -35,7 +35,7 @@ Does PostgreSQL fit the application's persistence contract?
 - Supervise the pool and budget connection capacity. Verify readiness through an actual query; successful pool startup alone need not establish a usable connection.
 - Pass the callback's transaction connection to every participating query. Pog commits callback `Ok` and rolls back callback `Error` or panic; propagate failures instead of replacing them with success.
 - Treat decoding failure after a write as possible completed execution. Propagate it through the transaction if rollback is required; an `Error` outside that transaction does not establish rollback.
-- Keep external effects and separately committed package stores outside claims of one atomic transaction. The application owns authorization and business invariants.
+- Keep external effects and separately committed stores outside atomicity claims. Express domain decisions in Gleam and enforce database invariants with constraints or appropriate locking; application checks alone cannot exclude concurrent writes.
 
 ## Migrate deliberately
 

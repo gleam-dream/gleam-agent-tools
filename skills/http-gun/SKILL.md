@@ -5,13 +5,13 @@ description: Send and debug outgoing HTTP with HTTP Gun on Erlang/OTP. Use for p
 
 # HTTP Gun
 
-Own HTTP byte exchanges explicitly. Let the application interpret statuses, decode payloads, and decide whether an effect can be repeated.
+Choose HTTP Gun on Erlang when shared pooling, bounded response reads, owned body lifetimes, or live/playback exchanges justify a managed client. A simpler or existing client suffices without those needs. Applications interpret statuses, decode payloads, and decide repetition.
 
 ## Abstraction decision tree
 
 | Need | Choose |
 | --- | --- |
-| Outgoing HTTP on Erlang with pooling and owned bodies | HTTP Gun; preserve an existing suitable transport |
+| Redirects, decompression, proxies, or streamed uploads required | Select a transport exposing those capabilities |
 | Small complete response | `send` with a body limit |
 | Incremental response | `with_response` and `body.next` |
 | Body lifetime extends beyond one callback | `open`, with an explicit owner and `body.close` |

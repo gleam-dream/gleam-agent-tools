@@ -1,127 +1,127 @@
 {
   "research_date": "2026-10-20",
   "skills": 19,
-  "total_words": 10915,
-  "min_lines": 54,
+  "total_words": 11304,
+  "min_lines": 55,
   "max_lines": 67,
-  "min_words": 503,
-  "max_words": 646,
-  "checked_exact_local_github_source_paths": 25,
+  "min_words": 532,
+  "max_words": 649,
+  "checked_exact_local_github_source_paths": 21,
   "status": "passed",
   "catalog": [
     {
       "name": "correio",
       "lines": 57,
-      "words": 642,
-      "bytes": 4985
+      "words": 643,
+      "bytes": 4982
     },
     {
       "name": "fabric",
       "lines": 62,
-      "words": 596,
-      "bytes": 4538
+      "words": 630,
+      "bytes": 4703
     },
     {
       "name": "gleam",
       "lines": 57,
-      "words": 518,
-      "bytes": 3943
+      "words": 532,
+      "bytes": 4099
     },
     {
       "name": "gleam-ffi",
-      "lines": 60,
-      "words": 620,
-      "bytes": 4648
+      "lines": 59,
+      "words": 601,
+      "bytes": 4533
     },
     {
       "name": "gleam-lib",
       "lines": 67,
-      "words": 646,
-      "bytes": 5046
+      "words": 649,
+      "bytes": 5096
     },
     {
       "name": "gleam-otp",
       "lines": 62,
-      "words": 544,
-      "bytes": 3911
+      "words": 566,
+      "bytes": 4052
     },
     {
       "name": "gleam-pubsub",
-      "lines": 56,
-      "words": 571,
-      "bytes": 4212
+      "lines": 57,
+      "words": 635,
+      "bytes": 4628
     },
     {
       "name": "gleam-sql",
       "lines": 59,
-      "words": 589,
-      "bytes": 4242
+      "words": 616,
+      "bytes": 4441
     },
     {
       "name": "grind",
-      "lines": 54,
-      "words": 503,
-      "bytes": 3741
+      "lines": 56,
+      "words": 558,
+      "bytes": 4142
     },
     {
       "name": "http-gun",
       "lines": 56,
-      "words": 589,
-      "bytes": 4354
+      "words": 604,
+      "bytes": 4500
     },
     {
       "name": "json-blueprint",
-      "lines": 56,
-      "words": 601,
-      "bytes": 4475
+      "lines": 55,
+      "words": 637,
+      "bytes": 4728
     },
     {
       "name": "llm-wire",
       "lines": 62,
-      "words": 562,
-      "bytes": 4240
+      "words": 584,
+      "bytes": 4419
     },
     {
       "name": "lustre",
       "lines": 56,
-      "words": 525,
-      "bytes": 3955
+      "words": 540,
+      "bytes": 4076
     },
     {
       "name": "relay",
-      "lines": 61,
-      "words": 542,
-      "bytes": 4113
+      "lines": 63,
+      "words": 584,
+      "bytes": 4527
     },
     {
       "name": "retrace",
-      "lines": 63,
-      "words": 628,
-      "bytes": 4876
+      "lines": 61,
+      "words": 534,
+      "bytes": 4359
     },
     {
       "name": "saga",
-      "lines": 55,
-      "words": 551,
-      "bytes": 4205
+      "lines": 58,
+      "words": 611,
+      "bytes": 4648
     },
     {
       "name": "sinal",
-      "lines": 54,
-      "words": 522,
-      "bytes": 3902
+      "lines": 57,
+      "words": 586,
+      "bytes": 4381
     },
     {
       "name": "warden",
       "lines": 56,
-      "words": 625,
-      "bytes": 4997
+      "words": 629,
+      "bytes": 5010
     },
     {
       "name": "wisp",
       "lines": 56,
-      "words": 541,
-      "bytes": 3966
+      "words": 565,
+      "bytes": 4157
     }
   ]
 }

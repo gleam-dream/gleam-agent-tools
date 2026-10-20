@@ -5,7 +5,7 @@ description: Build and debug typed LLM agents and conditional graphs with Fabric
 
 # Fabric
 
-Use Fabric when model-selected actions or application-controlled graphs need bounded execution and retained outcomes on Erlang/OTP. Preserve an existing runtime when its contract fits.
+Choose Fabric when a tool waits for approval or a lost runner must resume from retained actions and outcomes on Erlang/OTP. Those needs justify a store, live context, and recovery owner. One model call or a small controlled loop can use LLM Wire and ordinary functions; retain a fitting existing runtime.
 
 ## Abstraction decision tree
 
@@ -21,7 +21,7 @@ Need explicit workflow compensation? → Saga
 ## Build the ordinary path
 
 1. Define native input and output codecs. Create each `tool.Definition`, then bind its typed handler before combining heterogeneous tools.
-2. Build an agent with a model, tool list, and explicit policy. Set useful turn, concurrency, model-call, and tool-body bounds; handle `agent.build` errors before starting.
+2. Build an agent with a model, tool list, and explicit policy. Set turn, concurrency, model-call, and tool-body bounds; these do not supply a whole-agent elapsed deadline. Handle `agent.build` errors before starting.
 3. Start the selected store. Allocate HTTP/database resources only when the chosen adapters require them; keep borrowed resources under their application owner's lifecycle.
 4. Start with a retained `RunId`, live context, prompt, and correlation. Use a stable application identity when retried admission must find the existing run.
 5. Await or inspect status. Read action records from `fabric.snapshot` before treating a final answer as business success.

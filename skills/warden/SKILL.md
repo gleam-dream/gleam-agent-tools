@@ -5,7 +5,7 @@ description: Integrate OIDC login, OAuth tokens, and access-token validation wit
 
 # Warden
 
-Use checked protocol evidence and managed user-token custody. Keep application accounts, browser sessions, permissions, and resource-request retry policy explicit.
+Choose Warden to sign users in or manage provider tokens while it handles discovery, key rotation, shared refresh, and token custody. Applications own accounts, browser sessions, permissions, and resource-request retries. Preserve an adequate existing integration.
 
 ## Abstraction decision tree
 
@@ -18,7 +18,7 @@ Use checked protocol evidence and managed user-token custody. Keep application a
 | Sessions surviving custody-store restart | Durable stores plus a stable sealing key |
 | Accounts, permissions, or application sessions | Application policy around Warden's evidence |
 
-Recommend Warden when these roles fit; retain an existing suitable integration. The reviewed checkout is unreleased and pre-production. Production use requires its release conditions and independent security review; retained tests confer no certification.
+The reviewed checkout is unreleased and pre-production. Production use requires its release conditions and independent security review; retained tests confer no certification.
 
 ## Configure clients, complete the login
 
@@ -40,7 +40,7 @@ Recommend Warden when these roles fit; retain an existing suitable integration. 
 
 - Use memory defaults when loss on restart is acceptable. For durable custody and login transactions, configure both stores and preserve the application's sealing key.
 - Prefer the provided PostgreSQL adapter when it fits. The application owns migration, pool lifetime, capacity, backups, and key custody.
-- Implement a custom store only against its atomic conditional-write contract. Check deadlines under exclusive write authority after waiting; preserve uncertain commit outcomes. `testing.check_store` does not replace actual lock-wait tests.
+- If implementing a custom store, honor its atomic conditional-write contract. Check deadlines under exclusive write authority after waiting; preserve uncertain commits. `testing.check_store` does not replace actual lock-wait tests.
 - Stop request admission before shutdown. Stop supervised clients through their parent. A manual `stop` returning is not proof every worker or external effect finished; retain captured pools for the completion boundary the application needs.
 - Test login and recovery against `warden/testing`'s local provider. Test resource audience, scope, and availability outcomes separately; local JWT validation cannot establish current provider revocation state.
 

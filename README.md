@@ -10,7 +10,7 @@ Use the guides that fit the task. Agents compose their responsibilities. Include
 | --- | --- |
 | [gleam](skills/gleam/SKILL.md) | Language conventions, types, errors, functions, and modules |
 | [gleam-lib](skills/gleam-lib/SKILL.md) | Bounded libraries, public APIs, ownership, and compatibility |
-| [gleam-ffi](skills/gleam-ffi/SKILL.md) | Foreign representations, async behavior, and lifetimes |
+| [gleam-ffi](skills/gleam-ffi/SKILL.md) | Thin native capabilities, checked representations, and lifetimes |
 | [gleam-otp](skills/gleam-otp/SKILL.md) | Typed processes, protocols, supervision, and runtime inspection |
 | [lustre](skills/lustre/SKILL.md) | Interface state, views, effects, and component lifetimes |
 | [wisp](skills/wisp/SKILL.md) | Inbound HTTP, middleware, and Mist integration |
@@ -19,14 +19,14 @@ Use the guides that fit the task. Agents compose their responsibilities. Include
 | [gleam-pubsub](skills/gleam-pubsub/SKILL.md) | Whisper/Roar notifications, scope, and delivery limits |
 | [grind](skills/grind/SKILL.md) | Durable background jobs, admission, and uncertain effects |
 | [saga](skills/saga/SKILL.md) | Typed dependent workflows, compensation, and recovery |
-| [sinal](skills/sinal/SKILL.md) | Typed telemetry, handlers, spans, and forwarding |
-| [json-blueprint](skills/json-blueprint/SKILL.md) | JSON codecs, wire contracts, schemas, and numeric bounds |
+| [sinal](skills/sinal/SKILL.md) | Typed observations independent of optional consumers |
+| [json-blueprint](skills/json-blueprint/SKILL.md) | Aligned JSON encoding, decoding, and schemas |
 | [warden](skills/warden/SKILL.md) | OIDC/OAuth roles, checked identity, and token custody |
 | [correio](skills/correio/SKILL.md) | Email submission and passwordless verification |
 | [llm-wire](skills/llm-wire/SKILL.md) | Provider calls, structured answers, tools, and streaming |
 | [fabric](skills/fabric/SKILL.md) | Typed agents, conditional graphs, policy, and recovery |
 | [relay](skills/relay/SKILL.md) | Typed MCP clients, servers, transports, and delivery evidence |
-| [retrace](skills/retrace/SKILL.md) | Safe recording, reconstruction, delivery, and erasure |
+| [retrace](skills/retrace/SKILL.md) | Frontend model/message recording and inert session reconstruction |
 
 Package skills serve applications consuming those packages. `gleam-lib` covers creating libraries. Skill names normalize package underscores to hyphens; package and import names keep their original spelling.
 

@@ -5,7 +5,7 @@ description: Design and debug application notifications with Whisper and Roar. U
 
 # Gleam pub/sub
 
-Choose notification scope and recovery before connecting publishers and subscribers.
+Use ephemeral fanout when several independent consumers should react to a change, such as views notified to reread an entity. A callback or subject suffices for one known recipient. Keep authoritative state elsewhere so missed notifications can be repaired by rereading it.
 
 ## Abstraction decision tree
 
@@ -14,7 +14,7 @@ What delivery contract does the application require?
 ├─ Durable receipt, replay, or required command → Durable store/protocol
 ├─ Diagnostic observation on BEAM → Telemetry
 └─ Ephemeral application notification → Choose scope
-   ├─ Local Erlang or JavaScript → Whisper
+   ├─ Local Erlang or JavaScript → Whisper candidate; qualify target/version
    └─ BEAM cluster → Roar candidate; establish a compatible pair first
 ```
 
@@ -22,6 +22,7 @@ What delivery contract does the application require?
 
 - Inspect the resolved manifest and public API. Both packages are experimental. Roar 0.1.0 uses Whisper's older router API and is source-incompatible with the inspected Whisper 0.2.0 API, despite its permissive dependency range.
 - Do not recommend that combined installation or invent a working downgrade. Establish a normally resolved, compiled pair before selecting Roar for a new application.
+- Qualify Whisper alone on the selected target and resolved graph. The retained local probe bypassed resolution and used an out-of-range stdlib; it does not establish a supported installation.
 - Keep old router examples separate from Whisper 0.2 topic examples. In 0.2, `new_topic` returns a checked topic value; `subscribe` and `on` receive that value directly.
 
 ## Own topics and subscriptions

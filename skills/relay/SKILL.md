@@ -1,11 +1,11 @@
 ---
 name: relay
-description: Serve and call typed MCP tools with Relay over stdio or Streamable HTTP. Use for tool contracts, discovery, mounting, bearer verification, call controls, and delivery evidence in Gleam applications.
+description: Serve and call typed MCP tools with Relay over stdio or Streamable HTTP. Use for shared tool contracts, resources, prompts, completion, discovery, mounting, bearer verification, call controls, and delivery evidence in Gleam applications.
 ---
 
 # Relay
 
-Use Relay for MCP clients and servers on Erlang. The inspected API implements revision `2026-07-28`; verify peer revision and needed capabilities. Keep business effects, durable execution, and retry policy in the application.
+Choose Relay for MCP interoperability on Erlang: one typed tool definition supplies declaration, server decoding, and client calling. Internal operations need only functions; preserve a fitting MCP SDK. The inspected API implements revision `2026-07-28`; verify peer capabilities. Applications own business effects, durable execution, and retries.
 
 ## Abstraction decision tree
 
@@ -27,6 +27,8 @@ Need only an internal application operation? → Plain typed function
 5. Close clients, endpoints, and listeners the application created, including when later setup fails.
 
 Use `try_define` for runtime-built definitions so invalid names or schemas return typed errors. Source-authored `define` treats invalid definitions as programmer errors. Refuse discovered schemas outside the supported profile rather than weakening their contract.
+
+For resources, prompts, or completion, configure `server.with_resources`, `server.with_prompts`, or `server.with_completion` using their public contracts. These expose peer-facing capabilities without turning ordinary application functions into tools.
 
 ## Choose the transport honestly
 

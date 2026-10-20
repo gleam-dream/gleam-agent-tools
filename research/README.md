@@ -44,11 +44,15 @@ The owner's subsequent diff review strengthened two design policies. `gleam-ffi`
 
 The subsequent [scope and composition review](composition-review.md) covered the remaining 17 skills. It tightened Wisp's domain boundary, Blueprint callback purity, Warden configuration per client, and Fabric's adapter-specific resource requirements. The other 13 were already aligned with the requested principles.
 
+The owner's requested [independent Astra High review](astra-high-review.md) then examined all 19 skills, their abstraction fit, primary sources, oracle scope, and retained probe evidence. Its purpose-first recommendations were applied after baseline commit `a873eac`. The [revision record](astra-revisions.md) accounts for every skill and the contracts preserved while compressing or replacing prose. Retrace now leads with frontend reconstruction, Sinal with independent producers and optional consumers, and Saga with coordinated effects rather than typed dependencies alone.
+
+Astra High independently reread all 19 revisions and the baseline diff. It found one new ambiguity: legacy Blueprint decoding had been nested beneath bidirectional codecs. The corrected tree separates its one-way decoder and separate encoders from the modern shared-definition codec. No other material regression was found. This is source and editorial review, not a new runtime qualification or agent-effectiveness evaluation.
+
 ## Checks
 
 The structural check verifies the exact 19-skill catalog, matching names/directories, portable two-field metadata, direct discovery verbs, one file per skill, decision sections, red flags, source links, balanced fences, size limits, whitespace, and existing relative links. Individual skill budgets are 80 lines and 650 whitespace-delimited words, including metadata and sources.
 
-The final check passed for all 19 skills: 54–67 lines and 503–646 words each. It also verified 25 exact-revision GitHub source paths against local Git objects; refreshed Retrace sources were checked separately through the connector. The [validation record](validation.json) retains per-skill counts. This establishes structure and source-path integrity, not agent effectiveness.
+The baseline check passed for all 19 skills: 54–67 lines and 503–646 words each, with 25 exact-revision source-path checks. After applying Astra's recommendations, the structural check passed again: 55–67 lines and 532–649 words each. It verified all 21 unique exact-revision local GitHub source paths against Git objects; refreshed Retrace sources retain their separate connector evidence. All 19 skills changed and `git diff --check` passed. The [validation record](validation.json) retains current per-skill counts. This establishes structure and source-path integrity, not agent effectiveness.
 
 The retained [boundary lab](../../gleam-agent-tools-research/probes/README.md) was read and rerun with Gleam 1.19.2, OTP 28, and Node 25.8.1:
 

@@ -5,7 +5,7 @@ description: Write and refactor idiomatic Gleam functions, types, and modules. U
 
 # Gleam
 
-Preserve caller-visible behavior while making domain decisions explicit in types and functions.
+Model domain decisions with ordinary typed values and functions. Use this guide for application logic and behavior-preserving refactoring; introduce runtime machinery only for an actual concurrency, ownership, or recovery need.
 
 ## Governing rule
 
@@ -26,9 +26,9 @@ What needs representing?
 
 - Inspect `gleam.toml`, `manifest.toml`, repository instructions, and the selected compiler. Read the resolved dependency's public API before using a remembered function. A nearby checkout can differ from the consumer's lock.
 - Annotate every module function's arguments and return type, including private functions. Qualify imported functions and constants through their module.
-- Use `snake_case` names and `PascalCase` types/variants. Use singular module segments, treat acronyms as words, and name fallible operations for their action; reserve `try_` for a distinct error-propagating counterpart.
+- Use `snake_case` names, `PascalCase` types/variants, and singular module segments. Reserve `try_` for a distinct error-propagating counterpart.
 - Return expected failures through `Result`. Reserve `Option` for absence. Preserve omitted values, explicit false, empty values, and failures when they have different meanings.
-- Prefer a custom type when a boolean or optional fields conceal mutually exclusive states. Use checked constructors and opacity for actual invariants; types alone do not validate foreign data or concurrent history.
+- Represent mutually exclusive states directly: replace independent optional `pending` and `completed` fields with `Pending` and `Completed(value)` variants. Keep booleans for genuine yes/no facts. Use checked constructors and opacity for invariants; types alone do not validate foreign data or concurrent history.
 
 ## Keep the operation readable
 

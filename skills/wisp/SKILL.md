@@ -5,11 +5,11 @@ description: Build and debug Erlang/OTP HTTP handlers and middleware with Wisp a
 
 # Wisp
 
-Translate an inbound HTTP request into a checked application operation and an explicit response.
+Choose Wisp for Erlang HTTP endpoints composed from ordinary request/response functions and small middleware. Translate checked input into a Gleam application operation, then map its result to HTTP. Use Mist's transport API when connection-level behavior is required.
 
 ## Governing rule
 
-Read the request body once. Pass the parsed value onward instead of asking another layer to consume the stream again.
+Let middleware refine requests and handlers translate protocols; keep domain decisions in Gleam application functions. Read a body once and pass its parsed value onward.
 
 ## Abstraction decision tree
 
@@ -28,7 +28,7 @@ What HTTP responsibility is needed?
 - Keep expected malformed input and domain failures on ordinary response paths. Use crash recovery for unexpected failures without returning private diagnostics to clients.
 - Use the selected `require_*` body/form helpers and share their result. Wisp's body helpers do not cache the consumed stream; repeated reads may hang or return an incorrect value.
 - Check content type and decoding separately from domain validation. Choose body and upload limits at the adapter that enforces them.
-- Keep domain decisions in Gleam application functions and storage behind explicit application capabilities. Let handlers parse requests and map results so HTTP behavior can be tested independently.
+- Pass existing application functions and storage capabilities explicitly; add a port only for a real variation. Test HTTP mapping independently from domain behavior.
 - Use framework response/cookie helpers. Escape untrusted text when constructing HTML, and validate redirect destinations according to application policy.
 
 ## Preserve request and resource ownership

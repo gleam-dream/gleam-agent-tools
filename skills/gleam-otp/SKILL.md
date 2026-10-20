@@ -5,7 +5,7 @@ description: Design and debug typed BEAM processes with gleam_otp and gleam_erla
 
 # Gleam OTP
 
-Choose processes for runtime ownership, concurrency, serialization, or fault isolation on Erlang/BEAM.
+Choose processes to own a connection, serialize shared state, run concurrent work, or isolate failure on Erlang/BEAM. Keep stateless calculations as functions; a process earns its lifecycle by owning a runtime responsibility.
 
 ## Governing rule
 
@@ -47,7 +47,7 @@ What runtime responsibility exists?
 
 Exercise the protocol's failure path, timeout, restart, and retained client handle where relevant. Confirm that a restarted process can recover the state its caller expects.
 
-Check system-operation support against the pinned actor implementation. In `gleam_otp` 1.3.0, the focused probe reads state but `sys:trace` times out. Use bounded diagnostics; treat inspected state as private and mutate through the owning public API.
+When inspecting actors, check system-operation support against the pinned implementation. In `gleam_otp` 1.3.0, the focused probe reads state but `sys:trace` times out. Use bounded diagnostics; treat inspected state as private and mutate through the owning public API.
 
 ## Red flags
 

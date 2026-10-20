@@ -5,11 +5,11 @@ description: Design and debug thin, narrowly scoped Gleam interfaces to Erlang, 
 
 # Gleam FFI
 
-Expose narrow external capabilities through thin, type-sound, composable Gleam entry points. Keep the logic that combines them in Gleam.
+Use FFI for platform access or a required foreign library lacking a suitable typed interface. Expose one narrow capability through a thin, type-sound Gleam entry point; compose the operations in Gleam.
 
 ## Governing rule
 
-Limit FFI to required native calls, representation conversion, and necessary runtime mechanics. Put domain validation, decisions, state transitions, and workflow policy in checked Gleam. A typed wrapper around a foreign workflow does not establish this boundary.
+Keep application domain decisions and workflow policy in checked Gleam. Foreign code should perform native calls, representation conversion, and required runtime mechanics. Preserve atomic native/resource sequencing and use a selected foreign library's protocol implementation through its public contract.
 
 ## Abstraction decision tree
 
@@ -24,8 +24,7 @@ Why does this operation need foreign code?
 ## Trace the whole operation
 
 - Inspect the declaration, implementation, callers, resolved dependency, compiler, and supported runtimes. Confirm the foreign module/export actually exists.
-- Locate validation, state transitions, sequencing, retries, cancellation, persistence, and recovery decisions. A wrapper around a foreign workflow leaves those decisions foreign.
-- Expose small typed operations that compose in Gleam. Keep only necessary native sequencing and resource mechanics foreign; move domain logic and workflow orchestration into Gleam. Judge the boundary by its responsibility, not the number of externals.
+- Trace validation, state transitions, retries, cancellation, persistence, and recovery through callers and implementation. Check where each decision lives; counting externals cannot establish a thin boundary.
 
 ## Represent the actual values
 

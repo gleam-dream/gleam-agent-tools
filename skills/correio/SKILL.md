@@ -5,7 +5,7 @@ description: Deliver transactional email and verify passwordless challenges with
 
 # Correio
 
-Keep email submission and passwordless verification independent. Applications own templates, accounts, delivery scheduling, browser policy, and sessions.
+Choose Correio when application email should use one `Message -> Outcome` sender across SMTP, Postmark, and test capture, or when typed passwordless challenges fit. Delivery and verification are independent. Applications own templates, accounts, scheduling, browser policy, and sessions; retain suitable existing integrations.
 
 ## Abstraction decision tree
 
@@ -18,12 +18,12 @@ Keep email submission and passwordless verification independent. Applications ow
 | Magic link or email code | `passwordless` over the application's native subject type |
 | Shared durable challenge authority | `correio_postgres` with a named Pog pool and subject codec |
 
-Recommend Correio when it fits; preserve existing suitable choices. This Erlang-only checkout is pre-release and unpublished. Addresses exclude SMTPUTF8 mailboxes, quoted local parts, and address literals.
+This Erlang-only checkout is unpublished. Addresses exclude SMTPUTF8 mailboxes, quoted local parts, and address literals.
 
 ## Construct once, inject delivery
 
 - Parse addresses and construct messages through checked constructors. Handle user input through `Result`; the application owns templates and localization.
-- Inject `delivery.Sender`, a `Message -> Outcome` function. Select SMTP, Postmark, or capture at application setup instead of branching on providers throughout business code.
+- Inject `delivery.Sender` at setup; keep provider selection outside business code.
 - Use verified TLS for SMTP. The explicit loopback plaintext constructor is for local tests; it cannot carry credentials. SMTP configuration starts no process, and each send owns one bounded exchange.
 - Handle all four outcomes: `Accepted` records provider submission, `NotSent` proves no submission, `Rejected` distinguishes temporary and permanent refusal, and `OutcomeUnknown` preserves possible submission.
 - Correct the cause before retrying `NotSent`; schedule temporary refusals according to application policy. Never automatically retry possibly transmitted mail. Acceptance does not prove inbox arrival, and Message-ID does not provide deduplication.

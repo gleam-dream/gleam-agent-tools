@@ -5,7 +5,7 @@ description: Build and debug Lustre interfaces with Model-View-Update. Use for U
 
 # Lustre
 
-Model interface state explicitly and return managed effects for the runtime to execute.
+Choose Lustre when explicit model/message transitions should make an interactive interface inspectable and reproducible. Return effects for the runtime to execute. Static HTML needs no UI runtime; reusable presentation usually needs only a view function.
 
 ## Governing rule
 
@@ -33,7 +33,7 @@ What does the interface need?
 
 ## Manage effects and lifetimes
 
-- Use effect-returning `init`/`update` with `lustre.application`. Use `effect.none()` when no work is required.
+- Use effect-returning `init`/`update` with `lustre.application`.
 - Do not rely on `effect.batch` ordering. Sequence dependent work through result messages or a single effect with the required sequencing.
 - Install long-lived event sources through managed effects and give their owner a cleanup path. `effect.subscribe`/`unsubscribe` handles parent DOM context. Use the paint lifecycle for DOM measurement; ordinary effects can run before the new view is rendered.
 - Separate browser APIs from portable state transitions. Server components ignore browser paint effects; a shared source file does not establish runtime compatibility.
