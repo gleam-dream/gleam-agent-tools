@@ -1,0 +1,127 @@
+{
+  "research_date": "2026-10-20",
+  "skills": 19,
+  "total_words": 10915,
+  "min_lines": 54,
+  "max_lines": 67,
+  "min_words": 503,
+  "max_words": 646,
+  "checked_exact_local_github_source_paths": 25,
+  "status": "passed",
+  "catalog": [
+    {
+      "name": "correio",
+      "lines": 57,
+      "words": 642,
+      "bytes": 4985
+    },
+    {
+      "name": "fabric",
+      "lines": 62,
+      "words": 596,
+      "bytes": 4538
+    },
+    {
+      "name": "gleam",
+      "lines": 57,
+      "words": 518,
+      "bytes": 3943
+    },
+    {
+      "name": "gleam-ffi",
+      "lines": 60,
+      "words": 620,
+      "bytes": 4648
+    },
+    {
+      "name": "gleam-lib",
+      "lines": 67,
+      "words": 646,
+      "bytes": 5046
+    },
+    {
+      "name": "gleam-otp",
+      "lines": 62,
+      "words": 544,
+      "bytes": 3911
+    },
+    {
+      "name": "gleam-pubsub",
+      "lines": 56,
+      "words": 571,
+      "bytes": 4212
+    },
+    {
+      "name": "gleam-sql",
+      "lines": 59,
+      "words": 589,
+      "bytes": 4242
+    },
+    {
+      "name": "grind",
+      "lines": 54,
+      "words": 503,
+      "bytes": 3741
+    },
+    {
+      "name": "http-gun",
+      "lines": 56,
+      "words": 589,
+      "bytes": 4354
+    },
+    {
+      "name": "json-blueprint",
+      "lines": 56,
+      "words": 601,
+      "bytes": 4475
+    },
+    {
+      "name": "llm-wire",
+      "lines": 62,
+      "words": 562,
+      "bytes": 4240
+    },
+    {
+      "name": "lustre",
+      "lines": 56,
+      "words": 525,
+      "bytes": 3955
+    },
+    {
+      "name": "relay",
+      "lines": 61,
+      "words": 542,
+      "bytes": 4113
+    },
+    {
+      "name": "retrace",
+      "lines": 63,
+      "words": 628,
+      "bytes": 4876
+    },
+    {
+      "name": "saga",
+      "lines": 55,
+      "words": 551,
+      "bytes": 4205
+    },
+    {
+      "name": "sinal",
+      "lines": 54,
+      "words": 522,
+      "bytes": 3902
+    },
+    {
+      "name": "warden",
+      "lines": 56,
+      "words": 625,
+      "bytes": 4997
+    },
+    {
+      "name": "wisp",
+      "lines": 56,
+      "words": 541,
+      "bytes": 3966
+    }
+  ]
+}
