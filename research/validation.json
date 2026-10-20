@@ -1,12 +1,12 @@
 {
   "research_date": "2026-10-20",
   "skills": 19,
-  "total_words": 11304,
+  "total_words": 11473,
   "min_lines": 55,
   "max_lines": 67,
   "min_words": 532,
   "max_words": 649,
-  "checked_exact_local_github_source_paths": 21,
+  "checked_exact_local_github_source_paths": 23,
   "status": "passed",
   "catalog": [
     {
@@ -59,9 +59,9 @@
     },
     {
       "name": "grind",
-      "lines": 56,
-      "words": 558,
-      "bytes": 4142
+      "lines": 57,
+      "words": 603,
+      "bytes": 4628
     },
     {
       "name": "http-gun",
@@ -95,21 +95,21 @@
     },
     {
       "name": "retrace",
-      "lines": 61,
-      "words": 534,
-      "bytes": 4359
+      "lines": 63,
+      "words": 607,
+      "bytes": 4897
     },
     {
       "name": "saga",
-      "lines": 58,
-      "words": 611,
-      "bytes": 4648
+      "lines": 59,
+      "words": 634,
+      "bytes": 4967
     },
     {
       "name": "sinal",
-      "lines": 57,
-      "words": 586,
-      "bytes": 4381
+      "lines": 58,
+      "words": 614,
+      "bytes": 4574
     },
     {
       "name": "warden",

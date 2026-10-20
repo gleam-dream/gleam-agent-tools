@@ -1,0 +1,124 @@
+{
+  "skill_commit": "19a087b9408435ba2533bcf9ccc11140fb8df9c0",
+  "scenarios": [
+    "01-library",
+    "02-frontend",
+    "03-webhooks",
+    "04-agent",
+    "05-portal",
+    "06-observation",
+    "07-json",
+    "08-minimal",
+    "09-oversight-financial",
+    "10-oversight-support",
+    "11-oversight-replay"
+  ],
+  "method": "fresh fork_turns=none; same catalog; selected full guides; initial answer before primary-source validation; no expected solutions supplied; no repository edits",
+  "control_group": false,
+  "oversight_commit": "15aceae5e73a0d1c4b943a0898291f5a8933259e",
+  "agent_runs": [
+    {
+      "case": "01-library",
+      "fresh_context": true,
+      "fork_turns": "none",
+      "model": "inherited default; no override",
+      "response": "01-library.md"
+    },
+    {
+      "case": "02-frontend",
+      "fresh_context": true,
+      "fork_turns": "none",
+      "model": "inherited default; no override",
+      "response": "02-frontend.md"
+    },
+    {
+      "case": "03-webhooks",
+      "fresh_context": true,
+      "fork_turns": "none",
+      "model": "inherited default; no override",
+      "response": "03-webhooks.md"
+    },
+    {
+      "case": "04-agent",
+      "fresh_context": true,
+      "fork_turns": "none",
+      "model": "inherited default; no override",
+      "response": "04-agent.md"
+    },
+    {
+      "case": "05-portal",
+      "fresh_context": true,
+      "fork_turns": "none",
+      "model": "inherited default; no override",
+      "response": "05-portal.md"
+    },
+    {
+      "case": "06-observation",
+      "fresh_context": true,
+      "fork_turns": "none",
+      "model": "inherited default; no override",
+      "response": "06-observation.md"
+    },
+    {
+      "case": "07-json",
+      "fresh_context": true,
+      "fork_turns": "none",
+      "model": "inherited default; no override",
+      "response": "07-json.md"
+    },
+    {
+      "case": "08-minimal",
+      "fresh_context": true,
+      "fork_turns": "none",
+      "model": "inherited default; no override",
+      "response": "08-minimal.md"
+    },
+    {
+      "case": "09-oversight-financial",
+      "fresh_context": true,
+      "fork_turns": "none",
+      "model": "inherited default; no override",
+      "response": "09-oversight-financial.md"
+    },
+    {
+      "case": "10-oversight-support",
+      "fresh_context": true,
+      "fork_turns": "none",
+      "model": "inherited default; no override",
+      "response": "10-oversight-support.md"
+    },
+    {
+      "case": "11-oversight-replay",
+      "fresh_context": true,
+      "fork_turns": "none",
+      "model": "inherited default; no override",
+      "response": "11-oversight-replay.md"
+    }
+  ],
+  "independent_adjudication": {
+    "agent": "/root/eval_adjudicator",
+    "fresh_context": true,
+    "fork_turns": "none",
+    "model": "inherited default; no override",
+    "response": "adjudication.md"
+  },
+  "repository_state_after_execution": {
+    "skills": {
+      "head": "19a087b9408435ba2533bcf9ccc11140fb8df9c0",
+      "porcelain": ""
+    },
+    "oversight": {
+      "head": "15aceae5e73a0d1c4b943a0898291f5a8933259e",
+      "porcelain": ""
+    }
+  },
+  "completion": {
+    "scenarios_complete": 11,
+    "independent_adjudication_complete": true,
+    "original_repositories_clean": true,
+    "no_repository_changes": true,
+    "report": "report.md",
+    "results": "evaluation-results.json",
+    "runtime": "runtime-results.json"
+  }
+}

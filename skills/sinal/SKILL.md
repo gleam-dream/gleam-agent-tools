@@ -25,6 +25,7 @@ What must the event accomplish?
 
 - Check the resolved source. The researched 0.1.0 is unreleased, targets Erlang, and requires Gleam >=1.18 with native telemetry >=1.4.2 and <2.
 - Define one event name with separate measurement and metadata codecs; reuse that definition in emitters and observers. Compose record fields through `fields.include` and `fields.success`.
+- Keep custom getters/encoders total: they run in the producer and can raise before dispatch, even without observers or with forwarding. Optional observation does not make encoding infallible.
 - Write event names, field keys, and route prefixes in trusted source. They create permanent atoms. Put request IDs and other unbounded values in metadata values.
 - Choose `observe` for an infallible handler, or `subscription`/`handler` plus `attach` for a registration plan. Retain attachments and detach them; use subscription scopes for temporary work.
 - Allocate stable handler IDs deliberately. Registrations are node-local; a copied old attachment can address a replacement that reuses its ID.

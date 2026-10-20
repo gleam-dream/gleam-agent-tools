@@ -15,7 +15,7 @@ What evidence is needed?
 ├── Arbitrary screen/DOM recording → A different recorder
 ├── Authoritative business history → A business event store
 └── Accepted frontend transitions and reconstruction → Retrace
-   ├── Portable recording/replay → core
+   ├── Portable recording/replay or local-only export → core
    ├── Browser/Tauri delivery or Lustre capture/viewer → retrace_frontend
    └── PostgreSQL admission/object archival → retrace_server
 ```
@@ -26,8 +26,10 @@ Pin imported Retrace packages to one revision. Core supports Erlang/JavaScript; 
 
 1. Project safe models and messages before capture/encoding; exclude credentials and private values.
 2. Use session and contract identities, a monotonic elapsed clock, and separate sessions for concurrent writers.
-3. In Lustre, connect capture once; call `capture.observe` with the pre-transition model. Exclude capture coordination messages from the domain stream.
-4. Retain the returned cursor. `record` numbers events without acknowledging persistence; commit cursor/checkpoint and outbox consistently when crash recovery matters.
+3. With core, accept through the reducer, `record` the event, then `checkpoint` the resulting model. Retain the returned recorder. `resume` trusts the recovered checkpoint; it grants no exclusive writer ownership.
+4. In Lustre, run capture's startup effect and process its connection message through `capture.update` before observing; an early observation stops capture. Pass the pre-transition model to `capture.observe`; exclude coordination messages from the domain stream.
+5. Frontend capture requires storage and an upload transport. For local-only recording/export, use core with application-owned storage; the frontend viewer is independent. Do not fake upload success to implement export.
+6. `record` numbers events without acknowledging persistence; commit cursor/checkpoint and outbox consistently when crash recovery matters.
 
 Handle capture failure separately from domain updates; surface stopped recording when users depend on capture.
 

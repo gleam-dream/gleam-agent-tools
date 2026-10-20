@@ -1,0 +1,36 @@
+warning: Git tree '/code/gleam-dream/oversight' is dirty
+   Compiled in 0.23s
+    Running support_desk_test.main
+
+[1m[31massert[39m[22m [90mtest/support_desk_test.gleam:61[39m
+[36m test[39m: support_desk_test.repeated_stop_releases_owned_resources_test
+[36m code[39m: assert !process.is_alive(service_recorder)
+[36m info[39m: Assertion failed.
+
+[1m[31mlet assert[39m[22m [90mtest/support_desk_test.gleam:187[39m
+[36m test[39m: support_desk_test.rejected_configuration_unwinds_partial_startup_test
+[36m code[39m: let assert Ok(Nil) =
+    process.new_selector()
+    |> process.select_specific_monitor(monitor, fn(_) { Nil })
+    |> process.selector_receive(1000)
+[36mvalue[39m: Error(Nil)
+[36m info[39m: Pattern match failed, no pattern matched the value.
+
+[1m[31massert[39m[22m [90mtest/support_desk_test.gleam:101[39m
+[36m test[39m: support_desk_test.stopping_suspended_ticket_retires_its_store_test
+[36m code[39m: assert fabric.snapshot(handle) |> result.is_error
+[36m info[39m: Assertion failed.
+
+[1m[31mlet assert[39m[22m [90mtest/support_desk_test.gleam:147[39m
+[36m test[39m: support_desk_test.stopping_active_refund_drains_before_releasing_borrowed_resources_test
+[36m code[39m: let assert Ok(#(outcome, entries, True)) = process.receive(settled, 1000)
+[36mvalue[39m: Ok(OutcomeFailed([], False))
+[36m info[39m: Pattern match failed, no pattern matched the value.
+
+[1m[31mlet assert[39m[22m [90mtest/support_desk_test.gleam:147[39m
+[36m test[39m: support_desk_test.forced_drain_waits_for_saga_cleanup_before_releasing_resources_test
+[36m code[39m: let assert Ok(#(outcome, entries, True)) = process.receive(settled, 1000)
+[36mvalue[39m: Ok(OutcomeFailed([], False))
+[36m info[39m: Pattern match failed, no pattern matched the value.
+[32m.[39m[32m.[39m[32m.[39m[32m.[39m[32m.[39m[32m.[39m[32m.[39m[32m.[39m[32m.[39m[32m.[39m[32m.[39m[32m.[39m[32m.[39m[32m.[39m[32m.[39m[32m.[39m[32m.[39m[32m.[39m[32m.[39m[32m.[39m[32m.[39m[31m
+21 passed, 5 failures[39m

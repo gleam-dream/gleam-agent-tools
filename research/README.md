@@ -48,6 +48,8 @@ The owner's requested [independent Astra High review](astra-high-review.md) then
 
 Astra High independently reread all 19 revisions and the baseline diff. It found one new ambiguity: legacy Blueprint decoding had been nested beneath bidirectional codecs. The corrected tree separates its one-way decoder and separate encoders from the modern shared-definition codec. No other material regression was found. This is source and editorial review, not a new runtime qualification or agent-effectiveness evaluation.
 
+The subsequent [behavioral evaluation](behavioral-evaluation.md) used fresh agents and actual Oversight maintenance tasks. Its accepted follow-up clarified Retrace core/capture timing, Grind transactional resolution, Saga reporting lifetime, and Sinal producer-side encoding failures. Six affected tasks were rerun with new agents; the report retains inputs, answers, independent grading, lifecycle regression evidence and limits. All 19 current files still pass the size/structure checks, now with 23 unique local exact-revision source paths. Oversight's separately repaired shutdown passed 26 application tests and the repeated-lifetime probe; these later results do not broaden the earlier authoring-pass claims below.
+
 ## Checks
 
 The structural check verifies the exact 19-skill catalog, matching names/directories, portable two-field metadata, direct discovery verbs, one file per skill, decision sections, red flags, source links, balanced fences, size limits, whitespace, and existing relative links. Individual skill budgets are 80 lines and 650 whitespace-delimited words, including metadata and sources.

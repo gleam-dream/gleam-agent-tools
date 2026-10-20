@@ -34,7 +34,8 @@ Does the operation need workflow coordination?
 
 ## Own execution and recovery
 
-- For a local `start` run, cancel and `await` before dropping an unfinished handle. For `start_reporting`, receive the terminal report and monitor the coordinator; `await` returns `NotOwner`. Use `reporting.run_owned` when a dedicated owner must retain the report.
+- Own unfinished local `start` handles: cancel and `await` before dropping them. With `start_reporting`, receive the terminal report and monitor the coordinator; `await` returns `NotOwner`.
+- Use `reporting.run_owned` inside a per-invocation worker; its receiver monitors after return. `on_stopped` runs in a separate guarded worker. `rollback_within` bounds owner-loss startup waits and notification, not total execution; keep captured resources alive.
 - Add versioned root/step codecs and recovery resolvers for durable execution. Give one business execution one stable ID; use `start_or_reconnect` with compatible definition and identical encoded input.
 - Resolve interrupted admitted actions from authoritative evidence. `Completed` restores a result; `NotSent` must prove absence; `MaybeSent` suspends. A missing or eventually consistent lookup is insufficient proof.
 - Keep effect keys stable across attempts and recovery. A fresh local run has a fresh run identity; it does not deduplicate another run's effects.
@@ -55,4 +56,4 @@ Does the operation need workflow coordination?
 
 ## Sources
 
-[Public workflow and consumer](https://github.com/gleam-dream/saga/tree/c09b7a7c72148fcaf73fea96cb595ccf16a56e7b), [durability contract](https://github.com/gleam-dream/saga/blob/c09b7a7c72148fcaf73fea96cb595ccf16a56e7b/src/saga/durable.gleam), [PostgreSQL adapter](https://github.com/gleam-dream/saga/tree/c09b7a7c72148fcaf73fea96cb595ccf16a56e7b/integrations/saga_postgres).
+[Public workflow and consumer](https://github.com/gleam-dream/saga/tree/c09b7a7c72148fcaf73fea96cb595ccf16a56e7b), [reporting lifetime](https://github.com/gleam-dream/saga/blob/c09b7a7c72148fcaf73fea96cb595ccf16a56e7b/src/saga/reporting.gleam), [durability contract](https://github.com/gleam-dream/saga/blob/c09b7a7c72148fcaf73fea96cb595ccf16a56e7b/src/saga/durable.gleam), [PostgreSQL adapter](https://github.com/gleam-dream/saga/tree/c09b7a7c72148fcaf73fea96cb595ccf16a56e7b/integrations/saga_postgres).

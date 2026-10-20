@@ -1,0 +1,61 @@
+[
+  {
+    "command": [
+      "erl",
+      "-noshell",
+      "-eval",
+      "io:format(\"~s~n\", [erlang:system_info(system_version)]), halt()."
+    ],
+    "cwd": "/code/gleam-dream/oversight",
+    "exit": 0,
+    "seconds": 0.1504351250041509,
+    "log": "1792508855957833000-erl.log"
+  },
+  {
+    "command": [
+      "gleam",
+      "format",
+      "--check",
+      "src",
+      "test"
+    ],
+    "cwd": "/code/gleam-dream/oversight/apps/support_desk",
+    "exit": 0,
+    "seconds": 0.023804707991075702,
+    "log": "1792508856108594000-gleam.log"
+  },
+  {
+    "command": [
+      "gleam",
+      "build",
+      "--warnings-as-errors"
+    ],
+    "cwd": "/code/gleam-dream/oversight/apps/support_desk",
+    "exit": 0,
+    "seconds": 0.2464642919949256,
+    "log": "1792508856132918000-gleam.log"
+  },
+  {
+    "command": [
+      "erlc",
+      "-Werror",
+      "-o",
+      "/tmp/nix-shell.L9DFku/oversight-erlc-fcb2j77p",
+      "/code/gleam-dream/oversight/apps/support_desk/test/support_desk_lifecycle_test_ffi.erl"
+    ],
+    "cwd": "/code/gleam-dream/oversight/apps/support_desk",
+    "exit": 0,
+    "seconds": 0.20183650001126807,
+    "log": "1792508856380495000-erlc.log"
+  },
+  {
+    "command": [
+      "gleam",
+      "test"
+    ],
+    "cwd": "/code/gleam-dream/oversight/apps/support_desk",
+    "exit": 0,
+    "seconds": 6.038392874994315,
+    "log": "1792508856583006000-gleam.log"
+  }
+]

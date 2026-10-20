@@ -37,6 +37,7 @@ Does work need durable admission and retained outcomes?
 - Use `submit_in` with the caller's open READ COMMITTED transaction in the same database. Propagate errors to its owner. Its reply is staged admission; only the outer commit settles business writes.
 - Give effectful providers an application idempotency key they actually enforce. Job admission deduplication alone cannot prevent repeated external effects.
 - Preserve `Uncertain` after an abandoned or possibly completed effect. Investigate authoritative evidence, then issue an attributed `admin.resolution` to confirm the outcome or authorize replay.
+- Use `admin.resolve_uncertain_in` when resolution and application acknowledgment must commit together: same-database READ COMMITTED transaction, supplied transaction connection. Keep investigation outside held locks and propagate errors. Its staged reply proves no outer commit; after a lost commit reply, read the durable application acknowledgment.
 - Treat cancellation as cooperative intent. It cannot retract an effect or settle uncertainty; cancellation intent forbids replay authorization.
 - Read durable outcomes for correctness. `await` returning `Pending` does not cancel work; its final read can exceed the requested wait budget. Telemetry is best effort.
 - Set retention deliberately. Pruning removes receipts and ends submission recovery/deduplication; preserve permanent business idempotency elsewhere.
@@ -53,4 +54,4 @@ Does work need durable admission and retained outcomes?
 
 ## Sources
 
-[Consumer API and examples](https://github.com/gleam-dream/grind/tree/bcd4b9205392596bbb3c60cd94d0c251e5072110), [runtime and recovery design](https://github.com/gleam-dream/grind/blob/bcd4b9205392596bbb3c60cd94d0c251e5072110/docs/design/design.typ).
+[Consumer API and examples](https://github.com/gleam-dream/grind/tree/bcd4b9205392596bbb3c60cd94d0c251e5072110), [transactional resolution](https://github.com/gleam-dream/grind/blob/bcd4b9205392596bbb3c60cd94d0c251e5072110/src/grind/admin.gleam), [runtime and recovery design](https://github.com/gleam-dream/grind/blob/bcd4b9205392596bbb3c60cd94d0c251e5072110/docs/design/design.typ).

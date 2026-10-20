@@ -1,0 +1,48 @@
+{
+  "skill_base_commit": "19a087b9408435ba2533bcf9ccc11140fb8df9c0",
+  "skill_sha256": {
+    "correio": "dfe3493d82ec0ce12cfc6578dd447253c64d61223293645e19f330d9cce96c7a",
+    "fabric": "9529d393fb19a28e9b1fcbd7d4d32b22430938d4f99b684fdffc69e4fd73c453",
+    "gleam": "6170009d3564b86ee26d03227aa463ed848bd10440ea23ce56ab28cfeae88a0b",
+    "gleam-ffi": "d0dc632ffb112a5c1635ab1256e00fed132b048dca381c5c9c1b36a12d57dab8",
+    "gleam-lib": "c4f2a46032824d44798e90b0582a361c3db438a2c982d71b96148f3b65cf42b9",
+    "gleam-otp": "5a09f9997812a4f26e3aa7178b16a85c80a0b1d3815f8b7d24a3d8bab7ad6ca0",
+    "gleam-pubsub": "b58007f84ae7b55740c2e9a201c311436b31600d48d48899a31c46d43633b746",
+    "gleam-sql": "74cfcb4d954a2d8d76f0b2429623e3903ec147a3ff2dd5c38ca576eb81f79aa6",
+    "grind": "2bd939d88567ab11a67139338d01c02c60cbae4ee7417842545282c77db6f900",
+    "http-gun": "b05ab73f608166b2acc14f04a2b662c0d1cf80367e1454da0d1a09fe23223ac1",
+    "json-blueprint": "3f015a2a5f576fbc3180687a9cd5f6be8b05a77210dc292f5c8ac6a2df247219",
+    "llm-wire": "4466a1b57ee17bf5bd46e012d61150c13e8b5e5cc76d17e13f51c63ae05542cc",
+    "lustre": "c32d0b8904581e26396e569fdb73571109a50d1e3d7b608cb290b57207ece886",
+    "relay": "da63569591e66a503306ffffcd2102c55e2056cd3171ca8e6ca752d0c9f148ee",
+    "retrace": "9db82b2d012c1d6bbfa2198f3020246a5be73717d67c037dc0dc1e0163760d79",
+    "saga": "22eccb0d9e14c4a2740eca5e824730864d70e4127642429b4b5761715a8efc4f",
+    "sinal": "0a516d50983090cd25b62441b51d1704ec675fd2ba37f9d489548ad0c122de44",
+    "warden": "beb284e009ef7698d9bd8dba8907fb68f0f8a86b12ac229bdd14ae56d7a2f9a0",
+    "wisp": "2fc56b144087e30fb6198b15b4c130127a73125e0d55dba8d94269e3fe6bc03a"
+  },
+  "scenarios": [
+    "02-frontend",
+    "04-agent",
+    "06-observation",
+    "09-oversight-financial",
+    "10-oversight-support",
+    "11-oversight-replay"
+  ],
+  "comparison": "same prompts and rubric as first evaluation; new fork_turns=none agents; INITIAL before source verification; no old answers or findings supplied",
+  "changes": [
+    "retrace",
+    "grind",
+    "saga",
+    "sinal"
+  ],
+  "runtime": "Oversight actual-tree changes validated separately",
+  "fresh_scenario_runs_complete": 6,
+  "lifecycle_probe": {
+    "before_additional_live_processes": 43,
+    "after_additional_live_processes": 0,
+    "scope": "two sequential public app start/stop cycles in one VM; stop Results asserted successful; no tickets/effects; full suite covers active/pending/forced-drain work"
+  },
+  "accepted_oversight_test_count": 26,
+  "oversight_inputs": "oversight-inputs.json"
+}

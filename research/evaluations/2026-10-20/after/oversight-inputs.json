@@ -1,0 +1,54 @@
+{
+  "base": "15aceae5e73a0d1c4b943a0898291f5a8933259e",
+  "dirty": true,
+  "changed_files": [
+    {
+      "path": "apps/support_desk/src/saga_tool.gleam",
+      "sha256": "f7780de8549d1163a27492b5bef9f59e3891a7fc2ea5ff55cfbbbddad9a3f6d9"
+    },
+    {
+      "path": "apps/support_desk/src/support_desk.gleam",
+      "sha256": "7d8f71eb6fef80999cfac1af5e6e6234bc6537024ccef410a97cc2dd09e2cc0f"
+    },
+    {
+      "path": "apps/support_desk/src/support_desk/app.gleam",
+      "sha256": "abb49ffd0f49870ed28be38d3cf55e1bcf393bbbca620df72a8ae04621141252"
+    },
+    {
+      "path": "apps/support_desk/src/support_desk/desk.gleam",
+      "sha256": "4a17079d5679778e32b2e18fa9c73ae075fd84ffee13aadd2f7f97c8cf2d7eb8"
+    },
+    {
+      "path": "apps/support_desk/src/support_desk/executions.gleam",
+      "sha256": "59733ad769544196d719ee3b80d3780a981af4c45366e9c6df19aa4815e2ec9b"
+    },
+    {
+      "path": "apps/support_desk/src/support_desk/ledger.gleam",
+      "sha256": "1d47e4957ed602916282fcdb69107465b43972e21bd03c2e4c0b1f211e3d343e"
+    },
+    {
+      "path": "apps/support_desk/src/support_desk/listener.gleam",
+      "sha256": "dff530d87d483343f06bf1757c61b981ce22d894205e550fd382886fd9973dfb"
+    },
+    {
+      "path": "apps/support_desk/src/support_desk/provider.gleam",
+      "sha256": "b9372a5603ef98e37811d72c67a746d9ea09269f3b0484527c7cb03ef57d9c37"
+    },
+    {
+      "path": "apps/support_desk/src/support_desk/services.gleam",
+      "sha256": "91fadabfb1a111ea32dc48702b54bde297a086895cd4a00538e78ce63436a6e0"
+    },
+    {
+      "path": "apps/support_desk/src/support_desk/telemetry.gleam",
+      "sha256": "b135b7eb3ea7bc0775c51026a18b24d94e66115e85db8f97e551afd08fe5d52e"
+    },
+    {
+      "path": "apps/support_desk/test/support_desk_lifecycle_test_ffi.erl",
+      "sha256": "777c374d3d764578ba9f377cf09fbd630b9e48bfda4ee1ac5b910429245c8220"
+    },
+    {
+      "path": "apps/support_desk/test/support_desk_test.gleam",
+      "sha256": "e0e4bdb94c29143a7cd2da67375e9526b604ebfb9abbc9ee4de3bdd3181c4c17"
+    }
+  ]
+}
