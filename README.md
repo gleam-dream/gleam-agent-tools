@@ -35,20 +35,8 @@ Package skills serve applications consuming those packages. `gleam-lib` covers c
 
 Each directory under `skills/` is an independent Agent Skills entry point. Install the desired directories through your agent's supported skill mechanism. No skill requires another file or a particular editor, host, Nix environment, or hook.
 
-For live service work, the [operator guide](docs/beam-inspection.md) illustrates standard Erlang, IEx and optional Voyager workflows. No runtime client or launcher is bundled. Setup should normally change only runtime naming, cookie access and private connectivity. Investigations use ad hoc expressions and existing APIs.
-
 The format follows the [Agent Skills specification](https://agentskills.io/specification). The decision-focused structure is informed by [Elixir Agent Tools](https://github.com/georgeguimaraes/elixir-agent-tools). Technical guidance was written against Gleam and package sources rather than translating Elixir APIs.
 
-The [research index](research/README.md) records source identities, claim evidence, review corrections, and verification limits. These records are maintainer material; they are not additional skill loads. Preserve source distinctions when updating a guide: a published release, a Git checkout, and a consumer's lock may expose different APIs.
+Before changing a technical claim, check its primary source. Use temporary code probes only when execution is needed to validate the claim. Keep experiments, downloaded dependencies and validation output outside this repository. Keep each skill below 650 words and 80 lines; check metadata, links, API names and responsibility boundaries.
 
-Before publishing a changed technical claim, check its primary contract and use a focused code probe only when execution is needed to settle that claim. Keep prototypes outside `skills/`. Keep each skill below 650 words and 80 lines. Check metadata, links, public API names, and overlap with neighboring responsibilities.
-
-## Current qualifications
-
-- JSON Blueprint's researched checkout has a modern codec API absent from published 1.7.1. The guide distinguishes those sources.
-- Roar 0.1.0 and Whisper 0.2.0 have incompatible APIs. The pub/sub guide keeps Roar conditional on a verified compatible resolution.
-- Several gleam-dream packages are unreleased. Their guides name consumer contracts and limits; they do not qualify package releases.
-
-OpenAPI, composition recipes, and a routing skill are outside the collection's scope. No package implementation changes are bundled here.
-
-See [source acknowledgements](NOTICE.md) for adapted foundation guidance.
+See [source acknowledgements](NOTICE.md) for adapted guidance and required notices.
