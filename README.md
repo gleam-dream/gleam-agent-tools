@@ -9,6 +9,7 @@ Use the guides that fit the task. Agents compose their responsibilities. Include
 | Skill | Responsibility |
 | --- | --- |
 | [gleam](skills/gleam/SKILL.md) | Language conventions, types, errors, functions, and modules |
+| [gleam-tooling](skills/gleam-tooling/SKILL.md) | Compiler evidence, dependencies, and language-server workflows |
 | [gleam-lib](skills/gleam-lib/SKILL.md) | Bounded libraries, public APIs, ownership, and compatibility |
 | [gleam-ffi](skills/gleam-ffi/SKILL.md) | Thin native capabilities, checked representations, and lifetimes |
 | [gleam-otp](skills/gleam-otp/SKILL.md) | Typed processes, protocols, supervision, and recovery |

@@ -4,6 +4,8 @@ The foundation skills adapt portable language, library API, FFI ownership, and r
 
 The runtime-inspection guidance also adapts `lostbean/skills` commit `ce969335b4c94d3129217280c1c77081e55aa193`. Its MIT notice is retained below.
 
+Language, tooling, library and inspection refinements also adapt `lostbean/skills` commit `a412adf5e58349abe6fb9ead1f3a7bf5642117a3` under the same MIT notice.
+
 The compact decision-tree and red-flag structure was informed by [George Guimarães's Elixir Agent Tools](https://github.com/georgeguimaraes/elixir-agent-tools/tree/ac3a5a1661a087158b39d5eb742b3c25fe3c7b44), licensed under Apache-2.0. Elixir-specific instructions and source code were not copied into this collection.
 
 ## MIT notice for adapted lostbean/skills guidance

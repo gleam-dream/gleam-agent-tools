@@ -24,7 +24,9 @@ Why does this operation need foreign code?
 ## Trace the whole operation
 
 - Inspect the declaration, implementation, callers, resolved dependency, compiler, and supported runtimes. Confirm the foreign module/export actually exists.
+- Compare dependencies by required behavior, targets, typed API, maintenance, licence, and cost. Reuse a suitable installed package; internal FFI alone is no defect.
 - Trace validation, state transitions, retries, cancellation, persistence, and recovery through callers and implementation. Check where each decision lives; counting externals cannot establish a thin boundary.
+- Find foreign files without callers. Establish shared state and lifecycle obligations before consolidating similar implementations; check remaining consumers before removing files or dependencies.
 
 ## Represent the actual values
 

@@ -5,7 +5,7 @@ description: Design and evolve bounded, composable Gleam libraries. Use for defi
 
 # Gleam libraries
 
-Extract a library when consumers share a responsibility and its rules. Give it a defined scope and a public contract that composes with ecosystem libraries; keep application-specific sequencing in ordinary modules.
+Extract shared responsibilities and rules into libraries with defined scope and composable public contracts. Keep application-specific sequencing in ordinary modules.
 
 ## Governing rule
 
@@ -37,14 +37,14 @@ What justifies the proposed boundary?
 
 - Use sans-I/O when protocol decisions can be separate from execution: consume values, return decisions or requests, and let callers perform I/O and supply results.
 - Define ports as narrow typed callbacks or records for caller-supplied capabilities. Supply adapters for concrete integrations; keep core rules independent of those implementations. Add ports for actual variation, not every function.
-- Let configured values and operations combine through ordinary typed functions. Reuse a combined operation through the same contract where its meaning permits; avoid hidden global state and mandatory framework adoption.
+- Combine configured values and operations through ordinary functions. Preserve the same contract where meaning permits; avoid global state and mandatory frameworks.
 
 ## Expose policy and ownership
 
-- Compose configuration through explicit values and value-first functions. Allow independent instances; separate validation from resource allocation.
+- Supply useful defaults through explicit configuration values and value-first functions. Prefer direct record updates over a setter for every field. Allow independent instances; validate configuration before resource allocation.
 - Require each argument to affect behavior. A bound operation should carry its own name/codecs instead of asking callers to repeat them at every use.
 - Give common tasks one obvious path; advanced paths need distinct capabilities.
-- Specify who creates, shares, cancels, and closes resources. State where limits are enforced and what return values establish. A callback type cannot prove purity, bounded work, or safe captured state.
+- Specify who creates, shares, cancels, and closes resources. Enforce allocation limits before allocation; a pull-shaped API alone proves no backpressure. State what returns establish. Callback types cannot prove purity, bounded work, or safe captured state.
 - Keep common validation and lifecycle rules in the library when offering extensions. State exactly what an adapter author must supply and which guarantees depend on that implementation.
 - Return actionable structured failures. Reserve deliberate crashes for a documented supervision/recovery contract.
 
