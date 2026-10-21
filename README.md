@@ -1,43 +1,47 @@
 # Gleam Agent Tools
 
-Compact, independent skills for building Gleam applications and libraries. Each skill is one self-contained `SKILL.md` with an abstraction decision tree, concrete rules, red flags, and primary sources.
+Compact agent skills for building Gleam applications and libraries. Each guide is one self-contained `SKILL.md` with selection criteria, a decision tree, red flags, and primary sources.
 
-Use the guides that fit the task. Agents compose their responsibilities. Included packages are recommended when their capabilities fit; preserve a project's existing suitable choices. Choose targets from the application's or library's purpose.
+## Install
+
+```sh
+npx skills@latest add gleam-dream/gleam-agent-tools
+```
+
+Choose the skills and agents interactively. Add `-g` to make them available across projects. See the [installer documentation](https://github.com/vercel-labs/skills#install-a-skill) for more options.
 
 ## Skills
 
-| Skill | Responsibility |
+| Skill | Use it for |
 | --- | --- |
-| [gleam](skills/gleam/SKILL.md) | Language conventions, types, errors, functions, and modules |
-| [gleam-tooling](skills/gleam-tooling/SKILL.md) | Compiler evidence, dependencies, and language-server workflows |
-| [gleam-lib](skills/gleam-lib/SKILL.md) | Bounded libraries, public APIs, ownership, and compatibility |
-| [gleam-ffi](skills/gleam-ffi/SKILL.md) | Thin native capabilities, checked representations, and lifetimes |
-| [gleam-otp](skills/gleam-otp/SKILL.md) | Typed processes, protocols, supervision, and recovery |
-| [gleam-inspect](skills/gleam-inspect/SKILL.md) | Existing BEAM service inspection, RPC, Voyager MCP, and deliberate repair boundaries |
-| [lustre](skills/lustre/SKILL.md) | Interface state, views, effects, and component lifetimes |
-| [wisp](skills/wisp/SKILL.md) | Inbound HTTP, middleware, and Mist integration |
-| [http-gun](skills/http-gun/SKILL.md) | Outbound HTTP, owned bodies, deadlines, and retry evidence |
-| [gleam-sql](skills/gleam-sql/SKILL.md) | Squirrel generation, Pog transactions, and Cigogne migrations |
-| [gleam-pubsub](skills/gleam-pubsub/SKILL.md) | Whisper/Roar notifications, scope, and delivery limits |
-| [grind](skills/grind/SKILL.md) | Durable background jobs, admission, and uncertain effects |
-| [saga](skills/saga/SKILL.md) | Typed dependent workflows, compensation, and recovery |
-| [sinal](skills/sinal/SKILL.md) | Typed observations independent of optional consumers |
-| [json-blueprint](skills/json-blueprint/SKILL.md) | Aligned JSON encoding, decoding, and schemas |
-| [warden](skills/warden/SKILL.md) | OIDC/OAuth roles, checked identity, and token custody |
-| [correio](skills/correio/SKILL.md) | Email submission and passwordless verification |
-| [llm-wire](skills/llm-wire/SKILL.md) | Provider calls, structured answers, tools, and streaming |
-| [fabric](skills/fabric/SKILL.md) | Typed agents, conditional graphs, policy, and recovery |
-| [relay](skills/relay/SKILL.md) | Typed MCP clients, servers, transports, and delivery evidence |
-| [retrace](skills/retrace/SKILL.md) | Frontend model/message recording and inert session reconstruction |
+| [gleam](skills/gleam/SKILL.md) | Types, errors, functions, and modules |
+| [gleam-tooling](skills/gleam-tooling/SKILL.md) | Compiler, dependencies, and language server |
+| [gleam-lib](skills/gleam-lib/SKILL.md) | Library scope, configuration, composition, and public APIs |
+| [gleam-ffi](skills/gleam-ffi/SKILL.md) | Thin foreign interfaces, types, and resource lifetimes |
+| [gleam-otp](skills/gleam-otp/SKILL.md) | Actors, supervision, and recovery |
+| [gleam-inspect](skills/gleam-inspect/SKILL.md) | Live BEAM inspection, RPC, and Voyager MCP |
+| [lustre](skills/lustre/SKILL.md) | UI models, messages, views, and effects |
+| [wisp](skills/wisp/SKILL.md) | HTTP handlers, middleware, and Mist integration |
+| [http-gun](skills/http-gun/SKILL.md) | Pooled HTTP requests, streams, and retry decisions |
+| [gleam-sql](skills/gleam-sql/SKILL.md) | SQL with Squirrel, Pog, and Cigogne |
+| [gleam-pubsub](skills/gleam-pubsub/SKILL.md) | Whisper/Roar notifications and delivery limits |
+| [grind](skills/grind/SKILL.md) | Durable jobs and uncertain-effect recovery |
+| [saga](skills/saga/SKILL.md) | Dependent workflows, compensation, and recovery |
+| [sinal](skills/sinal/SKILL.md) | Typed telemetry with independent consumers |
+| [json-blueprint](skills/json-blueprint/SKILL.md) | Aligned JSON codecs and schemas |
+| [warden](skills/warden/SKILL.md) | OIDC login, OAuth, and token custody |
+| [correio](skills/correio/SKILL.md) | Transactional email and passwordless verification |
+| [llm-wire](skills/llm-wire/SKILL.md) | Model calls, structured answers, tools, and streaming |
+| [fabric](skills/fabric/SKILL.md) | Agents, conditional graphs, policy, and retained execution |
+| [relay](skills/relay/SKILL.md) | Typed MCP clients, servers, and transports |
+| [retrace](skills/retrace/SKILL.md) | Frontend model/message capture and inert replay |
 
-Package skills serve applications consuming those packages. `gleam-lib` covers creating libraries. Skill names normalize package underscores to hyphens; package and import names keep their original spelling.
+Agents select and combine the guides a task needs. Package skills guide application code; `gleam-lib` guides library authors. Listed packages are recommended when they fit; keep existing suitable choices. Choose targets from the application's or library's purpose.
 
-## Use and maintenance
+## Maintaining skills
 
-Each directory under `skills/` is an independent Agent Skills entry point. Install the desired directories through your agent's supported skill mechanism. No skill requires another file or a particular editor, host, Nix environment, or hook.
+- Keep each skill self-contained, under 650 words and 80 lines.
+- Check primary sources before changing technical claims. Use temporary code probes only when execution is needed to verify a claim.
+- Check metadata, links, API names, and responsibility boundaries. Keep experiments, downloaded dependencies, and validation output outside this repository.
 
-The format follows the [Agent Skills specification](https://agentskills.io/specification). The decision-focused structure is informed by [Elixir Agent Tools](https://github.com/georgeguimaraes/elixir-agent-tools). Technical guidance was written against Gleam and package sources rather than translating Elixir APIs.
-
-Before changing a technical claim, check its primary source. Use temporary code probes only when execution is needed to validate the claim. Keep experiments, downloaded dependencies and validation output outside this repository. Keep each skill below 650 words and 80 lines; check metadata, links, API names and responsibility boundaries.
-
-See [source acknowledgements](NOTICE.md) for adapted guidance and required notices.
+Uses the [Agent Skills format](https://agentskills.io/specification). See [NOTICE.md](NOTICE.md) for source acknowledgements and licence notices.
