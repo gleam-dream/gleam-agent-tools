@@ -1,0 +1,8 @@
+pre-commit:
+  piped: true
+  commands:
+    format:
+      run: nix fmt -- {staged_files}
+      stage_fixed: true
+    check:
+      run: nix flake check
