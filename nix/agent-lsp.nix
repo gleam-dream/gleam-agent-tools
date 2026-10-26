@@ -13,12 +13,16 @@ let
     # Agent LSP starts this child in the requested Gleam package. Only enter
     # Nix here: the MCP bridge itself must also start in non-project chats.
     root="$PWD"
-    while [ ! -f "$root/flake.nix" ] && [ "$root" != / ]; do
+    while [ ! -f "$root/flake.nix" ] && [ ! -e "$root/.git" ] && [ "$root" != / ]; do
       root=$(dirname "$root")
     done
     if [ -f "$root/flake.nix" ]; then
+      lock_flag=--no-update-lock-file
+      if [ ! -f "$root/flake.lock" ]; then
+        lock_flag=--no-write-lock-file
+      fi
       # Preserve protocol stdout on fd 3 while the development shell starts.
-      exec ${lib.getExe nix} develop --no-update-lock-file \
+      exec ${lib.getExe nix} develop "$root" "$lock_flag" \
         --command ${lib.getExe bash} -c 'exec 1>&3 3>&-; exec gleam lsp' 3>&1 1>&2
     fi
     if command -v gleam >/dev/null 2>&1; then

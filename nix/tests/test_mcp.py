@@ -4,13 +4,16 @@ import json
 import os
 from pathlib import Path
 import selectors
+import shutil
 import subprocess
 import sys
 import tempfile
 import time
 import unittest
 
-LAUNCHER = sys.argv.pop(1)
+LAUNCHER = str(Path(shutil.which(sys.argv[1]) or sys.argv[1]).resolve())
+sys.argv.pop(1)
+NIXPKGS = os.environ.get("GLEAM_TEST_NIXPKGS")
 
 
 class Connection:
@@ -83,6 +86,61 @@ class Connection:
 
 
 class LauncherTest(unittest.TestCase):
+    def check_symbols(self, project, env=None):
+        (project / "src").mkdir()
+        (project / "gleam.toml").write_text(
+            'name = "launcher_test"\nversion = "0.1.0"\n'
+        )
+        source = project / "src/arithmetic.gleam"
+        source.write_text("pub fn double(value: Int) -> Int { value + value }\n")
+        connection = Connection(project.parent, env)
+        try:
+            connection.request(
+                "initialize",
+                {
+                    "protocolVersion": "2025-06-18",
+                    "clientInfo": {"name": "project-environment-check", "version": "1"},
+                    "capabilities": {},
+                },
+            )
+            connection.send(
+                {"jsonrpc": "2.0", "method": "notifications/initialized", "params": {}}
+            )
+            result, text = connection.tool(
+                "start_lsp", {"root_dir": str(project), "language_id": "gleam"}
+            )
+            self.assertFalse(result.get("isError"), text)
+            result, text = connection.tool("list_symbols", {"file_path": str(source)})
+            self.assertFalse(result.get("isError"), text)
+            self.assertIn("double", text)
+        finally:
+            connection.close()
+
+    @unittest.skipUnless(NIXPKGS, "requires nix develop and a live Nix store")
+    def test_path_compiler_ignores_flake_outside_git_project(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            (root / "flake.nix").write_text("{ outputs = _: {}; }\n")
+            project = root / "project"
+            project.mkdir()
+            subprocess.run(["git", "init", "--quiet", str(project)], check=True)
+            self.check_symbols(project)
+
+    @unittest.skipUnless(NIXPKGS, "requires nix develop and a live Nix store")
+    def test_project_without_lock_uses_shell_without_writing_lock(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            project = Path(temporary).resolve()
+            (project / "flake.nix").write_text(
+                "{ inputs.nixpkgs.url = "
+                + json.dumps(f"path:{NIXPKGS}")
+                + "; outputs = { nixpkgs, ... }: { devShells = "
+                + "builtins.mapAttrs (_: pkgs: { default = pkgs.mkShellNoCC { packages = [ pkgs.gleam ]; "
+                + "shellHook = ''printf 'Development environment ready\\n' ''; }; }) "
+                + "nixpkgs.legacyPackages; }; }\n"
+            )
+            self.check_symbols(project, dict(os.environ, PATH="/not-provided"))
+            self.assertFalse((project / "flake.lock").exists())
+
     def test_starts_without_project_or_compiler(self):
         with tempfile.TemporaryDirectory() as temporary:
             connection = Connection(temporary, dict(os.environ, PATH="/not-provided"))

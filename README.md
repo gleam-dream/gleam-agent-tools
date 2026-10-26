@@ -36,17 +36,21 @@ programs.gleam-agent-tools = {
 
 Omit `skills` to install the whole collection; use `[]` to install only the bridge. The module is disabled by default. It installs the selected guides under `~/.agents/skills` and exposes `gleam-agent-lsp` on `PATH`. Unknown skill names are rejected. The module leaves agent configuration to the host.
 
+The consuming host also owns Zsh, shell aliases, Git, `gh`, and authentication. Import the shared module into that host's existing Home Manager configuration so one activation manages the user's files. Mionix and Dash can each consume these Gleam tools while retaining their own general development settings.
+
 The default `skillDirectories` is `[ ".agents/skills" ]`, the [Codex user skill location](https://learn.chatgpt.com/docs/build-skills). The example also installs into [Claude Code's personal skill directory](https://code.claude.com/docs/en/skills). Hosts select the locations used by their agents.
 
 For an existing installation, move any selected skill directories to a backup before activating Home Manager. Nix-managed guides are updated through the consumer's flake lock. The `npx skills` route remains available for independently managed guides.
 
 Register `gleam-agent-lsp` as the agent's stdio MCP command. The bridge starts outside a project; when a Gleam file is requested, its child uses that package's Nix development shell or the existing compiler on `PATH`. Development-shell startup output is kept off the protocol stream. Configuration does not install a global Gleam compiler.
 
+Flake discovery stops at the project's Git root. An unrelated parent flake does not override a PATH compiler. Existing project lockfiles are preserved; a new project without a lockfile can enter its shell without writing one.
+
 The launcher disables the bridge's broad automatic watcher because it resets Gleam's diagnostic state. Refresh externally edited source with `get_diagnostics`, and restart the server after changing `gleam.toml`. The repaired fork remains pinned until the required fixes are available upstream.
 
 For a temporary installation, run `nix run github:gleam-dream/gleam-agent-tools#gleam-agent-lsp`. For local development, override the flake input with `--override-input gleam-agent-tools path:/absolute/path/to/gleam-agent-tools`.
 
-Run `nix fmt` and `nix flake check` before publishing. The checks build the package, verify enabled, disabled and selective Home Manager installations, and exercise MCP with a real Gleam compiler.
+Run `nix fmt`, `nix flake check`, and `nix develop --command python nix/tests/test_mcp.py gleam-agent-lsp` before publishing. The flake checks build the package, verify enabled, disabled and selective Home Manager installations, and exercise MCP with a real Gleam compiler. The development-shell command also verifies project environment selection against a live Nix store; CI runs both commands.
 
 ## Skills
 

@@ -65,6 +65,7 @@
       formatter = forSystems (system: (formatting system).config.build.wrapper);
       devShells = forSystems (system: {
         default = (pkgsFor system).mkShell {
+          GLEAM_TEST_NIXPKGS = "${nixpkgs}";
           packages = with pkgsFor system; [
             lefthook
             git
