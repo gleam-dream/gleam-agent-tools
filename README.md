@@ -38,6 +38,8 @@ Omit `skills` to install the whole collection; use `[]` to install only the brid
 
 The consuming host also owns Zsh, shell aliases, Git, `gh`, and authentication. Import the shared module into that host's existing Home Manager configuration so one activation manages the user's files. Mionix and Dash can each consume these Gleam tools while retaining their own general development settings.
 
+If an imported team setup also consumes this provider, make its `gleam-agent-tools` input follow the host's input. Both then import the same module, which Nix can deduplicate.
+
 The default `skillDirectories` is `[ ".agents/skills" ]`, the [Codex user skill location](https://learn.chatgpt.com/docs/build-skills). The example also installs into [Claude Code's personal skill directory](https://code.claude.com/docs/en/skills). Hosts select the locations used by their agents.
 
 For an existing installation, move any selected skill directories to a backup before activating Home Manager. Nix-managed guides are updated through the consumer's flake lock. The `npx skills` route remains available for independently managed guides.

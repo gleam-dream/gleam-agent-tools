@@ -49,7 +49,7 @@
       overlays.default = final: _: {
         agent-lsp = final.callPackage ./nix/agent-lsp.nix { };
       };
-      homeManagerModules.default = import ./nix/home-manager.nix;
+      homeManagerModules.default = ./nix/home-manager.nix;
       packages = forSystems (system: {
         inherit (pkgsFor system) agent-lsp;
         default = self.packages.${system}.agent-lsp;

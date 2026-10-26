@@ -9,7 +9,9 @@ let
     home-manager.lib.homeManagerConfiguration {
       inherit pkgs;
       modules = [
-        module
+        # A personal host and an imported team setup can both include this module.
+        { imports = [ module ]; }
+        { imports = [ module ]; }
         {
           home = {
             username = "gleam-tools-test";
