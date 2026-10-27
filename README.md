@@ -40,6 +40,36 @@ The consuming host also owns Zsh, shell aliases, Git, `gh`, and authentication. 
 
 If an imported team setup also consumes this provider, make its `gleam-agent-tools` input follow the host's input. Both then import the same module, which Nix can deduplicate.
 
+#### Use your existing Home Manager configuration
+
+On NixOS or nix-darwin, import the provider at the Home Manager level. For example, in a host module that receives the input through `specialArgs`:
+
+```nix
+{ gleam-agent-tools, ... }:
+{
+  home-manager.sharedModules = [
+    gleam-agent-tools.homeManagerModules.default
+  ];
+  home-manager.users.me.programs.gleam-agent-tools = {
+    enable = true;
+    skills = [ "gleam" "gleam-tooling" ];
+    skillDirectories = [ ".agents/skills" ".claude/skills" ];
+  };
+}
+```
+
+Apply this through the host's normal `nixos-rebuild` or `darwin-rebuild` command. Keep one Home Manager configuration and activation for each user. A second standalone `home-manager switch` can replace the host-managed generation.
+
+For an existing standalone setup, add `gleam-agent-tools.homeManagerModules.default` to the `modules` list of its `home-manager.lib.homeManagerConfiguration`, enable the program in that same configuration, and keep using its normal switch command.
+
+When a team module such as Dash also imports this provider, share the input explicitly:
+
+```nix
+inputs.dash-dev-env.inputs.gleam-agent-tools.follows = "gleam-agent-tools";
+```
+
+The consuming host selects which team defaults it wants. In a personal Mionix configuration, disable Dash's shell, Git, SSH, direnv, npm and MCP management when the host owns them. Set `dash.git.identityFile = null`, disable duplicate tool entries such as Node or separately managed agents, and disable Eza's shell integrations if retaining personal aliases. Configure `dash.switchCommand` to use the host's rebuild instead of Dash's standalone bootstrap. These choices belong in the consuming host; this provider installs its bridge and selected guides.
+
 The default `skillDirectories` is `[ ".agents/skills" ]`, the [Codex user skill location](https://learn.chatgpt.com/docs/build-skills). The example also installs into [Claude Code's personal skill directory](https://code.claude.com/docs/en/skills). Hosts select the locations used by their agents.
 
 For an existing installation, move any selected skill directories to a backup before activating Home Manager. Nix-managed guides are updated through the consumer's flake lock. The `npx skills` route remains available for independently managed guides.
