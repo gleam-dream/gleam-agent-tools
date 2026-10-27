@@ -24,7 +24,7 @@ Does work need durable admission and retained outcomes?
 
 ## Define and own the runtime
 
-- Inspect `gleam.toml`, the manifest, and public APIs first. The researched 0.1.0 is unpublished and requires Gleam >=1.18 on Erlang. Pin the Git revision; preserve its narrow Pog/pgo ranges.
+- Inspect `gleam.toml`, the manifest, and public APIs first. Use Hex `grind` 0.1.0 on Erlang with Gleam >=1.18. Retain the manifest and narrow Pog/pgo ranges.
 - Define stable worker identities and versions with typed input/output/error codecs. Keep old stored jobs readable across deployments; changing callback meaning can require a version change even when the types match.
 - Register workers with `with_worker`; add `supervised` to the application's supervision tree. Pair script-owned `start` with `stop`.
 - Let Grind own its pool. Borrow `connection` when useful. Budget one additional reserved renewal connection per used queue; queue capacity is local to a consumer.
@@ -54,4 +54,4 @@ Does work need durable admission and retained outcomes?
 
 ## Sources
 
-[Consumer API and examples](https://github.com/gleam-dream/grind/tree/bcd4b9205392596bbb3c60cd94d0c251e5072110), [transactional resolution](https://github.com/gleam-dream/grind/blob/bcd4b9205392596bbb3c60cd94d0c251e5072110/src/grind/admin.gleam), [runtime and recovery design](https://github.com/gleam-dream/grind/blob/bcd4b9205392596bbb3c60cd94d0c251e5072110/docs/design/design.typ).
+[HexDocs](https://hexdocs.pm/grind/0.1.0/) · [Consumer API and examples](https://github.com/gleam-dream/grind/tree/6792512dc53c6964f70ce3220eee0c550e2b0dab), [transactional resolution](https://github.com/gleam-dream/grind/blob/6792512dc53c6964f70ce3220eee0c550e2b0dab/src/grind/admin.gleam), [runtime and recovery design](https://github.com/gleam-dream/grind/blob/6792512dc53c6964f70ce3220eee0c550e2b0dab/docs/design/design.typ).

@@ -7,6 +7,8 @@ description: Call LLM providers and handle typed answers, tool requests, streami
 
 Choose LLM Wire on Erlang/OTP for common typed provider outcomes, preflight validation, and streaming while the application owns history, tools, and retries. A narrow provider client suffices without these shared contracts; Fabric adds retained execution. Generation adapters cover OpenAI Responses, Anthropic Messages, and Google GenerateContent.
 
+Use Hex `llm_wire` 0.1.0 and retain the resolved `manifest.toml`.
+
 ## Abstraction decision tree
 
 ```text
@@ -59,4 +61,4 @@ Check the application's manifest before using a signature. Validate changed requ
 
 ## Sources
 
-[Public API](https://github.com/gleam-dream/llm_wire/blob/aa74ce6d4364a851c12e58f5ae36afc5aece490a/src/llm_wire.gleam) · [Consumer topics](https://github.com/gleam-dream/llm_wire/tree/aa74ce6d4364a851c12e58f5ae36afc5aece490a/examples/consumer) · [Design](https://github.com/gleam-dream/llm_wire/tree/aa74ce6d4364a851c12e58f5ae36afc5aece490a/docs/design)
+[HexDocs](https://hexdocs.pm/llm_wire/0.1.0/) · [Public API](https://github.com/gleam-dream/llm_wire/blob/0e872683dc674a3b652019037926ad218a165a21/src/llm_wire.gleam) · [Consumer topics](https://github.com/gleam-dream/llm_wire/tree/0e872683dc674a3b652019037926ad218a165a21/examples/consumer) · [Design](https://github.com/gleam-dream/llm_wire/tree/0e872683dc674a3b652019037926ad218a165a21/docs/design)

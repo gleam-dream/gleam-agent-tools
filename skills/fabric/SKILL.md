@@ -7,6 +7,8 @@ description: Build and debug typed LLM agents and conditional graphs with Fabric
 
 Choose Fabric when a tool waits for approval or a lost runner must resume from retained actions and outcomes on Erlang/OTP. Those needs justify a store, live context, and recovery owner. One model call or a small controlled loop can use LLM Wire and ordinary functions; retain a fitting existing runtime.
 
+Use Hex `fabric` 0.1.0; retain `manifest.toml`. Its PostgreSQL adapter stays Git+path.
+
 ## Abstraction decision tree
 
 ```text
@@ -59,4 +61,4 @@ Pin the resolved dependency graph. Check changed lifecycle claims with scripted 
 
 ## Sources
 
-[Public API](https://github.com/gleam-dream/fabric/tree/815fc5971e0ae8e7783f122e1ee00a7e50c08de7/src/fabric) · [Usage topics](https://github.com/gleam-dream/fabric/tree/815fc5971e0ae8e7783f122e1ee00a7e50c08de7/examples/usage) · [Design and pending scope](https://github.com/gleam-dream/fabric/blob/815fc5971e0ae8e7783f122e1ee00a7e50c08de7/docs/design/design.typ)
+[HexDocs](https://hexdocs.pm/fabric/0.1.0/) · [Public API](https://github.com/gleam-dream/fabric/tree/fdbe9960336c0908a6d9af9caa3874e141768aea/src/fabric) · [Usage topics](https://github.com/gleam-dream/fabric/tree/fdbe9960336c0908a6d9af9caa3874e141768aea/examples/usage) · [Design and pending scope](https://github.com/gleam-dream/fabric/blob/fdbe9960336c0908a6d9af9caa3874e141768aea/docs/design/design.typ)

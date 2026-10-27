@@ -18,7 +18,7 @@ Choose Hellhound to sign users in or manage provider tokens while it handles dis
 | Sessions surviving custody-store restart       | Durable stores plus a stable sealing key                                      |
 | Accounts, permissions, or application sessions | Application policy around Hellhound's evidence                                |
 
-The reviewed checkout is unreleased and pre-production. Production use requires its release conditions and independent security review; retained tests confer no certification.
+Use Hex `hellhound` 0.1.0 on Erlang; `hellhound_postgres` stays Git+path. Deployment requires independent security review; publication and retained tests confer no certification.
 
 ## Configure clients, complete the login
 
@@ -53,4 +53,4 @@ The reviewed checkout is unreleased and pre-production. Production use requires 
 
 ## Sources
 
-[Public API and consumers](https://github.com/gleam-dream/hellhound/blob/46bbf6e52a41ef9ed760cf17ace1c2c4bd8d7a84/README.md), [application decisions](https://github.com/gleam-dream/hellhound/blob/46bbf6e52a41ef9ed760cf17ace1c2c4bd8d7a84/consumer/src/hellhound_reference/usage/responsibilities.gleam), [store contract](https://github.com/gleam-dream/hellhound/blob/46bbf6e52a41ef9ed760cf17ace1c2c4bd8d7a84/src/hellhound/store.gleam).
+[HexDocs](https://hexdocs.pm/hellhound/0.1.0/) · [Public API and consumers](https://github.com/gleam-dream/hellhound/blob/9f47f74dc01c956db2343df3e3ea2731a6ecf806/README.md), [application decisions](https://github.com/gleam-dream/hellhound/blob/9f47f74dc01c956db2343df3e3ea2731a6ecf806/consumer/src/hellhound_reference/usage/responsibilities.gleam), [store contract](https://github.com/gleam-dream/hellhound/blob/9f47f74dc01c956db2343df3e3ea2731a6ecf806/src/hellhound/store.gleam).

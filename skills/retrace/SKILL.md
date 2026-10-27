@@ -20,7 +20,7 @@ What evidence is needed?
    └── PostgreSQL admission/object archival → retrace_server
 ```
 
-Pin imported Retrace packages to one revision. Core supports Erlang/JavaScript; frontend targets JavaScript and server Erlang. Select browser/native adapters deliberately; preserve a suitable existing recorder.
+Use coordinated Hex 0.1.0 releases of imported Retrace packages and retain `manifest.toml`. Core supports Erlang/JavaScript; frontend targets JavaScript and server Erlang. Select browser/native adapters deliberately; preserve a suitable existing recorder.
 
 ## Record accepted, safe transitions
 
@@ -60,4 +60,4 @@ Verify changed core claims on both targets. Exercise browser, native delivery, o
 
 ## Sources
 
-[Capture and replay examples](https://github.com/gleam-dream/retrace/tree/31352e53c7673fd948540e2f7cbe921a9903b203/examples) · [Core API](https://github.com/gleam-dream/retrace/blob/31352e53c7673fd948540e2f7cbe921a9903b203/src/retrace.gleam) · [Server and erasure](https://github.com/gleam-dream/retrace/blob/31352e53c7673fd948540e2f7cbe921a9903b203/packages/retrace_server/README.md)
+[HexDocs](https://hexdocs.pm/retrace/0.1.0/) · [Capture and replay examples](https://github.com/gleam-dream/retrace/tree/2b8c877a634dd29e90d7f9e9d271012ccb0ddf2f/examples) · [Core API](https://github.com/gleam-dream/retrace/blob/2b8c877a634dd29e90d7f9e9d271012ccb0ddf2f/src/retrace.gleam) · [Server and erasure](https://github.com/gleam-dream/retrace/blob/2b8c877a634dd29e90d7f9e9d271012ccb0ddf2f/packages/retrace_server/README.md)

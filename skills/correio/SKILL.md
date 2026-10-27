@@ -18,7 +18,7 @@ Choose Correio when application email should use one `Message -> Outcome` sender
 | Magic link or email code | `passwordless` over the application's native subject type |
 | Shared durable challenge authority | `correio_postgres` with a named Pog pool and subject codec |
 
-This Erlang-only checkout is unpublished. Addresses exclude SMTPUTF8 mailboxes, quoted local parts, and address literals.
+Use Hex `correio` 0.1.0 on Erlang; adapters stay Git+path. Addresses exclude SMTPUTF8 mailboxes, quoted local parts, and address literals.
 
 ## Construct once, inject delivery
 
@@ -54,4 +54,4 @@ This Erlang-only checkout is unpublished. Addresses exclude SMTPUTF8 mailboxes, 
 
 ## Sources
 
-[Public API and consumers](https://github.com/gleam-dream/correio/blob/a44986421f3b71bb55e9a4a8813fc89c83aaa79c/README.md), [passwordless evidence](https://github.com/gleam-dream/correio/blob/a44986421f3b71bb55e9a4a8813fc89c83aaa79c/src/correio/passwordless.gleam), [Postmark ownership](https://github.com/gleam-dream/correio/blob/a44986421f3b71bb55e9a4a8813fc89c83aaa79c/adapters/correio_postmark/README.md).
+[HexDocs](https://hexdocs.pm/correio/0.1.0/) · [Public API and consumers](https://github.com/gleam-dream/correio/blob/236c4359b31ddaf25d26fb94bd0be5f325751ca6/README.md), [passwordless evidence](https://github.com/gleam-dream/correio/blob/236c4359b31ddaf25d26fb94bd0be5f325751ca6/src/correio/passwordless.gleam), [Postmark ownership](https://github.com/gleam-dream/correio/blob/236c4359b31ddaf25d26fb94bd0be5f325751ca6/adapters/correio_postmark/README.md).

@@ -18,7 +18,7 @@ Choose HTTP Gun on Erlang when shared pooling, bounded response reads, owned bod
 | Several independent requests | `batch` with explicit concurrency; results retain input order |
 | Deterministic HTTP tests | `testing.playback`; use a cassette for captured exchanges |
 
-The reviewed checkout is unreleased and Erlang-only. Pin the selected revision and keep the application's resolved manifest. Streamed uploads, redirect following, decompression, proxies, and generic SSE parsing have no public API here.
+Use Hex `http_gun` 0.1.0 on Erlang and retain the application's resolved manifest. Streamed uploads, redirect following, decompression, proxies, and generic SSE parsing have no public API here.
 
 ## Configure once, reuse the client
 
@@ -53,4 +53,4 @@ The reviewed checkout is unreleased and Erlang-only. Pin the selected revision a
 
 ## Sources
 
-[Public API and consumers](https://github.com/gleam-dream/http_gun/blob/db1cc9789af6cc6af2175d502dfcabb0451f4e2e/README.md), [body ownership](https://github.com/gleam-dream/http_gun/blob/db1cc9789af6cc6af2175d502dfcabb0451f4e2e/src/http_gun/body.gleam), [retry evidence](https://github.com/gleam-dream/http_gun/blob/db1cc9789af6cc6af2175d502dfcabb0451f4e2e/src/http_gun/error.gleam).
+[HexDocs](https://hexdocs.pm/http_gun/0.1.0/) · [Public API and consumers](https://github.com/gleam-dream/http_gun/blob/6a16c115217417734f84e9a75906c5358a33549f/README.md), [body ownership](https://github.com/gleam-dream/http_gun/blob/6a16c115217417734f84e9a75906c5358a33549f/src/http_gun/body.gleam), [retry evidence](https://github.com/gleam-dream/http_gun/blob/6a16c115217417734f84e9a75906c5358a33549f/src/http_gun/error.gleam).

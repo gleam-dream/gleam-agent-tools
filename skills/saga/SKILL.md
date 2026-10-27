@@ -25,7 +25,7 @@ Does the operation need workflow coordination?
 
 ## Define once, execute with input
 
-- Inspect the resolved revision and public modules. The researched 0.1.0 is unpublished, targets Erlang, and requires Gleam >=1.18.
+- Inspect the resolved revision and public modules. Use Hex `saga` 0.1.0 on Erlang with Gleam >=1.18; `saga_postgres` stays Git+path.
 - Build a reusable workflow with `define`. Its builder runs once; supply each request as run input. Connect steps through typed ports, using `perform`, `both`, `all`, and `choose` as needed.
 - Keep external clients and application policy in supplied callbacks. Use `effect` when a step needs its `EffectKey`; send its stable idempotency key to a provider that enforces it.
 - Use `undo` to reverse known completed work. Use `compensate` to choose a failed attempt's retry, replacement, abort, or hold. They own different decisions.
@@ -56,4 +56,4 @@ Does the operation need workflow coordination?
 
 ## Sources
 
-[Public workflow and consumer](https://github.com/gleam-dream/saga/tree/c09b7a7c72148fcaf73fea96cb595ccf16a56e7b), [reporting lifetime](https://github.com/gleam-dream/saga/blob/c09b7a7c72148fcaf73fea96cb595ccf16a56e7b/src/saga/reporting.gleam), [durability contract](https://github.com/gleam-dream/saga/blob/c09b7a7c72148fcaf73fea96cb595ccf16a56e7b/src/saga/durable.gleam), [PostgreSQL adapter](https://github.com/gleam-dream/saga/tree/c09b7a7c72148fcaf73fea96cb595ccf16a56e7b/integrations/saga_postgres).
+[HexDocs](https://hexdocs.pm/saga/0.1.0/) · [Public workflow and consumer](https://github.com/gleam-dream/saga/tree/aea8e5df8ca9e9ad7048020a1205408eeba53a9f), [reporting lifetime](https://github.com/gleam-dream/saga/blob/aea8e5df8ca9e9ad7048020a1205408eeba53a9f/src/saga/reporting.gleam), [durability contract](https://github.com/gleam-dream/saga/blob/aea8e5df8ca9e9ad7048020a1205408eeba53a9f/src/saga/durable.gleam), [PostgreSQL adapter](https://github.com/gleam-dream/saga/tree/aea8e5df8ca9e9ad7048020a1205408eeba53a9f/integrations/saga_postgres).
