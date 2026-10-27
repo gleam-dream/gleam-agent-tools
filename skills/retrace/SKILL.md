@@ -22,6 +22,8 @@ What evidence is needed?
 
 Use coordinated Hex 0.1.0 releases of imported Retrace packages and retain `manifest.toml`. Core supports Erlang/JavaScript; frontend targets JavaScript and server Erlang. Select browser/native adapters deliberately; preserve a suitable existing recorder.
 
+The unpublished development `retrace_collector` uses [Git+path](https://github.com/gleam-dream/retrace/blob/464b20552d0ed1b2d2b025166e60c77098fb36de/support/collector/README.md) at `support/collector`, with Hex core/server dependencies.
+
 ## Record accepted, safe transitions
 
 1. Project safe models and messages before capture/encoding; exclude credentials and private values.
