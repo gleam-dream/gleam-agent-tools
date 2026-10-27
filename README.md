@@ -1,5 +1,8 @@
 # Gleam Agent Tools
 
+[![CI](https://github.com/gleam-dream/gleam-agent-tools/actions/workflows/nix.yml/badge.svg?branch=main)](https://github.com/gleam-dream/gleam-agent-tools/actions/workflows/nix.yml)
+[![Gleam](https://img.shields.io/badge/Gleam-FFAFF3?logo=gleam&logoColor=000000)](https://gleam.run/)
+
 Compact agent skills for building Gleam applications and libraries, with an optional Nix installation for the skills and language tools. Each guide is one self-contained `SKILL.md` with selection criteria, a decision tree, red flags, and primary sources.
 
 ## Install
