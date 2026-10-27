@@ -9,14 +9,14 @@ Choose HTTP Gun on Erlang when shared pooling, bounded response reads, owned bod
 
 ## Abstraction decision tree
 
-| Need | Choose |
-| --- | --- |
-| Redirects, decompression, proxies, or streamed uploads required | Select a transport exposing those capabilities |
-| Small complete response | `send` with a body limit |
-| Incremental response | `with_response` and `body.next` |
-| Body lifetime extends beyond one callback | `open`, with an explicit owner and `body.close` |
-| Several independent requests | `batch` with explicit concurrency; results retain input order |
-| Deterministic HTTP tests | `testing.playback`; use a cassette for captured exchanges |
+| Need                                                            | Choose                                                        |
+| --------------------------------------------------------------- | ------------------------------------------------------------- |
+| Redirects, decompression, proxies, or streamed uploads required | Select a transport exposing those capabilities                |
+| Small complete response                                         | `send` with a body limit                                      |
+| Incremental response                                            | `with_response` and `body.next`                               |
+| Body lifetime extends beyond one callback                       | `open`, with an explicit owner and `body.close`               |
+| Several independent requests                                    | `batch` with explicit concurrency; results retain input order |
+| Deterministic HTTP tests                                        | `testing.playback`; use a cassette for captured exchanges     |
 
 Use Hex `http_gun` 0.1.0 on Erlang and retain the application's resolved manifest. Streamed uploads, redirect following, decompression, proxies, and generic SSE parsing have no public API here.
 

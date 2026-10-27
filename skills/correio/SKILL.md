@@ -9,13 +9,13 @@ Choose Correio when application email should use one `Message -> Outcome` sender
 
 ## Abstraction decision tree
 
-| Need | Choose |
-| --- | --- |
-| Transactional email | Validated `Message` and an injected `delivery.Sender` |
-| SMTP submission | `smtp.starttls` or implicit TLS configuration |
-| Postmark submission | `correio_postmark` with a caller-owned HTTP Gun client |
-| Test application email flows | Owned `capture` and `testing` checkpoint |
-| Magic link or email code | `passwordless` over the application's native subject type |
+| Need                               | Choose                                                     |
+| ---------------------------------- | ---------------------------------------------------------- |
+| Transactional email                | Validated `Message` and an injected `delivery.Sender`      |
+| SMTP submission                    | `smtp.starttls` or implicit TLS configuration              |
+| Postmark submission                | `correio_postmark` with a caller-owned HTTP Gun client     |
+| Test application email flows       | Owned `capture` and `testing` checkpoint                   |
+| Magic link or email code           | `passwordless` over the application's native subject type  |
 | Shared durable challenge authority | `correio_postgres` with a named Pog pool and subject codec |
 
 Use Hex `correio` 0.1.0 on Erlang; adapters stay Git+path. Addresses exclude SMTPUTF8 mailboxes, quoted local parts, and address literals.
