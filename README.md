@@ -3,7 +3,7 @@
 [![CI](https://github.com/gleam-dream/gleam-agent-tools/actions/workflows/nix.yml/badge.svg?branch=main)](https://github.com/gleam-dream/gleam-agent-tools/actions/workflows/nix.yml)
 [![Gleam](https://img.shields.io/badge/Gleam-FFAFF3?logo=gleam&logoColor=000000)](https://gleam.run/)
 
-Compact agent skills for building Gleam applications and libraries, with an optional Nix installation for the skills and language tools. Each guide is one self-contained `SKILL.md` with selection criteria, a decision tree, red flags, and primary sources.
+Agent skills for building Gleam applications and libraries, with optional Nix installation for skills and language tools. Each self-contained `SKILL.md` includes selection criteria, a decision tree, red flags, and primary sources.
 
 ## Install
 
@@ -37,15 +37,15 @@ programs.gleam-agent-tools = {
 };
 ```
 
-Omit `skills` to install the whole collection; use `[]` to install only the bridge. The module is disabled by default. It installs the selected guides under `~/.agents/skills` and exposes `gleam-agent-lsp` on `PATH`. Unknown skill names are rejected. The module leaves agent configuration to the host.
+Omit `skills` to install the whole collection; use `[]` to install only the bridge. The module is disabled by default. It installs the selected guides under `~/.agents/skills` and exposes `gleam-agent-lsp` on `PATH`. Unknown skill names are rejected.
 
-The consuming host also owns Zsh, shell aliases, Git, `gh`, and authentication. Import the shared module into that host's existing Home Manager configuration so one activation manages the user's files. Mionix and Dash can each consume these Gleam tools while retaining their own general development settings.
+The host owns agent configuration, Zsh, shell aliases, Git, `gh`, and authentication. Import the module into its existing Home Manager configuration so one activation manages the user's files. Mionix and Dash can retain their own development settings while consuming these tools.
 
-If an imported team setup also consumes this provider, make its `gleam-agent-tools` input follow the host's input. Both then import the same module, which Nix can deduplicate.
+If an imported team setup also consumes this provider, make its `gleam-agent-tools` input follow the host's input so Nix can deduplicate the module.
 
 #### Use your existing Home Manager configuration
 
-On NixOS or nix-darwin, import the provider at the Home Manager level. For example, in a host module that receives the input through `specialArgs`:
+On NixOS or nix-darwin, import at the Home Manager level. In a host module receiving the input through `specialArgs`:
 
 ```nix
 { gleam-agent-tools, ... }:
@@ -71,7 +71,7 @@ When a team module such as Dash also imports this provider, share the input expl
 inputs.dash-dev-env.inputs.gleam-agent-tools.follows = "gleam-agent-tools";
 ```
 
-The consuming host selects which team defaults it wants. In a personal Mionix configuration, disable Dash's shell, Git, SSH, direnv, npm and MCP management when the host owns them. Set `dash.git.identityFile = null`, disable duplicate tool entries such as Node or separately managed agents, and disable Eza's shell integrations if retaining personal aliases. Configure `dash.switchCommand` to use the host's rebuild instead of Dash's standalone bootstrap. These choices belong in the consuming host; this provider installs its bridge and selected guides.
+The host selects team defaults. In a personal Mionix configuration, disable Dash's shell, Git, SSH, direnv, npm and MCP management where the host owns them. Set `dash.git.identityFile = null`, disable duplicate tools such as Node or separately managed agents, and disable Eza's shell integrations if retaining personal aliases. Set `dash.switchCommand` to the host's rebuild. This provider installs the bridge and selected guides.
 
 The default `skillDirectories` is `[ ".agents/skills" ]`, the [Codex user skill location](https://learn.chatgpt.com/docs/build-skills). The example also installs into [Claude Code's personal skill directory](https://code.claude.com/docs/en/skills). Hosts select the locations used by their agents.
 
