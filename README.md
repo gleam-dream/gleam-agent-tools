@@ -97,7 +97,7 @@ Run `nix fmt`, `nix flake check`, and `nix develop --command python nix/tests/te
 | [gleam-ffi](skills/gleam-ffi/SKILL.md)           | Thin foreign interfaces, types, and resource lifetimes     |
 | [gleam-otp](skills/gleam-otp/SKILL.md)           | Actors, supervision, and recovery                          |
 | [gleam-inspect](skills/gleam-inspect/SKILL.md)   | Live BEAM inspection, RPC, and Voyager MCP                 |
-| [lustre](skills/lustre/SKILL.md)                 | UI models, messages, views, and effects                    |
+| [lustre](skills/lustre/SKILL.md)                 | UI state, views, effects, and large application structure  |
 | [wisp](skills/wisp/SKILL.md)                     | HTTP handlers, middleware, and Mist integration            |
 | [http-gun](skills/http-gun/SKILL.md)             | Pooled HTTP requests, streams, and retry decisions         |
 | [gleam-sql](skills/gleam-sql/SKILL.md)           | SQL with Squirrel, Pog, and Cigogne                        |

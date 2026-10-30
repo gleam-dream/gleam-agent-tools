@@ -1,15 +1,15 @@
 ---
 name: lustre
-description: Build and debug Lustre interfaces with Model-View-Update. Use for UI state, forms, views, effects, asynchronous responses, subscriptions, browser components, static rendering, and server-component lifetimes. Keep transport and durable application state under their own contracts.
+description: Build and debug Lustre interfaces with Model-View-Update. Use for UI state, large applications, flow boundaries, shared drafts, forms, views, effects, asynchronous responses, subscriptions, browser components, static rendering, and server-component lifetimes. Keep transport and durable application state under their own contracts.
 ---
 
 # Lustre
 
-Choose Lustre when explicit model/message transitions should make an interactive interface inspectable and reproducible. Return effects for the runtime to execute. Static HTML needs no UI runtime; reusable presentation usually needs only a view function.
+Explicit model/message transitions make interfaces inspectable and reproducible.
 
 ## Governing rule
 
-Keep `init`, `update`, and `view` deterministic for the same inputs. Move external work into effects and return its observations as messages. Gleam's type checker does not enforce purity.
+Keep `init`, `update`, and `view` deterministic for the same inputs. Return external work as effects and observations as messages. Gleam does not enforce purity.
 
 ## Abstraction decision tree
 
@@ -23,34 +23,41 @@ What does the interface need?
 └── Server-owned interactive state → Server component + explicit transport owner
 ```
 
-## Model the interaction
+## Model the interaction and organize the application
 
-- Represent meaningful states with variants: idle, pending, success, or failure as the domain requires. Keep form input and validation feedback available until the intended transition completes.
-- Keep shared state in the model that owns its coordination. Extract view functions before adding independent component runtimes; a component needs an actual encapsulation or lifetime reason.
-- Translate DOM events and external results into typed messages. Decode event payloads at ingress and let `update` decide the next model and effect.
-- Associate asynchronous results with the request or model revision they belong to. Ignore obsolete results when a newer request supersedes them; arrival order is not request order.
-- Put navigation state in the URL when reloads and shared links must reproduce it. Keep transient interaction details local to the model.
+- Represent meaningful states with variants: idle, pending, success, or failure as needed. Preserve form input and validation feedback until the intended transition completes.
+- Decode event payloads at ingress into typed messages describing DOM events and external results. Let `update` choose the next model and effect. Compose internal behavior with ordinary functions; never recursively call `update` with fabricated messages.
+- Correlate asynchronous results with requests or model revisions. Ignore superseded responses and messages for departed flow instances; arrival order is not request order.
+- Put navigation in URLs when reloads and shared links must reproduce it. Keep transient interaction details in the model.
+- Split around data ownership, invariants, and lifetimes, rather than line counts. Extract modules that hide internals or separate responsibilities.
+- Keep one authoritative copy of shared state and surviving session/context with the coordinating model; pass flows only needed data. Use a `Screen` variant for mutually exclusive flows whose local state can be discarded on navigation.
+- Distinct flows with independent state can own `Model`, `Message`, `init`, `update`, and `view`. The root delegates updates, maps child messages, and owns routing and handovers within one runtime.
+- Steps editing one draft share one model with step views and transformation functions. A lookup with timers and requests can own a submachine.
+- Extract view functions before adding component runtimes. Components require independent encapsulation or lifetime.
 
 ## Manage effects and lifetimes
 
 - Use effect-returning `init`/`update` with `lustre.application`.
-- Do not rely on `effect.batch` ordering. Sequence dependent work through result messages or a single effect with the required sequencing.
-- Install long-lived event sources through managed effects and give their owner a cleanup path. `effect.subscribe`/`unsubscribe` handles parent DOM context. Use the paint lifecycle for DOM measurement; ordinary effects can run before the new view is rendered.
-- Separate browser APIs from portable state transitions. Server components ignore browser paint effects; a shared source file does not establish runtime compatibility.
-- Decide whether a server runtime belongs to one client or several. Authorize connections and messages, register/deregister clients, and own runtime shutdown. The component runtime is separate from the WebSocket server and may outlive every connection.
+- For complex coordination, consider application-defined `Command` values for requests and handovers such as `SignedIn`, returned as `#(Model, List(Command))`. This optional Effect pattern differs from Lustre's `Effect(Message)`; simpler flows can return native effects and explicit outcomes.
+- With commands, the root applies shared transitions; a live interpreter converts requests into Lustre effects. Replay applies transitions without executing requests.
+- Do not rely on `effect.batch` ordering. Sequence dependent work through result messages or one sequencing effect.
+- Install long-lived event sources through managed effects and own cleanup. `effect.subscribe`/`unsubscribe` handles parent DOM context. Measure DOM during paint; ordinary effects may precede rendering.
+- Separate browser APIs from portable transitions. Server components ignore browser paint effects; shared source does not guarantee compatibility.
+- Decide whether server runtimes serve one client or several. Authorize connections/messages, register/deregister clients, and own shutdown. Runtimes are separate from WebSocket servers and may outlive connections.
 
 ## Verification
 
-Test transitions with meaningful message sequences, including delayed responses and failures. Lustre simulation discards effects: injected messages test their interpretation, not the actual request, subscription, or DOM behavior. Test those claims in their real runtime.
+Test message sequences through flow handovers, draft preservation, delayed responses, and failures; inspect returned commands when used. Lustre simulation discards effects: injected messages test interpretation. Verify requests, subscriptions, DOM behavior, and cleanup in their real runtime.
 
 ## Red flags
 
-- HTTP requests, timers, or random reads executed directly by `view` or `update`.
-- Components created solely to split a large view file.
-- An older response overwrites the latest search or form state.
-- A shared server runtime exposes one user's private state to another.
-- Simulation success presented as proof of effect execution or browser cleanup.
+- Executing requests, timers, or random reads inside `view` or `update`.
+- Components created for file size; duplicated shared drafts; recursive message dispatch.
+- Stale responses overwrite current state; shared runtimes leak private state.
+- Simulation presented as proof of effect execution or cleanup.
 
 ## Sources
 
 [Core API](https://lustre.hexdocs.pm/lustre.html), [state](https://lustre.hexdocs.pm/guide/02-state-management.html), [effects](https://lustre.hexdocs.pm/lustre/effect.html), [server components](https://lustre.hexdocs.pm/lustre/server_component.html), [simulation](https://lustre.hexdocs.pm/lustre/dev/simulate.html).
+
+Architecture examples: [Elm SPA](https://github.com/rtfeldman/elm-spa-example), [Effect pattern](https://discourse.elm-lang.org/t/realworld-example-app-architected-with-the-effect-pattern/5753), [module boundaries](https://elm-radio.com/episode/life-of-a-file/). These inform application design; they are not Lustre requirements.
