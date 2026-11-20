@@ -36,6 +36,7 @@ Use `with_output(name, codec)` for decoded answers. Its codec must have a record
 - On `NeedsTools`, retain the returned `AssistantTurn`. Append `message.Assistant(turn)` and one `tool_result` for every call to the next request.
 - Preserve call ids, ordering, and opaque provider replay data when storing history. Use the message and turn codecs; rebuilding a turn from visible text loses information.
 - Keep authorization, effect identity, and tool errors in the application. A model request cannot authorize a business action.
+- Each call copies its tool list about five times between processes ([measured](https://github.com/gleam-dream/llm_wire/pull/11)). A `tool.new` tool carries its input codec into every copy; `from_contract` and `from_json_schema` tools copy schema data only. When the same tools go on many calls, prefer contract-only tools and decode arguments in your process with `decode_arguments`. Build codecs per the [codec guide](https://github.com/lostbean/json_blueprint/blob/main/docs/CODEC-PRACTICE.md).
 
 ## Own streams and retries
 
@@ -45,7 +46,7 @@ Use `with_output(name, codec)` for decoded answers. Its codec must have a record
 - Inspect `sent`, `partial_output`, and optional usage. `MaybeSent` can mean paid remote work; missing usage does not mean zero tokens.
 - Bound attempts, backoff, and provider delay by one application deadline. `ProviderDelay` is uncapped advice; do not sleep beyond the remaining budget.
 
-Classification maps authored alternatives into native answers, such as `Publish` or `Revise`; confidence is provider evidence, not correctness. Classification and transcription have separate contracts; neither implies generation streaming, uploaded-audio lifecycle, or diarization.
+Classification maps authored alternatives into native answers; confidence is provider evidence, not correctness. Classification and transcription have separate contracts; neither implies generation streaming, uploaded-audio lifecycle, or diarization.
 
 ## Red flags
 
@@ -57,7 +58,7 @@ Classification maps authored alternatives into native answers, such as `Publish`
 
 ## Verify
 
-Check the application's manifest before using a signature. Validate changed request and replay claims with the package's offline consumer playback; use live providers only when the task requires live behavior.
+Check the application's manifest before using a signature. Validate changed request and replay claims with the package's offline consumer playback; use live providers only when required.
 
 ## Sources
 
