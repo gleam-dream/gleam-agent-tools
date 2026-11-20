@@ -23,7 +23,7 @@ Need explicit workflow compensation? → Saga
 ## Build the ordinary path
 
 1. Define native input and output codecs. Create each `tool.Definition`, then bind its typed handler before combining heterogeneous tools.
-2. Build an agent with a model, tool list, and explicit policy. Set turn, concurrency, model-call, and tool-body bounds; these do not supply a whole-agent elapsed deadline. Handle `agent.build` errors before starting.
+2. Build an agent with a model, tool list, and explicit policy, inside a builder given to `agent.build_with`. Set turn, concurrency, model-call, and tool-body bounds; these do not supply a whole-agent elapsed deadline. Handle its errors before starting.
 3. Start the selected store. Allocate HTTP/database resources only when the chosen adapters require them; keep borrowed resources under their application owner's lifecycle.
 4. Start with a retained `RunId`, live context, prompt, and correlation. Use a stable application identity when retried admission must find the existing run.
 5. Await or inspect status. Read action records from `fabric.snapshot` before treating a final answer as business success.
@@ -31,6 +31,15 @@ Need explicit workflow compensation? → Saga
 Use `llm.model` for a Wire-backed model or `llm.configured_model` for fixed generation settings. Supply a deterministic `model.Model` callback for offline checks. Fabric owns request assembly and transcript replay; supply live credentials and settings again on reconstruction.
 
 For a graph, define typed state, operations, acceptance, and routes. Bind the definition to its store, context factory, and policy with `graph.new`; validate with `graph.build` before `graph.start`.
+
+## Keep codecs out of process copies
+
+Each run has its own runner process, and each tool body and model call its own task; a value sent between processes is copied whole. A built agent holds every tool codec, the answer codec, the policy and its sub-agents.
+
+- Build agents with `agent.build_with(fn() { spec })` (Fabric after 0.4.0). Fabric builds the agent in each process that runs it and copies only the builder; a tool's task receives only its tool. `agent.build` is deprecated: its agent is copied into every runner. On 0.4.0, build once and never hand the agent to another process per operation.
+- Make the builder deterministic and give it small captures: ids, settings, a client. A builder that captures a built tool or codec copies it again; another name or version crashes the rebuild.
+- Write codecs by the [json_blueprint codec practice](https://github.com/lostbean/json_blueprint/blob/main/docs/CODEC-PRACTICE.md) with `json_blueprint >= 2.1.1`. Make each tool input codec's children inside their fields. Build a run-time enum, such as the accounts a run may pay, inside its field from the run's own ids, which the builder captures.
+- Bound `erts_debug:flat_size/1` of what crosses processes in an Erlang test when agents are large.
 
 ## Declare effect meaning
 
@@ -53,6 +62,7 @@ For a graph, define typed state, operations, acceptance, and routes. Bind the de
 - Marking every tool replayable or equating a final answer with successful effects.
 - Reusing approval after changing arguments, policy, or requirements.
 - Assuming per-call timeouts supply a whole-agent deadline.
+- Sending a built agent, tool or codec to other processes per run or request.
 - Treating a queued run reference as the owner of Fabric recovery.
 
 ## Verify
