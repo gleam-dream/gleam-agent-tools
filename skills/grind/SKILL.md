@@ -27,7 +27,7 @@ Does work need durable admission and retained outcomes?
 - Inspect `gleam.toml`, the manifest, and public APIs first. Use Hex `grind` 0.1.0 on Erlang with Gleam >=1.18. Retain the manifest and narrow Pog/pgo ranges.
 - Define stable worker identities and versions with typed input/output/error codecs. Keep old stored jobs readable across deployments; changing callback meaning can require a version change even when the types match.
 - Register workers with `with_worker`; add `supervised` to the application's supervision tree. Pair script-owned `start` with `stop`.
-- Keep worker values small: Grind copies the handler closure, with its captures, into each job's processes. Capture ids or process names, keep static data in module constants, and bound the worker's `erts_debug:flat_size` in a test.
+- Keep worker values small: Grind copies the handler closure, with its captures, into each job's processes. Capture ids, keep static data in module constants, and bound `erts_debug:flat_size(Worker) * erlang:system_info(wordsize)` bytes in a test.
 - Let Grind own its pool. Borrow `connection` when useful. Budget one additional reserved renewal connection per used queue; queue capacity is local to a consumer.
 - Select one migration owner: package migrations or Cigogne mirrors. Install the schema before starting consumers; use startup migration only where that role owns DDL.
 

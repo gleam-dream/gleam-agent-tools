@@ -32,8 +32,8 @@ What runtime responsibility exists?
 
 ## Bound what crosses processes
 
-- Size every term a spawn, message or start argument carries. Processes share no heap and a copy loses internal sharing, so a closure's captures can grow many times per copy.
-- Pass small references to per-job processes. Keep static data in module constants or `persistent_term`; bound the term's `erts_debug:flat_size` in a test.
+- Size every term a spawn, message or start argument carries. A copy loses internal sharing, so it costs the term's flat size, which can be many times its heap size.
+- Pass small references to per-job processes. Keep static data in module constants or `persistent_term`, which are not copied; bound `erts_debug:flat_size(Term) * erlang:system_info(wordsize)` bytes in a test.
 
 ## Encode recovery dependencies
 
@@ -65,4 +65,4 @@ When inspecting actors, check system-operation support against the pinned implem
 
 ## Sources
 
-[Actors](https://gleam-otp.hexdocs.pm/gleam/otp/actor.html), [subjects and calls](https://gleam-erlang.hexdocs.pm/gleam/erlang/process.html), [static supervision](https://gleam-otp.hexdocs.pm/gleam/otp/static_supervisor.html), [factory supervision](https://gleam-otp.hexdocs.pm/gleam/otp/factory_supervisor.html).
+[Actors](https://gleam-otp.hexdocs.pm/gleam/otp/actor.html), [subjects and calls](https://gleam-erlang.hexdocs.pm/gleam/erlang/process.html), [static supervision](https://gleam-otp.hexdocs.pm/gleam/otp/static_supervisor.html), [factory supervision](https://gleam-otp.hexdocs.pm/gleam/otp/factory_supervisor.html), [process copies](https://www.erlang.org/doc/system/eff_guide_processes.html).
