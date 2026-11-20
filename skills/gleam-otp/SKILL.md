@@ -30,6 +30,11 @@ What runtime responsibility exists?
 - Receive from a subject in its owning process. Use selectors to combine subjects and map their payloads into a coherent protocol.
 - Distinguish reply waiting from work cancellation. `process.call` panics on timeout, callee exit before reply, or a missing named process; it does not return a timeout `Error` or prove the request had no effect.
 
+## Bound what crosses processes
+
+- Size every term a spawn, message or start argument carries. Processes share no heap and a copy loses internal sharing, so a closure's captures can grow many times per copy.
+- Pass small references to per-job processes. Keep static data in module constants or `persistent_term`; bound the term's `erts_debug:flat_size` in a test.
+
 ## Encode recovery dependencies
 
 | Child relationship | Static strategy |
@@ -55,6 +60,7 @@ When inspecting actors, check system-operation support against the pinned implem
 - Network work blocks the only process handling cancellation.
 - A call timeout triggers an unconditional retry of an external effect.
 - A supervisor restarts a dependency while dependants retain unusable handles.
+- A per-job process receives a closure that captures a whole environment.
 - GenServer debugging features assumed to work for every Gleam actor.
 
 ## Sources
