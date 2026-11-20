@@ -7,7 +7,7 @@ description: Build and debug typed LLM agents and conditional graphs with Fabric
 
 Choose Fabric when a tool waits for approval or a lost runner must resume from retained actions and outcomes on Erlang/OTP; that justifies a store, live context and recovery owner.
 
-Use Hex `fabric` 0.4 with `json_blueprint >= 2.1.1`; retain `manifest.toml`. Its PostgreSQL adapter stays Git+path.
+Use Hex `fabric` 0.5 with `json_blueprint >= 2.1.1`; retain `manifest.toml`. Its PostgreSQL adapter stays Git+path.
 
 ## Abstraction decision tree
 
@@ -22,7 +22,7 @@ Need explicit workflow compensation? → Saga
 
 ## Build the ordinary path
 
-1. Write one builder function that makes the spec: each tool from its `tool.Definition` and typed handler, the model, an explicit policy, and turn, concurrency, model-call and tool-body bounds (no whole-agent deadline). Pass it to `agent.build_with` (after 0.4.0; `agent.build` is deprecated) and handle its errors.
+1. Write one builder function that makes the spec: each tool from its `tool.Definition` and typed handler, the model, an explicit policy, and turn, concurrency, model-call and tool-body bounds (no whole-agent deadline). Pass it to `agent.build_with` (`agent.build` is deprecated) and handle its errors.
 2. Start the store; keep adapter resources under their owner's lifecycle.
 3. Start with a retained `RunId`, live context, prompt and correlation; a stable id lets a retry find the run.
 4. Read `fabric.snapshot` actions before treating a final answer as business success.
@@ -38,7 +38,6 @@ Runs, tool bodies and model calls run in separate processes, and sent values are
 - Another name or version is refused (`AgentUnbuildable`), but `open`, `recover` and the sweeper ignore captures. A per-run capture makes a per-run agent: re-derive it from the run and recover those runs yourself.
 - A `Run` handle holds the built agent: send the id and `open` it there.
 - Follow the [json_blueprint codec practice](https://github.com/lostbean/json_blueprint/blob/main/docs/CODEC-PRACTICE.md): child codecs inside their fields; run-time enums built in the field and checked with `codec.check`.
-- On 0.4.0, build once and never send the agent per operation.
 
 ## Declare effect meaning
 
@@ -69,4 +68,4 @@ Pin the dependency graph. Check lifecycle claims with scripted models and the wa
 
 ## Sources
 
-[HexDocs](https://hexdocs.pm/fabric/0.4.0/) · [Public API](https://github.com/gleam-dream/fabric/tree/main/src/fabric) · [Usage topics](https://github.com/gleam-dream/fabric/tree/main/examples/usage) · [Design and pending scope](https://github.com/gleam-dream/fabric/blob/main/docs/design/design.typ)
+[HexDocs](https://hexdocs.pm/fabric/0.5.0/) · [Public API](https://github.com/gleam-dream/fabric/tree/main/src/fabric) · [Usage topics](https://github.com/gleam-dream/fabric/tree/main/examples/usage) · [Design and pending scope](https://github.com/gleam-dream/fabric/blob/main/docs/design/design.typ)
