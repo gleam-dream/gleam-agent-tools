@@ -7,7 +7,7 @@ description: Call LLM providers and handle typed answers, tool requests, streami
 
 Choose LLM Wire on Erlang/OTP for common typed provider outcomes, preflight validation, and streaming while the application owns history, tools, and retries. A narrow provider client suffices without these shared contracts; Fabric adds retained execution. Generation adapters cover OpenAI Responses, Anthropic Messages, and Google GenerateContent.
 
-Use Hex `llm_wire` 0.1.0 and retain the resolved `manifest.toml`.
+Use Hex `llm_wire` 0.1.0 with `json_blueprint >= 2.1.1`; retain the resolved `manifest.toml`.
 
 ## Abstraction decision tree
 
@@ -36,7 +36,7 @@ Use `with_output(name, codec)` for decoded answers. Its codec must have a record
 - On `NeedsTools`, retain the returned `AssistantTurn`. Append `message.Assistant(turn)` and one `tool_result` for every call to the next request.
 - Preserve call ids, ordering, and opaque provider replay data when storing history. Use the message and turn codecs; rebuilding a turn from visible text loses information.
 - Keep authorization, effect identity, and tool errors in the application. A model request cannot authorize a business action.
-- Each call copies its tool list about five times between processes ([measured](https://github.com/gleam-dream/llm_wire/pull/11)). A `tool.new` tool carries its input codec into every copy; `from_contract` and `from_json_schema` tools copy schema data only. When the same tools go on many calls, prefer contract-only tools and decode arguments in your process with `decode_arguments`. Build codecs per the [codec guide](https://github.com/lostbean/json_blueprint/blob/main/docs/CODEC-PRACTICE.md).
+- Each call copies its tool list about five times, into its owner process and worker ([measured](https://github.com/gleam-dream/llm_wire/blob/061980efa69308f3e5715e814d375d0d3ffa2080/issues/hold-tools-once-per-call/PRD.md)). A `tool.new` tool's decode closure holds its input codec, so every copy includes it; `from_contract` and `from_json_schema` tools copy schema data only. The `with_output` codec stays in your process; only its schema is copied. For tools sent on many calls, prefer contract-only tools and decode arguments in your process with `decode_arguments`. Build codecs per the [codec guide](https://github.com/lostbean/json_blueprint/blob/main/docs/CODEC-PRACTICE.md).
 
 ## Own streams and retries
 
@@ -51,14 +51,12 @@ Classification maps authored alternatives into native answers; confidence is pro
 ## Red flags
 
 - Retrying every timeout or treating retry advice as an effect guarantee.
-- Flattening assistant turns to text before a tool round or restart.
 - Treating output truncation, refusal, or invalid structured output as success.
-- Sharing a stream reader or abandoning a stream without closing it.
 - Assuming this Erlang package supplies a browser implementation.
 
 ## Verify
 
-Check the application's manifest before using a signature. Validate changed request and replay claims with the package's offline consumer playback; use live providers only when required.
+Check the application's manifest before using a signature. Validate changed request and replay claims with the package's offline consumer playback; use live providers only when the task requires live behavior.
 
 ## Sources
 
