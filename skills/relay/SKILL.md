@@ -7,7 +7,7 @@ description: Serve and call typed MCP tools with Relay over stdio or Streamable 
 
 Choose Relay for MCP interoperability on Erlang: one typed tool definition supplies declaration, server decoding, and client calling. Relay implements revision `2026-07-28`; applications own business effects, durable execution, and retries.
 
-Use Hex `relay` 0.2 with `json_blueprint >= 2.1.1`; retain the resolved `manifest.toml`.
+Use Hex `relay >= 0.2.2`, the first release that holds the server once, with `json_blueprint >= 2.1.1`; retain `manifest.toml`.
 
 ## Abstraction decision tree
 
@@ -34,13 +34,12 @@ Expose resources, prompts, or completion with `server.with_resources`, `server.w
 
 ## Keep the catalog out of process copies
 
-After 0.2.1, Relay holds the server, with its tool codecs and handlers, once in `persistent_term`; requests and tool workers read it uncopied. Relay 0.2.1 copies it several times per HTTP request and per call: keep its catalog small.
+HTTP endpoints and stdio servers hold the server, with its codecs and handlers, once in `persistent_term`; requests and tool workers read it uncopied. In-process clients and `runtime.start` copy the called tool per call. Earlier releases copy the whole server per request and call.
 
-- Per request and per call Relay copies the body, arguments and the context your builder returns. Keep catalogues, clients and codecs out of the context.
-- `register_tool` holds a new snapshot and scans the node; reserve it for rare changes.
-- `client.call` encodes and decodes in the caller. Never send a `Definition` or codec to another process per operation.
-- Follow the [json_blueprint codec practice](https://github.com/lostbean/json_blueprint/blob/main/docs/CODEC-PRACTICE.md): child codecs inside their fields, generated codecs for fixed shapes.
-- Guard with `erts_debug:flat_size(Term) * wordsize` of your context and anything you send.
+- Relay copies the body, arguments and your context per request and call. Keep catalogues, clients and codecs out of the context.
+- `register_tool` frees the previous snapshot, which scans the node; register rarely.
+- Never send a `Definition` or codec to another process per operation.
+- Write codecs by the [json_blueprint codec practice](https://github.com/lostbean/json_blueprint/blob/main/docs/CODEC-PRACTICE.md); guard sent terms with `erts_debug:flat_size(T) * erlang:system_info(wordsize)`.
 
 ## Choose the transport honestly
 
@@ -53,10 +52,10 @@ After 0.2.1, Relay holds the server, with its tool codecs and handlers, once in 
 
 - Protect HTTP with `http.new_protected` when bearer admission is required. The verifier checks tokens; the application owns business permissions.
 - Stdio trusts its parent; it has no bearer authorization.
-- Inspect `client.kind(error)` and `client.evidence(error)` before retrying; Relay never retries, and `MaybeSent` means a mutation may have run.
-- Carry a stable idempotency key scoped to the authenticated principal when repetition must be safe; the application suppresses duplicates.
+- Inspect `client.kind(error)` and `client.evidence(error)` before retrying; Relay never retries, and `MaybeSent` can mean a mutation ran.
+- Carry a stable idempotency key scoped to the authenticated principal when repetition must be safe; the key alone suppresses nothing.
 - Keep request id, invocation id, correlation, and effect identity distinct; correlation and client keys are untrusted.
-- Trust behavior hints only through a known peer contract.
+- Trust behavior hints only through a known peer contract; a discovered read-only hint cannot prove a retry safe.
 
 ## Red flags
 
@@ -72,4 +71,4 @@ Check the consuming manifest and the relevant usage module. Validate protocol cl
 
 ## Sources
 
-[HexDocs](https://hexdocs.pm/relay/0.1.0/) · [Public API](https://github.com/gleam-dream/relay/tree/bb72ae21644ce58718659161a42c55e998f4be46/src/relay) · [Usage topics](https://github.com/gleam-dream/relay/tree/bb72ae21644ce58718659161a42c55e998f4be46/examples/relay_usage) · [MCP specification](https://modelcontextprotocol.io/specification/2026-07-28)
+[HexDocs](https://hexdocs.pm/relay/0.2.2/) · [Public API](https://github.com/gleam-dream/relay/tree/v0.2.2/src/relay) · [Usage topics](https://github.com/gleam-dream/relay/tree/v0.2.2/examples/relay_usage) · [MCP specification](https://modelcontextprotocol.io/specification/2026-07-28)
