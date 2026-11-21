@@ -33,11 +33,11 @@ What HTTP responsibility is needed?
 
 ## Keep the handler out of connection copies
 
-Mist copies the function given to `mist.new` into every connection's process, so all it captures, such as route tables, codecs, catalogs, schemas and config, is copied once per open connection and kept while the connection lives. On mist 6.0.3 a handler capturing a 320 kB list holds 384 kB in each connection, and the listener's supervisors hold about 18 more copies from start.
+Mist 6.0.3 copies the builder given to `mist.start`, with its handler and `after_start` callback, into every connection's process. What those functions capture, such as route tables, codecs, catalogs, schemas and config, is copied once per open connection and kept while the connection lives; module literals and binaries over 64 bytes are not. A handler capturing a 320 kB list holds 384 kB in each connection, and the listener's supervisors hold about 18 more copies from start.
 
 - Reach large data from inside the handler through module constants, `persistent_term` written once at start, or a named process that answers lookups; none is copied into the connection. A named process copies its reply, so ask it for the entry, not the table.
 - Build inside the handler only what is cheap: a composed route table, codec or catalog built there is rebuilt on every request. Build it once at start and keep it in `persistent_term`.
-- Bound the copy size of the function passed to `mist.new` in a test. The `gleam-otp` skill holds the general process-copy rule.
+- Bound the copy size of the builder passed to `mist.start` in a test. The `gleam-otp` skill holds the general process-copy rule.
 
 ## Preserve request and resource ownership
 
