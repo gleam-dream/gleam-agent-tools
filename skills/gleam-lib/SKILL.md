@@ -36,7 +36,7 @@ What justifies the proposed boundary?
 ## Compose configuration and operations
 
 - Use sans-I/O when protocol decisions can be separate from execution: consume values, return decisions or requests, and let callers perform I/O and supply results.
-- Define ports as narrow typed callbacks or records for caller-supplied capabilities. Supply adapters for concrete integrations; keep core rules independent of those implementations. Add ports for actual variation, not every function.
+- Define ports as narrow typed callbacks or records for caller-supplied capabilities. Supply adapters for concrete integrations; keep core rules independent of those implementations.
 - Combine configured values and operations through ordinary functions. Preserve the same contract where meaning permits; avoid global state and mandatory frameworks.
 
 ## Expose policy and ownership
@@ -47,6 +47,7 @@ What justifies the proposed boundary?
 - Specify who creates, shares, cancels, and closes resources. Enforce allocation limits before allocation; a pull-shaped API alone proves no backpressure. State what returns establish. Callback types cannot prove purity, bounded work, or safe captured state.
 - Keep common validation and lifecycle rules in the library when offering extensions. State exactly what an adapter author must supply and which guarantees depend on that implementation.
 - Return actionable structured failures. Reserve deliberate crashes for a documented supervision/recovery contract.
+- Bound what your API sends between processes, as the `gleam-otp` skill describes. Codecs need `json_blueprint >= 2.2.0`, which copies a codec at about its own size; build run-time enums once ([codec guide](https://github.com/lostbean/json_blueprint/blob/main/docs/CODEC-PRACTICE.md)).
 
 ## Verify the public contract
 
@@ -57,10 +58,8 @@ Treat exported constructors, fields, variants, module paths, and behavior as com
 ## Red flags
 
 - A library takes over application policy or forces unrelated capabilities into its scope.
-- Ordinary usage requires global state, peer internals, repeated facts, or conversion glue.
 - Builders or extension protocols without distinct use cases.
 - A public signature exposes implementation-state type parameters.
-- Internal tests pass while public constructors or behavior break consumers.
 
 ## Sources
 
