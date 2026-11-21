@@ -28,26 +28,26 @@ What justifies the proposed boundary?
 
 - State the capability, invariant owner, and exclusions. Group code around hidden decisions; file length and execution phases do not determine boundaries.
 - Design the common consumer path first. Minimize concepts, conversions, and hidden call ordering.
-- Test depth: removing the abstraction should force callers to reproduce meaningful rules, not rename calls.
+- Test depth: removing the abstraction should force callers to reproduce meaningful rules, rather than merely rename calls.
 - Preserve application-native input, output, and error types. Bind typed operations before hiding heterogeneous parameters; avoid dynamic dispatchers.
-- Reuse ecosystem types and public contracts. Let applications translate vocabularies; ordinary composition must not depend on peer internals.
-- Choose targets and runtimes from purpose; verify each promised path. Preserve the execution models of synchronous BEAM I/O and JavaScript promises.
+- Reuse ecosystem types and public contracts. Let applications translate different vocabularies; ordinary composition must not depend on peer internals.
+- Choose targets and runtimes from purpose; verify each promised path and its dependencies. Preserve the different execution models of synchronous BEAM I/O and JavaScript promises.
 
 ## Compose configuration and operations
 
 - Use sans-I/O when protocol decisions can be separate from execution: consume values, return decisions or requests, and let callers perform I/O and supply results.
-- Define ports as narrow typed callbacks or records for caller-supplied capabilities. Supply adapters for concrete integrations; keep core rules independent of them.
+- Define ports as narrow typed callbacks or records for caller-supplied capabilities. Supply adapters for concrete integrations; keep core rules independent of those implementations.
 - Combine configured values and operations through ordinary functions. Preserve the same contract where meaning permits; avoid global state and mandatory frameworks.
 
 ## Expose policy and ownership
 
-- Supply defaults through explicit configuration values and value-first functions. Prefer record updates over a setter per field. Allow independent instances; validate configuration before allocation.
-- Require each argument to affect behavior. A bound operation should carry its own name/codecs instead of callers repeating them at every use.
+- Supply useful defaults through explicit configuration values and value-first functions. Prefer direct record updates over a setter for every field. Allow independent instances; validate configuration before resource allocation.
+- Require each argument to affect behavior. A bound operation should carry its own name/codecs instead of asking callers to repeat them at every use.
 - Give common tasks one obvious path; advanced paths need distinct capabilities.
 - Specify who creates, shares, cancels, and closes resources. Enforce allocation limits before allocation; a pull-shaped API alone proves no backpressure. State what returns establish. Callback types cannot prove purity, bounded work, or safe captured state.
-- Keep common validation and lifecycle rules in the library for extensions. State exactly what an adapter author must supply and which guarantees depend on it.
+- Keep common validation and lifecycle rules in the library when offering extensions. State exactly what an adapter author must supply and which guarantees depend on that implementation.
 - Return actionable structured failures. Reserve deliberate crashes for a documented supervision/recovery contract.
-- A copy between processes loses internal sharing, so messages, spawn arguments, and closures can far exceed heap size; module literals are not copied. Never send a built codec or large value to another process; keep static data in module constants. Bound `erts_debug:flat_size(Term) * erlang:system_info(wordsize)` bytes of crossing terms ([codec guide](https://github.com/lostbean/json_blueprint/blob/main/docs/CODEC-PRACTICE.md)).
+- Bound what your API sends between processes, as the `gleam-otp` skill describes. Codecs need `json_blueprint >= 2.2.0`, which copies a codec at about its own size; build run-time enums once ([codec guide](https://github.com/lostbean/json_blueprint/blob/main/docs/CODEC-PRACTICE.md)).
 
 ## Verify the public contract
 
