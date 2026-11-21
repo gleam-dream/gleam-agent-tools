@@ -5,9 +5,9 @@ description: Build and debug typed LLM agents and conditional graphs with Fabric
 
 # Fabric
 
-Choose Fabric when a tool waits for approval or a lost runner must resume from retained actions and outcomes on Erlang/OTP. Those needs justify a store, live context, and recovery owner. One model call or a small controlled loop can use LLM Wire and ordinary functions; retain a fitting existing runtime.
+Choose Fabric when a tool waits for approval or a lost runner must resume from retained actions and outcomes on Erlang/OTP; that justifies a store, live context and recovery owner.
 
-Use Hex `fabric` 0.1.0; retain `manifest.toml`. Its PostgreSQL adapter stays Git+path.
+Use Hex `fabric` 0.5 with `json_blueprint >= 2.2.0`; retain `manifest.toml`. The PostgreSQL adapter installs from Git tag `fabric_postgres-v0.4.0`, path `integrations/fabric_postgres`.
 
 ## Abstraction decision tree
 
@@ -22,30 +22,36 @@ Need explicit workflow compensation? → Saga
 
 ## Build the ordinary path
 
-1. Define native input and output codecs. Create each `tool.Definition`, then bind its typed handler before combining heterogeneous tools.
-2. Build an agent with a model, tool list, and explicit policy. Set turn, concurrency, model-call, and tool-body bounds; these do not supply a whole-agent elapsed deadline. Handle `agent.build` errors before starting.
-3. Start the selected store. Allocate HTTP/database resources only when the chosen adapters require them; keep borrowed resources under their application owner's lifecycle.
-4. Start with a retained `RunId`, live context, prompt, and correlation. Use a stable application identity when retried admission must find the existing run.
-5. Await or inspect status. Read action records from `fabric.snapshot` before treating a final answer as business success.
+1. Write one builder function that makes the spec: each tool from its `tool.Definition` and typed handler, the model, an explicit policy, and turn, concurrency, model-call and tool-body bounds (no whole-agent deadline). Pass it to `agent.build_with` (`agent.build` is deprecated) and handle its errors.
+2. Start the store; keep adapter resources under their owner's lifecycle.
+3. Start with a retained `RunId`, live context, prompt and correlation; a stable id lets a retry find the run.
+4. Read `fabric.snapshot` actions before treating a final answer as business success.
 
-Use `llm.model` for a Wire-backed model or `llm.configured_model` for fixed generation settings. Supply a deterministic `model.Model` callback for offline checks. Fabric owns request assembly and transcript replay; supply live credentials and settings again on reconstruction.
+Use `llm.model` or `llm.configured_model`; a deterministic `model.Model` serves offline checks. A graph binds typed state, operations and routes with `graph.new`, validated by `graph.build`.
 
-For a graph, define typed state, operations, acceptance, and routes. Bind the definition to its store, context factory, and policy with `graph.new`; validate with `graph.build` before `graph.start`.
+## Keep agents out of process copies
+
+Runs, tool bodies and model calls run in separate processes; a sent value is copied whole (see the `gleam-otp` skill). Fabric builds a `build_with` agent in each process and gives a tool's task only that tool.
+
+- Capture small values the same for every run: a client, settings, ids loaded once. Never capture built tools or codecs; capture a `build_with` sub-agent.
+- Make subjects, names, and tables outside the builder; one made inside is remade per process.
+- Another name or version is refused (`AgentUnbuildable`), but `open`, `recover` and the sweeper ignore captures. A per-run capture makes a per-run agent: give it its own name, keep that name out of `sweeper.agent`, and recover its runs from an owner that re-derives the captures.
+- A `Run` handle holds the built agent: send the id and `open` it there.
+- On json_blueprint 2.2.0 a codec copies at about its own size. Build a run-time enum once before the chain and `codec.check` it; the [codec practice](https://github.com/lostbean/json_blueprint/blob/main/docs/CODEC-PRACTICE.md) has the rules.
 
 ## Declare effect meaning
 
-- Classify a definitely failed effect as `tool.Explain`; the model can receive that failure and continue.
-- Classify a possibly completed effect as `tool.Uncertain`. Reconcile it from external evidence before allowing dependent work to continue.
-- Enable `with_replay` only for reads or application-idempotent writes. Key repeated effects by stable run and action identity; correlation is for observation.
-- Keep graph selection, acceptance, codecs, and request preparation pure. Put effects in the execution operations that record their outcomes.
+- A definitely failed effect is `tool.Explain`; a possibly completed one is `tool.Uncertain`, reconciled from external evidence before dependent work.
+- Enable `with_replay` only for reads or idempotent writes keyed by run and action identity.
+- Keep graph selection, acceptance, codecs and request preparation pure.
 
 ## Retain recovery authority
 
-- Match status variants explicitly. `Finished(Completed(answer))` records a model answer; denied or failed actions may precede it.
-- Treat an await timeout or dropped handle as a caller observation. Cancel explicitly when that is the intended lifecycle; remote effects can still require reconciliation.
-- Bind approval to the exact action and current policy. Reconstruct fresh context and use the configured verifier; changed arguments need fresh approval.
-- Choose storage for the failure model. In-memory records disappear on stop; directory storage covers process/VM restart on one host. Use a database backend for production power-loss durability and supervise its recovery worker.
-- Keep application admission and result incorporation explicit. Retain an applied marker where a business transaction must incorporate a run result once; preserve unapplied results when pruning.
+- Match status variants; denied or failed actions may precede `Finished(Completed(answer))`.
+- An await timeout or dropped handle cancels nothing; cancel explicitly.
+- Approval binds the exact action, current policy and configured verifier.
+- Use a database backend in production and supervise its recovery worker.
+- Retain an applied marker where a result must be incorporated once.
 
 ## Red flags
 
@@ -53,12 +59,13 @@ For a graph, define typed state, operations, acceptance, and routes. Bind the de
 - Marking every tool replayable or equating a final answer with successful effects.
 - Reusing approval after changing arguments, policy, or requirements.
 - Assuming per-call timeouts supply a whole-agent deadline.
+- Sending built agents, handles, tools or codecs to other processes per request.
 - Treating a queued run reference as the owner of Fabric recovery.
 
 ## Verify
 
-Pin the resolved dependency graph. Check changed lifecycle claims with scripted models and the existing waiting, approval, and reconciliation consumers; provider calls do not validate recovery semantics.
+Pin the dependency graph. Check lifecycle claims with scripted models and the waiting, approval, and reconciliation consumers; bound `erts_debug:flat_size/1` of what crosses processes when agents are large.
 
 ## Sources
 
-[HexDocs](https://hexdocs.pm/fabric/0.1.0/) · [Public API](https://github.com/gleam-dream/fabric/tree/fdbe9960336c0908a6d9af9caa3874e141768aea/src/fabric) · [Usage topics](https://github.com/gleam-dream/fabric/tree/fdbe9960336c0908a6d9af9caa3874e141768aea/examples/usage) · [Design and pending scope](https://github.com/gleam-dream/fabric/blob/fdbe9960336c0908a6d9af9caa3874e141768aea/docs/design/design.typ)
+[HexDocs](https://hexdocs.pm/fabric/0.5.0/) · [Public API](https://github.com/gleam-dream/fabric/tree/main/src/fabric) · [Usage topics](https://github.com/gleam-dream/fabric/tree/main/examples/usage) · [Design and pending scope](https://github.com/gleam-dream/fabric/blob/main/docs/design/design.typ)
