@@ -24,9 +24,10 @@ Does work need durable admission and retained outcomes?
 
 ## Define and own the runtime
 
-- Inspect `gleam.toml`, the manifest, and public APIs first. Use Hex `grind` 0.1.0 on Erlang with Gleam >=1.18. Retain the manifest and narrow Pog/pgo ranges.
+- Inspect `gleam.toml`, the manifest, and public APIs first. Use Hex `grind` 0.2.1 on Erlang with Gleam >=1.18. Retain the manifest and narrow Pog/pgo ranges.
 - Define stable worker identities and versions with typed input/output/error codecs. Keep old stored jobs readable across deployments; changing callback meaning can require a version change even when the types match.
 - Register workers with `with_worker`; add `supervised` to the application's supervision tree. Pair script-owned `start` with `stop`.
+- Keep worker values small: each job copies a closure over the whole worker definition three times, and its handler keeps one while it runs. Apply the `gleam-otp` process-copy rule to the worker value.
 - Let Grind own its pool. Borrow `connection` when useful. Budget one additional reserved renewal connection per used queue; queue capacity is local to a consumer.
 - Select one migration owner: package migrations or Cigogne mirrors. Install the schema before starting consumers; use startup migration only where that role owns DDL.
 
@@ -49,9 +50,10 @@ Does work need durable admission and retained outcomes?
 - A staged reply presented as proof of the caller's commit.
 - Replaying `Uncertain` work because the process died.
 - Assuming cancellation means no effect happened.
+- A worker closure that captures an environment, catalogue or agent.
 - Treating local queue limits as a cluster quota.
 - Promising cron, batch coordination, or dependency workflows from intended design alone.
 
 ## Sources
 
-[HexDocs](https://hexdocs.pm/grind/0.1.0/) · [Consumer API and examples](https://github.com/gleam-dream/grind/tree/6792512dc53c6964f70ce3220eee0c550e2b0dab), [transactional resolution](https://github.com/gleam-dream/grind/blob/6792512dc53c6964f70ce3220eee0c550e2b0dab/src/grind/admin.gleam), [runtime and recovery design](https://github.com/gleam-dream/grind/blob/6792512dc53c6964f70ce3220eee0c550e2b0dab/docs/design/design.typ).
+[HexDocs](https://hexdocs.pm/grind/0.2.1/) · [Consumer API and examples](https://github.com/gleam-dream/grind/tree/3a85b147341e09ae5c103d8144c4034759085ad1), [transactional resolution](https://github.com/gleam-dream/grind/blob/3a85b147341e09ae5c103d8144c4034759085ad1/src/grind/admin.gleam), [runtime and recovery design](https://github.com/gleam-dream/grind/blob/3a85b147341e09ae5c103d8144c4034759085ad1/docs/design/design.typ).
