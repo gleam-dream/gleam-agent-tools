@@ -1,0 +1,326 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+#
+# Review policy for gleam-agent-tools, derived by the coderabbit-config skill.
+# Each instruction names the skill it comes from; `policy` is the review policy
+# of coderabbit-config itself, and `repository` marks a rule beyond the catalog.
+#
+# Catalogs read:
+#   practice catalog (not public)  879841a61c3f83cd809edca9229c4a6bb7f909f8
+#   gleam-agent-tools (this repo)  6a9ea2f647e787a32d3c7fa88d9c58c5b81ae9d7
+#
+# Governing skills: coderabbit-config (policy), write-skill, writing, gate,
+# testing, python, dependency, git from the practice catalog; gleam-tooling
+# from gleam-agent-tools.
+#
+# Governing dependency versions: no Gleam package is locked here. Pinned in
+# flake.lock: nixpkgs nixos-26.05 1f607aa79b63, home-manager release-26.05
+# 24f219058751, treefmt-nix 0d6d739a833b. Pinned in nix/agent-lsp.nix: the
+# agent-lsp fork 0.23.2-gleam-reliability-57d7a50 (rev 57d7a50949f1).
+language: en-US
+tone_instructions: >-
+  Literal and concise. Report only defects you can evidence from the diff, its
+  callers, README.md, or a cited rule. One finding per cause. An empty review
+  is valid.
+early_access: false
+
+reviews:
+  profile: chill
+  request_changes_workflow: false
+  high_level_summary: true
+  high_level_summary_instructions: |
+    Lead with the problem the change solves, then the response in one short
+    paragraph, then its effect on installed skills, Home Manager options or
+    flake outputs, if any. Do not narrate the diff file by file.
+  review_status: true
+  commit_status: true
+  fail_commit_status: true
+  collapse_walkthrough: true
+  changed_files_summary: false
+  sequence_diagrams: false
+  estimate_code_review_effort: false
+  assess_linked_issues: true
+  related_issues: true
+  related_prs: false
+  suggested_labels: false
+  suggested_reviewers: false
+  auto_assign_reviewers: false
+  poem: false
+  in_progress_fortune: false
+  enable_prompt_for_ai_agents: true
+
+  auto_review:
+    enabled: true
+    drafts: false
+    auto_incremental_review: true
+    base_branches:
+      - main
+
+  # Lock file only; this repository has no generated, vendored or rendered
+  # files.
+  path_filters:
+    - "!flake.lock"
+
+  path_instructions:
+    - path: "{flake.nix,nix/**}"
+      instructions: |
+        Review policy (policy).
+        - Design first. This repository has no design layer: README.md states
+          the contract of the Home Manager module (`programs.gleam-agent-tools`
+          options and defaults, the skill directories, unknown names rejected)
+          and of the `gleam-agent-lsp` launcher (flake discovery stops at the
+          Git root, an existing project lock file is never rewritten, no
+          global compiler is installed). Flag a change to that behavior with
+          no matching change to README.md. A fix that restores the stated
+          behavior needs none.
+        - Core abstractions. The skills directory is the one list of skills;
+          the module reads it with `builtins.readDir`. Flag a second list of
+          skill names, and a second definition of the launcher or the
+          agent-lsp package beside nix/agent-lsp.nix.
+        - Lean. Flag an option, argument or wrapper no consumer, test or
+          README statement needs, and an unreachable branch. Say what to
+          delete.
+        - Migration, never a legacy path. Flag a renamed-option alias, a
+          fallback to an old skill directory or option name, and a flag that
+          keeps old behavior. Consumers outside this repository select skills
+          and options by name, so a rename or removal is declared breaking in
+          the pull request with its migration.
+        - Composable. Flag a module option whose effect depends on another
+          option being set first, global state in the launcher, and a module
+          that takes over host-owned configuration (shell, Git, `gh`,
+          authentication, agent configuration) that README.md assigns to the
+          host.
+        - Test first. Flag a behavior change of the module or the launcher
+          with no case in nix/tests that exercises it.
+        - Typed before foreign. Flag a module option without a `lib.types`
+          type, a skill name accepted without the `enum` of available
+          directories, and launcher shell logic that crashes on a routine
+          condition (no flake, no lock file, no compiler) instead of the
+          fallback README.md states.
+        - Silence. Report nothing that `nix fmt` (nixfmt, ruff) or
+          `nix flake check` (actionlint, the Home Manager and MCP checks)
+          decides, and no layout or naming preference without a written rule.
+
+    - path: "skills/**"
+      instructions: |
+        Skill standard (write-skill). Every skill in this catalog meets it.
+        Its caps govern over the word and line limit in README.md.
+        - Flag a SKILL.md over 2,500 bytes or over 20 rules with no entry for
+          that skill in a root `exceptions.yaml` (skill, max_bytes,
+          max_rules, reason, approved_by, approved_on). Split the skill
+          instead.
+        - Flag a skill whose description joins two jobs; split it or cut one.
+        - Flag a description that is not what the skill does followed by
+          "Use when" and concrete triggers.
+        - Flag a body line that is not a one-line imperative bullet of at
+          most two sentences under a section, and a rule explained in a
+          paragraph; a reason gets one clause.
+        - Flag sections other than Do, Never and Boundary, sections out of
+          that order, and a missing Boundary where a neighbouring skill
+          exists. Boundary names the neighbour a reader would expect to
+          cover the job.
+        - Flag a hedge in a rule: prefer, consider, usually, generally,
+          typically, ideally, should, may, might, perhaps, try to, when or
+          where useful, when or where appropriate, as needed, as
+          appropriate, if or when possible.
+        - Flag a rule a capable agent follows unprompted, a step every task
+          has (read the request, run the tests, report the result), and a
+          rule that states no choice where a capable agent would choose
+          differently.
+        - Flag a rule another skill in skills/ already states, and a skill
+          that depends on another skill being loaded.
+        - Flag a resource file in a skill directory that no rule in its
+          SKILL.md says when to read.
+        - Flag a removed `<!-- Adapted from ... -->` source comment on a file
+          whose licence requires a notice in each file (NOTICE.md).
+        - Flag a new skill that is always loaded together with an existing
+          one; merge them.
+
+    - path: "{README.md,SECURITY.md,skills/**/*.md}"
+      instructions: |
+        Prose (writing).
+        - Flag a metaphor, idiom or figure of speech; name the concept. An
+          established technical term is a name, not a metaphor.
+        - Flag one concept under two terms, a project term not defined where
+          it first appears, and an "it" or "this" with two possible
+          referents.
+        - Flag a sentence holding two propositions, and background placed
+          after the finding that depends on it.
+        - Flag a caveat that names no decision the reader makes, filler, and
+          value judgments.
+        - Flag a plan label such as "Phase 1" in lasting text.
+        - Flag a shortened sentence that weakens "must", "never" or
+          "always", and restyled fenced code or quoted evidence.
+
+    - path: "nix/agent-lsp.nix"
+      instructions: |
+        Language server launcher (gleam-tooling).
+        - Flag a launcher that starts `gleam lsp` from a compiler other than
+          the requested project's development shell when that project has a
+          flake, and a change that installs a global Gleam compiler.
+        - Flag re-enabled broad file watching or broad watched-file
+          notifications; Gleam registers its own watch for `gleam.toml`, and
+          the bridge's watcher resets its diagnostics.
+        - Flag a second bridge or compiler added beside the existing one
+          without a stated reason.
+
+    - path: "nix/agent-lsp.nix"
+      instructions: |
+        Pinned fork (dependency).
+        - Flag a `rev` that is not a full commit SHA; a branch or tag is not
+          a reproducible pin.
+        - Flag a fork pin whose comment does not name the upstream change it
+          waits for and the condition that removes the fork.
+        - Flag moving the fork forward when the comment or the pull request
+          says upstream already contains the fix; switch to upstream and
+          delete the fork.
+        - Flag dependency source copied into this repository instead of
+          fetched by commit.
+
+    - path: "nix/tests/**"
+      instructions: |
+        Tests (testing).
+        - Flag a test that confirms success through internals or a side
+          channel where the public surface can show it: the launcher through
+          MCP tool calls, the module through the files Home Manager installs.
+        - Flag a mock of an internal collaborator, and an assertion on call
+          counts or call order.
+        - Flag a refusal the change introduces (an unknown skill, a missing
+          compiler) with no test through the public surface.
+        - Flag tests left in place for an interface the diff replaced.
+        - Flag a test that takes an MCP handshake or `start_lsp` success as
+          proof Gleam is ready without querying one symbol or diagnostic
+          (gleam-tooling).
+
+    - path: "nix/tests/**/*.py"
+      instructions: |
+        Python (python). The tests use `unittest.TestCase`; that base class
+        is the project's choice and is not a finding.
+        - Flag `Any`, and an external value (process output, a JSON-RPC
+          message, a file) used past its first read without parsing into a
+          checked shape.
+        - Flag a new abstract base class hierarchy; use `Protocol`.
+        - Flag exclusive states held as flags instead of tagged frozen
+          dataclasses matched with `assert_never`, and mutable dataclasses.
+
+    - path: "{flake.nix,lefthook.yml,.github/workflows/**}"
+      instructions: |
+        Gate (gate).
+        - Flag a check that passes or skips when its tool or the live Nix
+          store is missing; it fails or reports unmeasured.
+        - Flag a tool not supplied through the flake, and a command that
+          differs between the pre-commit hook, `nix flake check` and CI.
+        - Flag a check that only the pre-commit hook runs.
+        - Flag a gate that keeps formatting but loses the package build, the
+          Home Manager check or the MCP check.
+        - Flag a new check that encodes a layout, naming or README
+          convention, a check that scripts what a tool already performs, and
+          a validator copied into the repository.
+        - Flag a replaced check that drops security or data-integrity
+          coverage.
+
+  pre_merge_checks:
+    title:
+      mode: "off"
+    description:
+      mode: warning
+    issue_assessment:
+      mode: "off"
+    docstrings:
+      mode: "off"
+    custom_checks:
+      - name: No weakened test or gate
+        mode: error
+        instructions: |
+          Source: policy, gate. Fail if the diff skips, deletes, disables or
+          loosens a test in nix/tests, an entry of `checks` in flake.nix, a
+          lefthook command or a CI step (including a new `skipUnless`, a
+          removed runner from the CI matrix, or added `continue-on-error`),
+          and the pull request description does not name the behavior that
+          no longer exists or the stronger check that replaces it. Pass
+          otherwise.
+      - name: Breaking change is declared
+        mode: warning
+        instructions: |
+          Source: policy. Warn if the diff removes or renames a directory
+          under skills/, a `programs.gleam-agent-tools` option, or a flake
+          output (packages, apps, overlays, homeManagerModules), or changes
+          an option default, and the pull request description does not call
+          the change breaking and give its migration. Pass otherwise.
+      - name: Rewritten skill accounts for its rules
+        mode: warning
+        instructions: |
+          Source: write-skill. Warn if the diff removes or rewrites a rule
+          bullet in a skills/*/SKILL.md and the pull request description
+          does not account for each removed rule as kept, moved (and where)
+          or changed on purpose, or if it cuts a rule to fit a cap without
+          saying the owner agreed. Pass otherwise.
+      - name: Problem-first description
+        mode: warning
+        instructions: |
+          Source: git. Warn unless the pull request description gives the
+          problem, why it matters, one concrete example, the solution in one
+          paragraph, its trade-offs, and what was verified, with no file
+          tour, and its claims match the diff.
+      - name: No attribution text
+        mode: warning
+        instructions: |
+          Source: git, gate. Warn if the pull request title or description
+          contains a co-author credit, `Co-Authored-By`, `Signed-off-by`, a
+          "Generated with" or "Generated by" line, or a line starting with
+          the robot emoji.
+
+  finishing_touches:
+    docstrings:
+      enabled: false
+    unit_tests:
+      enabled: false
+    simplify:
+      enabled: false
+
+  tools:
+    gitleaks:
+      enabled: true
+    trufflehog:
+      enabled: true
+    actionlint:
+      enabled: true
+    zizmor:
+      enabled: true
+    ruff:
+      enabled: true
+    skillspector:
+      enabled: true
+    # The repository runs ruff and no other Python, Markdown, prose or YAML
+    # linter; their findings would be preferences without a written rule
+    # (policy, Silence).
+    flake8:
+      enabled: false
+    pylint:
+      enabled: false
+    markdownlint:
+      enabled: false
+    languagetool:
+      enabled: false
+    vale:
+      enabled: false
+    yamllint:
+      enabled: false
+    github-checks:
+      enabled: true
+
+chat:
+  auto_reply: true
+
+knowledge_base:
+  code_guidelines:
+    enabled: true
+    # AGENTS.md and CLAUDE.md are read by default.
+    filePatterns:
+      - files: "README.md"
+        applyTo: "flake.nix,nix/**"
+      - files: "NOTICE.md"
+        applyTo: "skills/**"
+  learnings:
+    scope: local
+  pull_requests:
+    scope: local
