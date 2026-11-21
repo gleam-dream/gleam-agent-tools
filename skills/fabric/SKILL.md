@@ -7,7 +7,7 @@ description: Build and debug typed LLM agents and conditional graphs with Fabric
 
 Choose Fabric when a tool waits for approval or a lost runner must resume from retained actions and outcomes on Erlang/OTP; that justifies a store, live context and recovery owner.
 
-Use Hex `fabric` 0.5 with `json_blueprint >= 2.1.1`; retain `manifest.toml`. Its PostgreSQL adapter stays Git+path.
+Use Hex `fabric` 0.5 with `json_blueprint >= 2.2.0`; retain `manifest.toml`. The PostgreSQL adapter installs from Git tag `fabric_postgres-v0.4.0`, path `integrations/fabric_postgres`.
 
 ## Abstraction decision tree
 
@@ -31,13 +31,13 @@ Use `llm.model` or `llm.configured_model`; a deterministic `model.Model` serves 
 
 ## Keep agents out of process copies
 
-Runs, tool bodies and model calls run in separate processes, and sent values are copied whole. Fabric builds a `build_with` agent in each process and gives a tool's task only that tool.
+Runs, tool bodies and model calls run in separate processes; a sent value is copied whole (see the `gleam-otp` skill). Fabric builds a `build_with` agent in each process and gives a tool's task only that tool.
 
 - Capture small values the same for every run: a client, settings, ids loaded once. Never capture built tools or codecs; capture a `build_with` sub-agent.
 - Make subjects, names, and tables outside the builder; one made inside is remade per process.
-- Another name or version is refused (`AgentUnbuildable`), but `open`, `recover` and the sweeper ignore captures. A per-run capture makes a per-run agent: re-derive it from the run and recover those runs yourself.
+- Another name or version is refused (`AgentUnbuildable`), but `open`, `recover` and the sweeper ignore captures. A per-run capture makes a per-run agent: give it its own name, keep that name out of `sweeper.agent`, and recover its runs from an owner that re-derives the captures.
 - A `Run` handle holds the built agent: send the id and `open` it there.
-- Follow the [json_blueprint codec practice](https://github.com/lostbean/json_blueprint/blob/main/docs/CODEC-PRACTICE.md): child codecs inside their fields; run-time enums built in the field and checked with `codec.check`.
+- On json_blueprint 2.2.0 a codec copies at about its own size. Build a run-time enum once before the chain and `codec.check` it; the [codec practice](https://github.com/lostbean/json_blueprint/blob/main/docs/CODEC-PRACTICE.md) has the rules.
 
 ## Declare effect meaning
 
