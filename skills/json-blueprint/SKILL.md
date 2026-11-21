@@ -14,10 +14,10 @@ What JSON boundary does the application need?
 ├─ Known input without schema/encoding → gleam/json decoder
 ├─ Legacy wire format or recursive types → json/blueprint (one-way Decoder)
 ├─ Typed values ↔ JSON and schema
-│  ├─ Fixed shape; codec hot, long-lived or held by other processes
-│  │  → typed-definition generator (json/blueprint/codegen)
-│  └─ Run-time labels, unions, shared definitions, custom/value/try_map,
-│     one-off, or a fixed shape that is neither → codec combinators
+│  ├─ Fixed shape the generator supports; codec hot, long-lived
+│  │  or held by other processes → json/blueprint/codegen
+│  └─ Otherwise (run-time labels, unions, a generator gap, one-off)
+│     → json/blueprint/codec combinators
 ├─ Native records from a closed-object schema
 │  → schema-driven generator (emits combinator code)
 ├─ Exact JSON numbers → number API
@@ -62,4 +62,4 @@ The `gleam-otp` skill owns the general rule: a process copy loses sharing, so bo
 
 ## Sources
 
-[Codec practice guide](https://github.com/lostbean/json_blueprint/blob/main/docs/CODEC-PRACTICE.md) · [HexDocs](https://hexdocs.pm/json_blueprint/) · [Inspected 2.2.0 source](https://github.com/lostbean/json_blueprint/tree/7ae91d9177c3f2d48cb91e467f641912908da172), [2.0 migration](https://github.com/lostbean/json_blueprint/blob/7ae91d9177c3f2d48cb91e467f641912908da172/docs/MIGRATION.md).
+[Codec practice guide](https://github.com/lostbean/json_blueprint/blob/7ae91d9177c3f2d48cb91e467f641912908da172/docs/CODEC-PRACTICE.md) · [HexDocs](https://hexdocs.pm/json_blueprint/) · [Inspected 2.2.0 source](https://github.com/lostbean/json_blueprint/tree/7ae91d9177c3f2d48cb91e467f641912908da172), [2.0 migration](https://github.com/lostbean/json_blueprint/blob/7ae91d9177c3f2d48cb91e467f641912908da172/docs/MIGRATION.md).
