@@ -31,6 +31,14 @@ What HTTP responsibility is needed?
 - Pass existing application functions and storage capabilities explicitly; add a port only for a real variation. Test HTTP mapping independently from domain behavior.
 - Use framework response/cookie helpers. Escape untrusted text when constructing HTML, and validate redirect destinations according to application policy.
 
+## Keep the handler out of connection copies
+
+Mist copies the function given to `mist.new` into every connection's process, so all it captures, such as route tables, codecs, catalogs, schemas and config, is copied once per open connection and kept while the connection lives. On mist 6.0.3 a handler capturing a 320 kB list holds 384 kB in each connection, and the listener's supervisors hold about 18 more copies from start.
+
+- Reach large data from inside the handler through module constants, `persistent_term` written once at start, or a named process that answers lookups; none is copied into the connection. A named process copies its reply, so ask it for the entry, not the table.
+- Build inside the handler only what is cheap: a composed route table, codec or catalog built there is rebuilt on every request. Build it once at start and keep it in `persistent_term`.
+- Bound the copy size of the function passed to `mist.new` in a test. The `gleam-otp` skill holds the general process-copy rule.
+
 ## Preserve request and resource ownership
 
 - Apply method overrides before route dispatch where required. Preserve the request returned by middleware so later handlers use its checked or modified headers.
@@ -47,10 +55,12 @@ Exercise method/path matching, malformed input, expected domain failure, and rel
 
 - Authentication and body middleware consume different copies of a checked request.
 - Two layers independently read the same body stream.
+- A handler closure that captures a catalog, codec set or route table.
+- A route table or codec built inside the handler on every request.
 - An uploaded temporary path is retained after the request ends.
 - Signed cookies treated as permission to access any resource.
 - GET performs a mutation while the application relies on origin/SameSite protections.
 
 ## Sources
 
-[Wisp request and middleware API](https://wisp.hexdocs.pm/wisp.html), [Mist adapter](https://wisp.hexdocs.pm/wisp/wisp_mist.html), [Mist transport API](https://mist.hexdocs.pm/mist.html).
+[Wisp request and middleware API](https://wisp.hexdocs.pm/wisp.html), [Mist adapter](https://wisp.hexdocs.pm/wisp/wisp_mist.html), [Mist transport API](https://mist.hexdocs.pm/mist.html), [glisten 9.0.1 connection spawn](https://github.com/rawhat/glisten/blob/v9.0.1/src/glisten/internal/acceptor.gleam).
