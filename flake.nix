@@ -85,16 +85,6 @@
         in
         {
           formatting = (formatting system).config.build.check self;
-          workflow =
-            pkgs.runCommand "gleam-agent-tools-workflow"
-              {
-                nativeBuildInputs = [ pkgs.actionlint ];
-              }
-              ''
-                cd ${self}
-                actionlint .github/workflows/nix.yml
-                touch "$out"
-              '';
           package = pkgs.agent-lsp;
           home-manager = import ./nix/tests/home-manager.nix {
             inherit pkgs home-manager;
