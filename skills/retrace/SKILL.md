@@ -22,7 +22,7 @@ What evidence is needed?
 
 Add the latest release of each imported package (`gleam add retrace`, `retrace_frontend`, `retrace_server`); retain `manifest.toml`. Core supports Erlang/JavaScript; frontend targets JavaScript and server Erlang. Preserve a suitable existing recorder.
 
-The unpublished [`retrace_collector`](https://github.com/gleam-dream/retrace/blob/main/support/collector/README.md) installs from Git (`gleam-dream/retrace`, path `support/collector`, a `retrace_collector-v*` release tag). `RETRACE_ALLOWED_ORIGINS` replaces the default browser origins (empty admits none) but filters only requests carrying `Origin`; without `RETRACE_COLLECTOR_TOKEN`, any local process can use every route. The packaged transport and viewer send no token; with one, use a custom transport, source, or proxy.
+The unpublished [`retrace_collector`](https://github.com/gleam-dream/retrace/blob/main/support/collector/README.md) installs from Git (`gleam-dream/retrace`, path `support/collector`): pin the newest `retrace_collector-v*` tag whose gleam.toml accepts the resolved core, by its commit. `RETRACE_ALLOWED_ORIGINS` replaces the default browser origins (empty admits none) but filters only requests carrying `Origin`; without `RETRACE_COLLECTOR_TOKEN`, any local process can use every route. The packaged transport and viewer send no token; with one, use a custom transport, source, or proxy.
 
 ## Record accepted, safe transitions
 

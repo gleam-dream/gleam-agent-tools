@@ -26,7 +26,7 @@ Does the operation need workflow coordination?
 ## Define once, execute with input
 
 - Inspect the resolved revision and public modules. Add the latest `saga` release (`gleam add saga`) on Erlang.
-- Install `saga_postgres` from Git (`gleam-dream/saga`, path `integrations/saga_postgres`, a `saga_postgres-v*` release tag).
+- Install `saga_postgres` from Git (`gleam-dream/saga`, path `integrations/saga_postgres`): pin the newest `saga_postgres-v*` tag whose gleam.toml accepts the resolved core, by its commit.
 - Build a reusable workflow with `define`. Its builder runs once; supply each request as input. Connect steps through typed ports, using `perform`, `both`, `all`, and `choose`.
 - Keep external clients and application policy in supplied callbacks. Use `effect` when a step needs its `EffectKey`; pass its idempotency key to an enforcing provider.
 - Use `undo` to reverse known completed work, `compensate` to choose a failed attempt's retry, replacement, abort, or hold.

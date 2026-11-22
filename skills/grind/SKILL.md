@@ -27,7 +27,7 @@ Does work need durable admission and retained outcomes?
 - Inspect `gleam.toml`, the manifest, and public APIs. Add the latest `grind` release (`gleam add grind`) on Erlang. Retain the manifest and narrow Pog/pgo ranges.
 - Define stable worker identities and versions with typed input/output/error codecs. Keep old stored jobs readable across deployments; changing callback meaning can require a version change even with matching types.
 - Register workers with `with_worker`; add `supervised` to the application supervisor. Pair script-owned `start` with `stop`.
-- Keep worker values small: each job copies a closure over the whole worker definition three times, and its handler keeps one while it runs. Apply the `gleam-otp` process-copy rule to the worker value.
+- Keep worker values small: each job copies a closure over the whole worker definition three times, and its handler keeps one while it runs.
 - Budget `admin.settle_due` copying its queue's settlement closures into the caller; no other call copies workers.
 - Let Grind own its pool. Borrow `connection` when useful. Budget one extra reserved renewal connection per used queue; queue capacity is local to a consumer.
 - Select one migration owner: package migrations or Cigogne mirrors. Install the schema before starting consumers; use startup migration only where that role owns DDL.
@@ -53,7 +53,7 @@ Does work need durable admission and retained outcomes?
 - Assuming cancellation means no effect happened.
 - A worker closure that captures an environment, catalogue or agent.
 - Treating local queue limits as a cluster quota.
-- Promising cron, batch coordination, or dependency workflows, which Grind lacks.
+- Promising cron, batch coordination, or dependency workflows from Grind's intended design rather than its public API.
 
 ## Sources
 

@@ -27,7 +27,7 @@ Does PostgreSQL fit the application's persistence contract?
 - Apply the intended migrations before generating or checking. The generator interrogates a live database; use the same schema baseline in CI and deployment planning.
 - Edit SQL, then regenerate. Run `gleam run -m squirrel check` to detect stale generated access. Keep database credentials in the environment.
 - Bind values as parameters. Select trusted query shapes for identifiers and ordering; bound values cannot stand in for arbitrary SQL syntax.
-- Inspect generated representations. In this version, PostgreSQL `numeric` decodes as `Float` and JSON/JSONB as `String`; exact money and domain JSON require a deliberate representation and validation.
+- Inspect generated representations. PostgreSQL `numeric` decodes as `Float` and JSON/JSONB as `String`; exact money and domain JSON require a deliberate representation and validation.
 - Handle nullable inputs explicitly. PostgreSQL metadata does not expose parameter nullability to Squirrel. Prefer separate set/clear queries; reserve a sentinel only when the domain excludes that value.
 
 ## Runtime and transaction ownership

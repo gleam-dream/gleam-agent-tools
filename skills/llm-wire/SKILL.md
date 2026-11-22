@@ -36,8 +36,8 @@ Use `with_output(name, codec)` for decoded answers. Its codec must have a record
 - On `NeedsTools`, retain the returned `AssistantTurn`. Append `message.Assistant(turn)` and one `tool_result` for every call to the next request.
 - Preserve call ids, ordering, and opaque provider replay data when storing history. Use the message and turn codecs; rebuilding a turn from visible text loses information.
 - Keep authorization, effect identity, and tool errors in the application. A model request cannot authorize a business action.
-- Each call copies its tool list about five times ([measured](https://github.com/gleam-dream/llm_wire/blob/main/issues/hold-tools-once-per-call/PRD.md)), each `tool.new` copy with its input codec (about its own size); the `with_output` codec stays in your process. For tools sent on many calls, use `from_contract` or `from_json_schema` tools, which copy schema only, with `decode_arguments`, and build run-time enums once ([codec guide](https://github.com/lostbean/json_blueprint/blob/main/docs/CODEC-PRACTICE.md)).
-- On Anthropic, `prepare` refuses a thinking level while the last assistant message holds a tool call (`ThinkingInToolRound`); drop the level for tool-result rounds.
+- A `tool.new` tool carries its input codec into each call's processes; the `with_output` codec stays in your process ([codecs and process copies](https://github.com/gleam-dream/llm_wire/blob/main/README.md#codecs-and-process-copies)). For tools sent on many calls, use `from_contract` or `from_json_schema` tools, which copy schema only, with `decode_arguments`, and build run-time enums once ([codec guide](https://github.com/lostbean/json_blueprint/blob/main/docs/CODEC-PRACTICE.md)).
+- Handle `ThinkingUnsupported` from `prepare`: a thinking level the provider cannot carry is refused, never dropped.
 
 ## Own streams and retries
 

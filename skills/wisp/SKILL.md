@@ -5,7 +5,7 @@ description: Build and debug Erlang/OTP HTTP handlers and middleware with Wisp a
 
 # Wisp
 
-Choose Wisp for Erlang HTTP endpoints built from request/response functions and small middleware: translate checked input into an application operation and map its result to HTTP.
+Choose Wisp for Erlang HTTP endpoints built from request/response functions and small middleware: translate checked input into an application operation and map its result to HTTP. Use Mist's transport API for connection-level behavior.
 
 ## Governing rule
 
@@ -24,8 +24,8 @@ What HTTP responsibility is needed?
 
 ## Build the handler
 
-- Inspect the resolved Wisp, Mist and existing middleware. Match method and path deliberately, parse input, call the application, and map its result to status, headers, and body.
-- Answer malformed input and domain failures as ordinary responses; reserve crash recovery for unexpected failures, without private diagnostics to clients.
+- Inspect the resolved Wisp, Mist and existing middleware, then match method and path deliberately and parse input.
+- Answer malformed input and domain failures as ordinary responses; reserve crash recovery for unexpected failures, without private diagnostics.
 - Read the body once with a `require_*` helper and share the result; Wisp does not cache the stream, so a second read can hang or return a wrong value.
 - Check content type and decoding separately from domain validation. Choose body and upload limits at the adapter that enforces them.
 - Pass existing application functions and storage capabilities explicitly; add a port only for a real variation. Test HTTP mapping apart from domain behavior.
@@ -41,7 +41,7 @@ Mist copies the builder given to `mist.start`, with its handler and `after_start
 
 ## Preserve request and resource ownership
 
-- Apply method overrides before route dispatch. Pass on the request middleware returns, so later handlers see its checked headers.
+- Where forms need method overrides, apply them before route dispatch. Pass on the request middleware returns, so later handlers see its checked headers.
 - Treat cookie decoding, sign-in, origin checks, and resource permission as separate decisions; authorize each operation with application policy.
 - With `csrf_known_header_protection`, keep GET/HEAD free of business mutations and consume the returned request; a missing origin/referer can strip cookies. Choose deliberately for routes serving other origins.
 - Move uploads that must outlive the request into application storage before it completes. Mist and compliant adapters clean temporary files then; others need explicit cleanup.

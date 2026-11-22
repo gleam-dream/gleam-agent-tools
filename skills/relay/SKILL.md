@@ -5,7 +5,7 @@ description: Serve and call typed MCP tools with Relay over stdio or Streamable 
 
 # Relay
 
-Choose Relay for MCP interoperability on Erlang: one typed tool definition supplies declaration, server decoding, and client calling. Relay implements the MCP revision its docs name; applications own business effects, durable execution, and retries.
+Choose Relay for MCP interoperability on Erlang: one typed tool definition supplies declaration, server decoding, and client calling. Relay implements the one MCP revision its [README](https://github.com/gleam-dream/relay/blob/main/README.md) names; applications own business effects, durable execution, and retries.
 
 Add the latest `relay` release (`gleam add relay`); retain `manifest.toml`.
 
@@ -70,4 +70,4 @@ Check the consuming manifest and the relevant usage module. Validate protocol cl
 
 ## Sources
 
-[HexDocs](https://relay.hexdocs.pm/) · [Public API](https://github.com/gleam-dream/relay/tree/main/src/relay) · [Usage topics](https://github.com/gleam-dream/relay/tree/main/examples/relay_usage) · [MCP specification](https://modelcontextprotocol.io/specification)
+[HexDocs](https://relay.hexdocs.pm/) · [Public API](https://github.com/gleam-dream/relay/tree/main/src/relay) · [Usage topics](https://github.com/gleam-dream/relay/tree/main/examples/relay_usage) · [Implemented MCP revision](https://github.com/gleam-dream/relay/blob/main/README.md#relay)

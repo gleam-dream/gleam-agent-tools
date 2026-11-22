@@ -18,11 +18,11 @@ Choose Correio when application email should use one `Message -> Outcome` sender
 | Magic link or email code           | `passwordless` over the application's native subject type  |
 | Shared durable challenge authority | `correio_postgres` with a named Pog pool and subject codec |
 
-Add the latest `correio` release (`gleam add correio`) on Erlang; adapters install from Git (`gleam-dream/correio`, path `adapters/<name>`, a `<name>-v*` release tag). Addresses exclude SMTPUTF8 mailboxes, quoted local parts, and address literals.
+Add the latest `correio` release (`gleam add correio`) on Erlang; adapters install from Git (`gleam-dream/correio`, path `adapters/<name>`): pin the newest `<name>-v*` tag whose gleam.toml accepts the resolved core, by its commit. Addresses exclude SMTPUTF8 mailboxes, quoted local parts, and address literals.
 
 ## Construct once, inject delivery
 
-- Parse addresses and construct messages through checked constructors. Handle user input through `Result`; the application owns templates and localization.
+- Parse addresses and construct messages through checked constructors. Handle user input through `Result`.
 - Inject `delivery.Sender` at setup; keep provider selection outside business code.
 - Use verified TLS for SMTP. The explicit loopback plaintext constructor is for local tests; it cannot carry credentials. SMTP configuration starts no process, and each send owns one bounded exchange.
 - Handle all four outcomes: `Accepted` records provider submission, `NotSent` proves no submission, `Rejected` distinguishes temporary and permanent refusal, and `OutcomeUnknown` preserves possible submission.
@@ -37,11 +37,11 @@ Add the latest `correio` release (`gleam add correio`) on Erlang; adapters insta
 
 ## Issue, deliver, consume
 
-- Construct the passwordless service with the authoritative store, scope, purpose, and a stable cryptographically random application key. A constructor checking key length cannot establish entropy.
+- Construct the passwordless service with the authoritative store, scope, purpose, and a stable cryptographically random application key. A length check cannot establish entropy.
 - Issue for an application-native subject and trusted current destination. Deliver the returned answer explicitly; issuance sends no email. Choose `MagicLink` or `EmailCode` per interaction.
 - Collect a magic-link answer on landing GET and require intentional confirmation on an application-protected POST. Apply account and session policy only after `verify` returns confirmed opaque evidence.
 - Retain `IssueUnknown`, `VerifyUnknown`, and `RevokeUnknown` handles and call the corresponding `recover_*` operation. Recovery resolves the original command; a fresh issue or verify is a different operation.
-- Retain confirmed verification evidence if session publication fails. Retry application publication with `verification_id` as its idempotency identity; do not verify the consumed answer again.
+- Retain confirmed verification evidence if session publication fails. Retry application publication with `verification_id` as its idempotency identity; never re-verify the consumed answer.
 - Revoke explicitly when resend policy withdraws older challenges. Issuing a new challenge does not revoke a previous one.
 - Use memory when restart loss is acceptable. For PostgreSQL, migrate during deployment and call bounded cleanup explicitly; keep the borrowed pool alive. Recovery handles have no stable persistence format, so cross-restart recovery needs application design.
 
