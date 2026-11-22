@@ -97,7 +97,7 @@ reviews:
           condition (no flake, no lock file, no compiler) instead of the
           fallback README.md states.
         - Silence. Report nothing that `nix fmt` (nixfmt, ruff) or
-          `nix flake check` (actionlint, the Home Manager and MCP checks)
+          `nix flake check` (the Home Manager and MCP checks)
           decides, and no layout or naming preference without a written rule.
 
     - path: "skills/**"
@@ -293,8 +293,9 @@ reviews:
       enabled: true
     trufflehog:
       enabled: true
+    # The repository does not run actionlint.
     actionlint:
-      enabled: true
+      enabled: false
     zizmor:
       enabled: true
     ruff:
