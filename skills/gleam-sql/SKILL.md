@@ -21,13 +21,13 @@ Does PostgreSQL fit the application's persistence contract?
 
 ## Generate against the intended schema
 
-- Check package versions and targets. Research covered Squirrel 4.7.0, Pog 4.1.0, and Cigogne 5.0.6. Squirrel supports PostgreSQL >=16; Pog and Cigogne execute on Erlang.
+- Check resolved packages and targets against their docs, including the PostgreSQL versions Squirrel supports. Pog and Cigogne execute on Erlang.
 - A JavaScript application can use migration tooling without gaining a JavaScript database runtime.
 - Add Squirrel as a development dependency. Author one statement per `.sql` file in `src/**/sql/`; run `gleam run -m squirrel` to generate the neighboring `sql.gleam` module.
 - Apply the intended migrations before generating or checking. The generator interrogates a live database; use the same schema baseline in CI and deployment planning.
 - Edit SQL, then regenerate. Run `gleam run -m squirrel check` to detect stale generated access. Keep database credentials in the environment.
 - Bind values as parameters. Select trusted query shapes for identifiers and ordering; bound values cannot stand in for arbitrary SQL syntax.
-- Inspect generated representations. In this version, PostgreSQL `numeric` decodes as `Float` and JSON/JSONB as `String`; exact money and domain JSON require a deliberate representation and validation.
+- Inspect generated representations. PostgreSQL `numeric` decodes as `Float` and JSON/JSONB as `String`; exact money and domain JSON require a deliberate representation and validation.
 - Handle nullable inputs explicitly. PostgreSQL metadata does not expose parameter nullability to Squirrel. Prefer separate set/clear queries; reserve a sentinel only when the domain excludes that value.
 
 ## Runtime and transaction ownership

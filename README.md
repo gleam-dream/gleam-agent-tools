@@ -118,6 +118,7 @@ Agents select and combine the guides a task needs. Package skills guide applicat
 ## Maintaining skills
 
 - Keep each skill self-contained, under 650 words and 80 lines.
+- State lasting direction. Name no release version or floor, upgrade step, or defect workaround; point to the package's docs and CHANGELOG, which hold those.
 - Check primary sources before changing technical claims. Use temporary code probes only when execution is needed to verify a claim.
 - Check metadata, links, API names, and responsibility boundaries. Keep experiments, downloaded dependencies, and validation output outside this repository.
 

@@ -5,9 +5,9 @@ description: Build and debug durable PostgreSQL jobs with Grind. Use for typed w
 
 # Grind
 
-Choose Grind when work must survive its request, become available on a schedule, and retain typed outcomes, with Erlang/OTP and PostgreSQL fitting that lifecycle. Preserve a suitable existing queue. Use supervised in-memory work when loss is acceptable, and a workflow for dependent effects.
+Choose Grind when work on Erlang/OTP and PostgreSQL must survive its request, become available on a schedule, and retain typed outcomes. Preserve a suitable existing queue. Use supervised in-memory work when loss is acceptable, and a workflow for dependent effects.
 
-Its recovery model preserves uncertainty: an abandoned effect can require investigation and an attributed resolution before replay. Plan that operational responsibility alongside durable admission.
+Its recovery model preserves uncertainty: an abandoned effect can require investigation and an attributed resolution before replay. Plan for that operational work.
 
 ## Abstraction decision tree
 
@@ -24,23 +24,24 @@ Does work need durable admission and retained outcomes?
 
 ## Define and own the runtime
 
-- Inspect `gleam.toml`, the manifest, and public APIs first. Use Hex `grind` 0.2.1 on Erlang with Gleam >=1.18. Retain the manifest and narrow Pog/pgo ranges.
-- Define stable worker identities and versions with typed input/output/error codecs. Keep old stored jobs readable across deployments; changing callback meaning can require a version change even when the types match.
-- Register workers with `with_worker`; add `supervised` to the application's supervision tree. Pair script-owned `start` with `stop`.
-- Keep worker values small: each job copies a closure over the whole worker definition three times, and its handler keeps one while it runs. Apply the `gleam-otp` process-copy rule to the worker value.
-- Let Grind own its pool. Borrow `connection` when useful. Budget one additional reserved renewal connection per used queue; queue capacity is local to a consumer.
+- Inspect `gleam.toml`, the manifest, and public APIs. Add the latest `grind` release (`gleam add grind`) on Erlang. Retain the manifest and narrow Pog/pgo ranges.
+- Define stable worker identities and versions with typed input/output/error codecs. Keep old stored jobs readable across deployments; changing callback meaning can require a version change even with matching types.
+- Register workers with `with_worker`; add `supervised` to the application supervisor. Pair script-owned `start` with `stop`.
+- Keep worker values small: each job copies a closure over the whole worker definition three times, and its handler keeps one while it runs.
+- Budget `admin.settle_due` copying its queue's settlement closures into the caller; no other call copies workers.
+- Let Grind own its pool. Borrow `connection` when useful. Budget one extra reserved renewal connection per used queue; queue capacity is local to a consumer.
 - Select one migration owner: package migrations or Cigogne mirrors. Install the schema before starting consumers; use startup migration only where that role owns DDL.
 
 ## Submission and recovery
 
-- Use one submission key for one exact command. Keep it stable across retries. Uniqueness selects an occupying job; submission receipts recover the original admission decision.
+- Use one submission key, stable across retries, for one exact command. Uniqueness selects an occupying job; receipts recover the original admission decision.
 - Retain `PendingSubmission` from `CommitUnknown` and call `reconcile_submission`. A lost reply does not authorize a new command or a fresh key.
 - Use `submit_in` with the caller's open READ COMMITTED transaction in the same database. Propagate errors to its owner. Its reply is staged admission; only the outer commit settles business writes.
-- Give effectful providers an application idempotency key they actually enforce. Job admission deduplication alone cannot prevent repeated external effects.
+- Give effectful providers an application idempotency key they enforce. Admission deduplication cannot prevent repeated external effects.
 - Preserve `Uncertain` after an abandoned or possibly completed effect. Investigate authoritative evidence, then issue an attributed `admin.resolution` to confirm the outcome or authorize replay.
 - Use `admin.resolve_uncertain_in` when resolution and application acknowledgment must commit together: same-database READ COMMITTED transaction, supplied transaction connection. Keep investigation outside held locks and propagate errors. Its staged reply proves no outer commit; after a lost commit reply, read the durable application acknowledgment.
-- Treat cancellation as cooperative intent. It cannot retract an effect or settle uncertainty; cancellation intent forbids replay authorization.
-- Read durable outcomes for correctness. `await` returning `Pending` does not cancel work; its final read can exceed the requested wait budget. Telemetry is best effort.
+- Treat cancellation as cooperative intent. It cannot retract an effect or settle uncertainty; its intent forbids replay authorization.
+- Read durable outcomes for correctness. `await` returning `Pending` does not cancel work; its final read can exceed the wait budget. Telemetry is best effort.
 - Set retention deliberately. Pruning removes receipts and ends submission recovery/deduplication; preserve permanent business idempotency elsewhere.
 
 ## Red flags
@@ -52,8 +53,8 @@ Does work need durable admission and retained outcomes?
 - Assuming cancellation means no effect happened.
 - A worker closure that captures an environment, catalogue or agent.
 - Treating local queue limits as a cluster quota.
-- Promising cron, batch coordination, or dependency workflows from intended design alone.
+- Promising cron, batch coordination, or dependency workflows from Grind's intended design rather than its public API.
 
 ## Sources
 
-[HexDocs](https://hexdocs.pm/grind/0.2.1/) · [Consumer API and examples](https://github.com/gleam-dream/grind/tree/3a85b147341e09ae5c103d8144c4034759085ad1), [transactional resolution](https://github.com/gleam-dream/grind/blob/3a85b147341e09ae5c103d8144c4034759085ad1/src/grind/admin.gleam), [runtime and recovery design](https://github.com/gleam-dream/grind/blob/3a85b147341e09ae5c103d8144c4034759085ad1/docs/design/design.typ).
+[HexDocs](https://hexdocs.pm/grind/) · [Consumer API and examples](https://github.com/gleam-dream/grind), [transactional resolution](https://github.com/gleam-dream/grind/blob/main/src/grind/admin.gleam), [runtime and recovery design](https://github.com/gleam-dream/grind/blob/main/docs/design/design.typ).

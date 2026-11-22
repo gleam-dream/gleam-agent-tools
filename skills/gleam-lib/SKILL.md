@@ -47,7 +47,7 @@ What justifies the proposed boundary?
 - Specify who creates, shares, cancels, and closes resources. Enforce allocation limits before allocation; a pull-shaped API alone proves no backpressure. State what returns establish. Callback types cannot prove purity, bounded work, or safe captured state.
 - Keep common validation and lifecycle rules in the library when offering extensions. State exactly what an adapter author must supply and which guarantees depend on that implementation.
 - Return actionable structured failures. Reserve deliberate crashes for a documented supervision/recovery contract.
-- Bound what your API sends between processes, as the `gleam-otp` skill describes. Codecs need `json_blueprint >= 2.2.0`, which copies a codec at about its own size; build run-time enums once ([codec guide](https://github.com/lostbean/json_blueprint/blob/main/docs/CODEC-PRACTICE.md)).
+- Bound what your API sends between processes, as the `gleam-otp` skill describes. A json_blueprint codec copies at about its own size; build run-time enums once ([codec guide](https://github.com/lostbean/json_blueprint/blob/main/docs/CODEC-PRACTICE.md)).
 
 ## Verify the public contract
 

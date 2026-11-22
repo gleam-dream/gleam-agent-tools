@@ -52,4 +52,4 @@ What evidence is needed?
 
 ## Sources
 
-[Dependencies](https://gleam.run/documentation/gleam-toml-reference/#dependencies), [CLI](https://gleam.run/documentation/command-line-reference/), [language server](https://gleam.run/documentation/language-server-reference/), [server notifications](https://github.com/gleam-lang/gleam/blob/v1.19.2/language-server/src/server.rs), [todo](https://tour.gleam.run/advanced-features/todo/).
+[Dependencies](https://gleam.run/documentation/gleam-toml-reference/#dependencies), [CLI](https://gleam.run/documentation/command-line-reference/), [language server](https://gleam.run/documentation/language-server-reference/), [server notifications](https://github.com/gleam-lang/gleam/blob/main/language-server/src/server.rs), [todo](https://tour.gleam.run/advanced-features/todo/).
