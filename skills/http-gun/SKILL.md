@@ -42,7 +42,7 @@ Add the latest `http_gun` release (`gleam add http_gun`) on Erlang; retain the r
 - Apply backoff and attempt limits in the application; HTTP Gun never retries. Cancellation or a timeout does not prove the server did nothing.
 - Retain `error.status` and `error.headers` after a body-collection failure; the response head still informs handling.
 - Configure recording redaction before startup. Defaults remove common credential headers and replace listed credential query and form/JSON fields; add provider headers with `with_headers`, field names with `with_query_parameters` or `with_body_fields`, and `with_body` for other bodies.
-- `cassette.encode` applies no redaction: run `cassette.redact(script, policy)` on a hand-built or parsed script that can hold credentials. Keep the answers playback checks: `redaction.request_fields_only` stores response bodies, such as a JSON `code`, as received.
+- `cassette.encode` applies no redaction: run `cassette.redact(script, policy)` on a hand-built or parsed script that can hold credentials. Keep the answers playback checks: `redaction.request_fields_only` stores response bodies as received, tokens included; redact them before saving.
 - Choose recording or playback at startup. Finish a recording explicitly and handle its result; HTTP success does not confirm cassette publication.
 
 ## Red flags

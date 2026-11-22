@@ -7,7 +7,7 @@ description: Serve and call typed MCP tools with Relay over stdio or Streamable 
 
 Choose Relay for MCP interoperability on Erlang: one typed tool definition supplies declaration, server decoding, and client calling. Relay implements the one MCP revision its [README](https://github.com/gleam-dream/relay/blob/main/README.md) names; applications own business effects, durable execution, and retries.
 
-Add the latest `relay` release (`gleam add relay`); retain `manifest.toml`.
+Add the latest `relay` and `json_blueprint` releases (`gleam add relay json_blueprint`); retain `manifest.toml`.
 
 ## Abstraction decision tree
 

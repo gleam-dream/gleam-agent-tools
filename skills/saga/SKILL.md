@@ -7,7 +7,7 @@ description: Build and debug typed workflows with Saga. Use for dependent steps,
 
 Choose Saga when dependent effects need coordinated scheduling, parallel branches, undo, compensation, or retained partial progress. Use ordinary `Result` sequencing for short operations and one database transaction for changes it can cover.
 
-For example, reserve inventory, charge, then release a known reservation if the charge fails.
+For example, reserve inventory, charge, then release a known reservation if the charge returns a known failure.
 
 ## Abstraction decision tree
 
