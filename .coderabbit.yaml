@@ -8,9 +8,10 @@
 #   practice catalog (not public)  879841a61c3f83cd809edca9229c4a6bb7f909f8
 #   gleam-agent-tools (this repo)  6a9ea2f647e787a32d3c7fa88d9c58c5b81ae9d7
 #
-# Governing skills: coderabbit-config (policy), write-skill, writing, gate,
-# testing, python, dependency, git from the practice catalog; gleam-tooling
-# from gleam-agent-tools.
+# Governing skills: coderabbit-config (policy), writing, gate, testing,
+# python, dependency, git from the practice catalog; gleam-tooling from
+# gleam-agent-tools. The practice catalog's write-skill standard does not
+# govern this catalog: README.md sets its own skill standard.
 #
 # Governing dependency versions: no Gleam package is locked here. Pinned in
 # flake.lock: nixpkgs nixos-26.05 1f607aa79b63, home-manager release-26.05
@@ -102,38 +103,26 @@ reviews:
 
     - path: "skills/**"
       instructions: |
-        Skill standard (write-skill). Every skill in this catalog meets it.
-        Its caps govern over the word and line limit in README.md.
-        - Flag a SKILL.md over 2,500 bytes or over 20 rules with no entry for
-          that skill in a root `exceptions.yaml` (skill, max_bytes,
-          max_rules, reason, approved_by, approved_on). Split the skill
-          instead.
-        - Flag a skill whose description joins two jobs; split it or cut one.
-        - Flag a description that is not what the skill does followed by
-          "Use when" and concrete triggers.
-        - Flag a body line that is not a one-line imperative bullet of at
-          most two sentences under a section, and a rule explained in a
-          paragraph; a reason gets one clause.
-        - Flag sections other than Do, Never and Boundary, sections out of
-          that order, and a missing Boundary where a neighbouring skill
-          exists. Boundary names the neighbour a reader would expect to
-          cover the job.
-        - Flag a hedge in a rule: prefer, consider, usually, generally,
-          typically, ideally, should, may, might, perhaps, try to, when or
-          where useful, when or where appropriate, as needed, as
-          appropriate, if or when possible.
-        - Flag a rule a capable agent follows unprompted, a step every task
-          has (read the request, run the tests, report the result), and a
-          rule that states no choice where a capable agent would choose
-          differently.
-        - Flag a rule another skill in skills/ already states, and a skill
-          that depends on another skill being loaded.
-        - Flag a resource file in a skill directory that no rule in its
-          SKILL.md says when to read.
-        - Flag a removed `<!-- Adapted from ... -->` source comment on a file
-          whose licence requires a notice in each file (NOTICE.md).
-        - Flag a new skill that is always loaded together with an existing
-          one; merge them.
+        Skill standard (repository: README.md, "Maintaining skills" and the
+        opening paragraph). This catalog does not use the Do/Never/Boundary
+        bullet format; do not flag sections, prose paragraphs, numbered
+        steps, decision tables or byte counts against it.
+        - Flag a SKILL.md at or over 650 words or 80 lines (`wc -w`,
+          `wc -l`).
+        - Flag a SKILL.md that is not self-contained: it relies on another
+          skill being loaded to be followed.
+        - Flag a SKILL.md that lacks selection criteria, a decision tree or
+          decision table, red flags, or primary sources.
+        - Flag a changed technical claim (API name, signature, variant,
+          default, install line, version) that the cited primary source at
+          the named release does not support, and a source link that points
+          at a release other than the one the skill names.
+        - Flag frontmatter whose `name` differs from its directory, and a
+          description that does not say when to select the skill.
+        - Flag a skill that takes over another skill's responsibility; the
+          README states that agents combine the guides a task needs.
+        - Flag experiments, downloaded dependencies or validation output
+          added to the repository.
 
     - path: "{README.md,SECURITY.md,skills/**/*.md}"
       instructions: |
@@ -260,8 +249,8 @@ reviews:
       - name: Rewritten skill accounts for its rules
         mode: warning
         instructions: |
-          Source: write-skill. Warn if the diff removes or rewrites a rule
-          bullet in a skills/*/SKILL.md and the pull request description
+          Source: repository (the word and line limit invites cuts). Warn if
+          the diff removes or rewrites a rule in a skills/*/SKILL.md and the pull request description
           does not account for each removed rule as kept, moved (and where)
           or changed on purpose, or if it cuts a rule to fit a cap without
           saying the owner agreed. Pass otherwise.
