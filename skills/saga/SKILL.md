@@ -7,7 +7,7 @@ description: Build and debug typed workflows with Saga. Use for dependent steps,
 
 Choose Saga when dependent effects need coordinated scheduling, parallel branches, undo, compensation, or retained partial progress. Use ordinary `Result` sequencing for short operations and one database transaction for changes it can cover.
 
-For example, reserve inventory, charge, then release a known reservation if the charge fails. Typed ports connect outputs to inputs without a result-name dictionary; unknown charge outcomes still require evidence before recovery.
+For example, reserve inventory, charge, then release a known reservation if the charge fails.
 
 ## Abstraction decision tree
 
@@ -25,24 +25,26 @@ Does the operation need workflow coordination?
 
 ## Define once, execute with input
 
-- Inspect the resolved revision and public modules. Use Hex `saga` 0.2.0 on Erlang with Gleam >=1.18; install `saga_postgres` 0.1.0 from Git ref `saga_postgres-v0.1.0`, path `integrations/saga_postgres`.
-- Build a reusable workflow with `define`. Its builder runs once; supply each request as run input. Connect steps through typed ports, using `perform`, `both`, `all`, and `choose`.
-- Keep external clients and application policy in supplied callbacks. Use `effect` when a step needs its `EffectKey`; send its stable idempotency key to a provider that enforces it.
-- `undo` reverses known completed work; `compensate` chooses a failed attempt's retry, replacement, abort, or hold.
+- Inspect the resolved revision and public modules. Use Hex `saga` 0.2.0 on Erlang with Gleam >=1.18.
+- Install `saga_postgres` 0.1.0 from Git ref `saga_postgres-v0.1.0`, path `integrations/saga_postgres`.
+- Build a reusable workflow with `define`. Its builder runs once; supply each request as input. Connect steps through typed ports, using `perform`, `both`, `all`, and `choose`.
+- Keep external clients and application policy in supplied callbacks. Use `effect` when a step needs its `EffectKey`; pass its idempotency key to an enforcing provider.
+- Use `undo` to reverse known completed work, `compensate` to choose a failed attempt's retry, replacement, abort, or hold.
 - Mark possibly completed failures with `unknown_when`. Select an explicit uncertainty policy; a transport timeout alone cannot justify replay or rollback.
-- Retain the typed terminal report, including cleanup failures and unknown-effect evidence. Render `outcome.summary` for display only. Treat a `CoordinatorCrashed` cause as uncertain.
-- Since 0.2.0, run and step bounds above about 49.7 days are refused; lift one with `Infinity`.
+- Retain the typed terminal report, including cleanup failures and unknown-effect evidence. Render `outcome.summary` for display only.
+- Treat a `CoordinatorCrashed` cause as uncertain.
+- Keep every `Config` and step bound under about 49.7 days; longer ones fail as `DurationTooLong` or, at `define`, `InvalidTimeout`. `execution.Infinity` lifts only the run deadline and default step timeout.
 
 ## Own execution and recovery
 
 - Own unfinished local `start` handles: cancel and `await` before dropping them. With `start_reporting`, receive the terminal report and monitor the coordinator; `await` returns `NotOwner`.
 - Use `reporting.run_owned` inside a per-invocation worker; its receiver monitors after return. `on_stopped` runs in a separate guarded worker. `rollback_within` bounds owner-loss startup waits and notification, not total execution; keep captured resources alive.
 - Add versioned root/step codecs and recovery resolvers for durable execution. Give one business execution one stable ID; use `start_or_reconnect` with compatible definition and identical encoded input.
-- Resolve interrupted admitted actions from authoritative evidence. `Completed` restores a result; `NotSent` must prove absence; `MaybeSent` suspends. A missing or eventually consistent lookup proves nothing.
+- Resolve interrupted admitted actions from authoritative evidence: `Completed` restores a result, `NotSent` must prove absence, `MaybeSent` suspends. A missing or eventually consistent lookup proves nothing.
 - Keep effect keys stable across attempts and recovery. A fresh local run has its own identity and does not deduplicate another run's effects.
 - Keep application commits and checkpoint commits separate, even on the same database. An absent checkpoint cannot prove the application write rolled back.
-- Own wakeups, unfinished-run discovery, and redelivery. Durable storage starts no scheduler; a drive timeout stops that driver without cancelling saved execution.
-- Upgrade every node before 0.2.0 writes checkpoints; 0.1.0 reads `CoordinatorCrashed` checkpoints as malformed.
+- Own wakeups, unfinished-run discovery, and redelivery; durable storage starts no scheduler. A drive timeout stops that driver without cancelling saved execution.
+- Upgrade all nodes before 0.2.0 writes checkpoints and never roll back: 0.1.0 reads `CoordinatorCrashed` checkpoints as malformed.
 - Match storage to the failure model. Memory loses progress with its store/VM; file storage requires an existing canonical absolute directory and one VM, without power-loss durability.
 - With `saga_postgres`, own and supervise the borrowed pool, migrate once, and plan retention. Use a pooled handle, not a transaction-scoped connection.
 

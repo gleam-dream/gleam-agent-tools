@@ -22,13 +22,13 @@ Need a provider call controlled by the application? → LLM Wire
 
 ## Prepare, execute, interpret
 
-1. Select an adapter and model available to the application. Supply credentials through live configuration.
+1. Select an adapter and an available model. Supply credentials through live configuration.
 2. Build messages with `request`; add tools, output codecs, a thinking level, or reusable `generation.Settings`.
-3. Call `prepare` before execution. It validates and encodes without I/O; handle unsupported settings and schemas there.
+3. Call `prepare` first; it validates and encodes without I/O. Handle unsupported settings and schemas there.
 4. Run with an application-owned HTTP Gun client. Share a supervised client in a service; stop a short-lived client on every exit path.
-5. Match every outcome: `Answer`, `NeedsTools`, `OutputLimited`, and `Refused`. A token-limited partial answer is not a complete typed answer. The token limit also counts thoughts; leave headroom with a thinking level.
+5. Match every outcome: `Answer`, `NeedsTools`, `OutputLimited`, and `Refused`. A token-limited partial answer is incomplete. The token limit also counts thoughts; leave headroom with a thinking level.
 
-Use `with_output(name, codec)` for decoded answers. Its codec must have a record root. Provider schema profiles differ; a valid Blueprint codec alone does not establish provider acceptance.
+Use `with_output(name, codec)` for decoded answers. Its codec must have a record root. Provider schema profiles differ; a valid Blueprint codec does not prove provider acceptance.
 
 ## Own the tool loop
 
@@ -36,16 +36,16 @@ Use `with_output(name, codec)` for decoded answers. Its codec must have a record
 - On `NeedsTools`, retain the returned `AssistantTurn`. Append `message.Assistant(turn)` and one `tool_result` for every call to the next request.
 - Preserve call ids, ordering, and opaque provider replay data when storing history. Use the message and turn codecs; rebuilding a turn from visible text loses information.
 - Keep authorization, effect identity, and tool errors in the application. A model request cannot authorize a business action.
-- Each call copies its tool list about five times ([measured](https://github.com/gleam-dream/llm_wire/blob/9059fdfa54c3d72eb489914926f3cea75b2e99f6/issues/hold-tools-once-per-call/PRD.md)). A `tool.new` tool's decode closure holds its input codec, so every copy includes it (about its own size from json_blueprint 2.2.0). `from_contract` and `from_json_schema` tools copy schema only; the `with_output` codec stays in your process. For tools sent on many calls, prefer contract-only tools with `decode_arguments`. Build run-time enums once ([codec guide](https://github.com/lostbean/json_blueprint/blob/v2.2.0/docs/CODEC-PRACTICE.md)).
-- In 0.2.0 every OpenAI tool call fails with `Protocol("Duplicate tool block completion")`; until a fixed release, use another adapter for tools.
+- Each call copies its tool list about five times ([measured](https://github.com/gleam-dream/llm_wire/blob/9059fdfa54c3d72eb489914926f3cea75b2e99f6/issues/hold-tools-once-per-call/PRD.md)), each `tool.new` copy with its input codec (about its own size from json_blueprint 2.2.0); the `with_output` codec stays in your process. For tools sent on many calls, use `from_contract` or `from_json_schema` tools, which copy schema only, with `decode_arguments`, and build run-time enums once ([codec guide](https://github.com/lostbean/json_blueprint/blob/v2.2.0/docs/CODEC-PRACTICE.md)).
+- In 0.2.0, every OpenAI tool call fails with `Protocol("Duplicate tool block completion")`; use another adapter for tools. On Anthropic, `prepare` refuses a thinking level while the last assistant message holds a tool call (`ThinkingInToolRound`); drop the level for tool-result rounds.
 
 ## Own streams and retries
 
 - Read a stream until `Done`, or close it when abandoning it. Keep one outstanding reader.
 - `next_within` returning `TimedOut` is a read timeout: the stream stays readable and the call may continue.
-- Use `advise(failure)` to classify retry prospects. LLM Wire never retries automatically.
+- Classify retry prospects with `advise(failure)`. LLM Wire never retries.
 - Inspect `sent`, `partial_output`, and optional usage; `output_tokens` includes thoughts. `MaybeSent` can mean paid remote work; missing usage does not mean zero tokens.
-- Bound attempts, backoff, and provider delay by one application deadline. `ProviderDelay` is uncapped advice; do not sleep beyond the remaining budget.
+- Bound attempts, backoff, and provider delay by one application deadline. `ProviderDelay` is uncapped advice; never sleep past the remaining budget.
 
 Classification maps authored alternatives into native answers; confidence is provider evidence, not correctness. Neither classification nor transcription implies generation streaming, uploaded audio, or diarization.
 
@@ -56,7 +56,7 @@ Classification maps authored alternatives into native answers; confidence is pro
 
 ## Verify
 
-Check the manifest before using a signature. Validate changed request and replay claims with the package's offline consumer playback; use live providers only when the task requires live behavior.
+Check the manifest before using a signature. Validate changed request and replay claims with the package's offline consumer playback; use live providers only when live behavior is required.
 
 ## Sources
 

@@ -25,26 +25,26 @@ Use Hex `http_gun` 0.2.0 on Erlang; retain the resolved manifest. Generic SSE pa
 - Start from `config.default()`. Use `http_gun.supervised(settings, name)` and `http_gun.named(name)` for shared application use. `start` links the client to its caller; stop supervised clients through their parent.
 - Build a `Request(BitArray)`, call `send`, then inspect `buffered.response.status` before decoding `buffered.response.body`. An `Ok` transport result can contain a 404 or 503.
 - Use client views for per-call timeout, deadline, body limit, cancellation, destination, and correlation. Views share the pool. A destination view can narrow its authority, never enlarge it.
-- Enable loopback explicitly for local services and tests. Keep verified TLS and the intended destination policy; a client identity does not replace server verification. A server accepting only TLS 1.2 CBC suites needs `config.with_cipher_suites(config.OtpDefaultsAndTls12Cbc)`, not weaker verification.
+- Enable loopback explicitly for local services and tests. Keep verified TLS and the intended destination policy; a client identity does not replace server verification. A server accepting only TLS 1.2 CBC suites needs `config.with_cipher_suites(settings, config.OtpDefaultsAndTls12Cbc)`, not weaker verification.
 - Set collection limits to the payload the application accepts. If selecting truncation, inspect `buffered.truncated` before treating the bytes as a complete document.
 
 ## Keep the body with its reader
 
 - Prefer `with_response` for lexical streaming; it closes the body on callback return or exception.
-- Read an explicit body from the process that opened it. Copies share one cursor; they do not transfer read ownership or create independent streams.
+- Read an explicit body from the process that opened it. Copies share one cursor; they transfer no read ownership and create no independent stream.
 - Close every body obtained through `open`, including after EOF or failed collection. Any holder may close; local cancellation cannot undo remote effects.
-- Distinguish `body.next_within` returning `None` from EOF. A local wait expiring leaves the stream available for a later read.
-- Bound application work separately. An HTTP timeout does not interrupt arbitrary decoding or sink computation after HTTP completion.
+- Distinguish `body.next_within` returning `None` from EOF. An expired local wait leaves the stream readable.
+- Bound application work separately. An HTTP timeout does not interrupt decoding or sink work after HTTP completion.
 
 ## Retry from evidence
 
-- Inspect failure kind and submission evidence. `NotSent` and `MaybeSent` have different authority; call `error.is_retryable(failure, idempotent:)` with the application's actual request semantics.
-- Apply backoff and attempt limits in the application. HTTP Gun never retries automatically. Cancellation or a timeout does not establish that the server did nothing.
-- Retain `error.status` and `error.headers` after a body-collection failure; the response head can still inform handling.
+- Inspect failure kind and submission evidence. `NotSent` and `MaybeSent` have different authority; call `error.is_retryable(failure, idempotent:)` with the request's actual idempotency.
+- Apply backoff and attempt limits in the application; HTTP Gun never retries. Cancellation or a timeout does not prove the server did nothing.
+- Retain `error.status` and `error.headers` after a body-collection failure; the response head still informs handling.
 - Configure recording redaction before startup. Defaults remove common credential headers and replace listed credential query and form/JSON fields; add provider names, and `with_body` for other bodies.
-- `cassette.encode` applies no redaction: run `cassette.redact(script, policy)` on a hand-built or parsed script first.
+- `cassette.encode` applies no redaction: run `cassette.redact(script, policy)` on a hand-built or parsed script that can hold credentials. Keep the answers playback checks: `redaction.request_fields_only` stores response bodies, such as a JSON `code`, as received.
 - 0.2.0 reads only schema 3 cassettes; convert 0.1.x files on the commit its changelog names.
-- Choose recording or playback at startup. Finish a recording explicitly and handle its result; HTTP success alone does not confirm cassette publication.
+- Choose recording or playback at startup. Finish a recording explicitly and handle its result; HTTP success does not confirm cassette publication.
 
 ## Red flags
 
@@ -52,7 +52,6 @@ Use Hex `http_gun` 0.2.0 on Erlang; retain the resolved manifest. Generic SSE pa
 - A worker reading a body opened by its parent.
 - Retrying every timeout or decoding a truncated response as complete JSON.
 - Treating default cassette redaction as removal of every secret.
-- Encoding a parsed or hand-built script without `cassette.redact`.
 
 ## Sources
 

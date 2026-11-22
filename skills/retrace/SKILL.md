@@ -5,7 +5,7 @@ description: Reconstruct frontend sessions from safe models and accepted message
 
 # Retrace
 
-Choose Retrace to understand how a user reached a frontend state: record safe model checkpoints and accepted messages, then reconstruct transitions through an inert view. Lustre's updates fit directly; the portable core is independent of Lustre.
+Choose Retrace to understand how a user reached a frontend state: record safe model checkpoints and accepted messages, then reconstruct transitions through an inert view. Lustre's updates fit directly.
 
 ## Abstraction decision tree
 
@@ -20,20 +20,20 @@ What evidence is needed?
    └── PostgreSQL admission/object archival → retrace_server
 ```
 
-Use Hex `retrace` 0.1.0, `retrace_frontend` 0.1.1, and `retrace_server` 0.1.0 where imported; retain `manifest.toml`. Core supports Erlang/JavaScript; frontend targets JavaScript and server Erlang. Select browser/native adapters deliberately; preserve a suitable existing recorder.
+Use Hex `retrace` 0.1.0, `retrace_frontend` 0.1.1, and `retrace_server` 0.1.0 where imported; retain `manifest.toml`. Core supports Erlang/JavaScript; frontend targets JavaScript and server Erlang. Preserve a suitable existing recorder.
 
-The unpublished `retrace_collector` 0.1.1 uses [Git+path](https://github.com/gleam-dream/retrace/blob/retrace_collector-v0.1.1/support/collector/README.md): ref `retrace_collector-v0.1.1`, path `support/collector`. It admits only `RETRACE_ALLOWED_ORIGINS`. The packaged transport and viewer send no token, so `RETRACE_COLLECTOR_TOKEN` needs a custom transport, source, or proxy.
+The unpublished `retrace_collector` 0.1.1 uses [Git+path](https://github.com/gleam-dream/retrace/blob/retrace_collector-v0.1.1/support/collector/README.md): ref `retrace_collector-v0.1.1`, path `support/collector`. `RETRACE_ALLOWED_ORIGINS` replaces the default browser origins (empty admits none) but filters only requests carrying `Origin`; without `RETRACE_COLLECTOR_TOKEN`, any local process can use every route. The packaged transport and viewer send no token; with one, use a custom transport, source, or proxy.
 
 ## Record accepted, safe transitions
 
 1. Project safe models and messages before capture/encoding; exclude credentials and private values. `capture.observe_projected` handles fallible projections: failure stops capture without recording the error.
 2. Use session and contract identities, a monotonic elapsed clock, and separate sessions for concurrent writers.
-3. With core, accept through the reducer, `record` the event, then `checkpoint` the resulting model. Retain the returned recorder. `resume` trusts the recovered checkpoint and grants no exclusive writer.
+3. With core, accept through the reducer, `record` the event, `checkpoint` the result, and retain the returned recorder. `resume` trusts the recovered checkpoint and grants no exclusive writer.
 4. In Lustre, run capture's startup effect and process its connection message through `capture.update` before observing; an early observation stops capture. Pass the pre-transition model to `capture.observe`; exclude coordination messages from the domain stream.
-5. Frontend capture requires storage and an upload transport. For local-only recording/export, use core with application-owned storage; the frontend viewer is independent. Never fake upload success for export.
-6. `record` numbers events without acknowledging persistence; commit cursor/checkpoint and outbox consistently when crash recovery matters.
+5. Frontend capture requires storage and an upload transport; for local-only recording/export, use core with application-owned storage (the viewer is independent). Never fake upload success for export.
+6. `record` numbers events without acknowledging persistence; commit cursor/checkpoint and outbox together for crash recovery.
 
-Handle capture failure separately from domain updates; surface stopped recording to users who depend on it.
+Handle capture failure apart from domain updates and surface stopped recording to dependent users.
 
 ## Reconstruct without live effects
 
@@ -45,9 +45,9 @@ Handle capture failure separately from domain updates; surface stopped recording
 ## Deliver and archive explicitly
 
 - Own frontend client startup/shutdown and invoke replay/viewer disposers.
-- Distinguish local save, collector acknowledgement, and object archival. Verify session and final cursor before removing queued data; retries cannot repair a permanently invalid first batch.
-- With the server, supply pool/object store and own migrations, archive workers, authentication, consent, and retention. Use `accept` for atomic admission; `accept_in_transaction` belongs inside a caller-owned transaction.
-- For server erasure, drive `erase` with `Eraser(remove, quiesced)`; match `Erasing`, `AwaitingWriters`, and `Erased`. Fencing stops new upload admission; admitted attempts may still dispatch. Quiescence requires no future local dispatch and no issued request able to publish. Worker death, timeout, or DELETE alone is insufficient.
+- Distinguish local save, collector acknowledgement, and object archival. Verify session and final cursor before removing queued data; retries cannot repair an invalid first batch.
+- With the server, supply pool/object store and own migrations, archive workers, authentication, consent, and retention. Use `accept` for atomic admission; `accept_in_transaction` belongs in a caller-owned transaction.
+- For server erasure, drive `erase` with `Eraser(remove, quiesced)`; match `Erasing`, `AwaitingWriters`, and `Erased`. Fencing stops new upload admission; admitted attempts may still dispatch. Quiescence requires no future local dispatch or issued request able to publish. Worker death, timeout, or DELETE alone is insufficient.
 - Before server deployment, check schema compatibility: the write-attempt schema refuses earlier tombstone layouts without an in-place upgrade.
 
 ## Red flags
@@ -58,7 +58,7 @@ Handle capture failure separately from domain updates; surface stopped recording
 
 ## Verify
 
-Verify changed core claims on both targets. Exercise claimed browser, native, or archival behavior in its own runtime.
+Verify core claims on both targets, and browser, native, or archival claims in their own runtime.
 
 ## Sources
 
