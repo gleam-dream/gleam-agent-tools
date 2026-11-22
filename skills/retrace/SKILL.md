@@ -5,7 +5,7 @@ description: Reconstruct frontend sessions from safe models and accepted message
 
 # Retrace
 
-Choose Retrace to understand how a user reached a frontend state: record safe model checkpoints and accepted messages, then reconstruct their transitions through an inert view. Lustre's model/message updates fit this directly; the portable core is independent of Lustre.
+Choose Retrace to understand how a user reached a frontend state: record safe model checkpoints and accepted messages, then reconstruct transitions through an inert view. Lustre's updates fit directly; the portable core is independent of Lustre.
 
 ## Abstraction decision tree
 
@@ -20,33 +20,33 @@ What evidence is needed?
    └── PostgreSQL admission/object archival → retrace_server
 ```
 
-Use coordinated Hex 0.1.0 releases of imported Retrace packages and retain `manifest.toml`. Core supports Erlang/JavaScript; frontend targets JavaScript and server Erlang. Select browser/native adapters deliberately; preserve a suitable existing recorder.
+Use Hex `retrace` 0.1.0, `retrace_frontend` 0.1.1, and `retrace_server` 0.1.0 where imported; retain `manifest.toml`. Core supports Erlang/JavaScript; frontend targets JavaScript and server Erlang. Select browser/native adapters deliberately; preserve a suitable existing recorder.
 
-The unpublished development `retrace_collector` uses [Git+path](https://github.com/gleam-dream/retrace/blob/464b20552d0ed1b2d2b025166e60c77098fb36de/support/collector/README.md) at `support/collector`, with Hex core/server dependencies.
+The unpublished `retrace_collector` 0.1.1 uses [Git+path](https://github.com/gleam-dream/retrace/blob/retrace_collector-v0.1.1/support/collector/README.md): ref `retrace_collector-v0.1.1`, path `support/collector`. It admits only `RETRACE_ALLOWED_ORIGINS`. The packaged transport and viewer send no token, so `RETRACE_COLLECTOR_TOKEN` needs a custom transport, source, or proxy.
 
 ## Record accepted, safe transitions
 
-1. Project safe models and messages before capture/encoding; exclude credentials and private values.
+1. Project safe models and messages before capture/encoding; exclude credentials and private values. `capture.observe_projected` handles fallible projections: failure stops capture without recording the error.
 2. Use session and contract identities, a monotonic elapsed clock, and separate sessions for concurrent writers.
-3. With core, accept through the reducer, `record` the event, then `checkpoint` the resulting model. Retain the returned recorder. `resume` trusts the recovered checkpoint; it grants no exclusive writer ownership.
+3. With core, accept through the reducer, `record` the event, then `checkpoint` the resulting model. Retain the returned recorder. `resume` trusts the recovered checkpoint and grants no exclusive writer.
 4. In Lustre, run capture's startup effect and process its connection message through `capture.update` before observing; an early observation stops capture. Pass the pre-transition model to `capture.observe`; exclude coordination messages from the domain stream.
-5. Frontend capture requires storage and an upload transport. For local-only recording/export, use core with application-owned storage; the frontend viewer is independent. Do not fake upload success to implement export.
+5. Frontend capture requires storage and an upload transport. For local-only recording/export, use core with application-owned storage; the frontend viewer is independent. Never fake upload success for export.
 6. `record` numbers events without acknowledging persistence; commit cursor/checkpoint and outbox consistently when crash recovery matters.
 
-Handle capture failure separately from domain updates; surface stopped recording when users depend on capture.
+Handle capture failure separately from domain updates; surface stopped recording to users who depend on it.
 
 ## Reconstruct without live effects
 
 - Supply a deterministic reducer and inert view. Record external results as messages; never repeat live effects during replay.
 - Match failures for gaps, duplicates, contract mismatch, backwards time, and reducer errors. Failed steps preserve the prior player; fetch missing ranges or deduplicate explicitly.
-- Retain historical replay artifacts under their build identity. Refuse missing/incompatible artifacts rather than substituting today's reducer.
+- Retain historical replay artifacts under their build identity. Refuse missing/incompatible artifacts; never substitute today's reducer.
 - Keep contract compatibility, build identity, artifact integrity, and viewer authorization separate. Identity strings do not prove authenticity.
 
 ## Deliver and archive explicitly
 
 - Own frontend client startup/shutdown and invoke replay/viewer disposers.
 - Distinguish local save, collector acknowledgement, and object archival. Verify session and final cursor before removing queued data; retries cannot repair a permanently invalid first batch.
-- If using the server, supply pool/object store and own migrations, archive workers, authentication, consent, and retention. Use `accept` for atomic admission; `accept_in_transaction` belongs inside a caller-owned transaction.
+- With the server, supply pool/object store and own migrations, archive workers, authentication, consent, and retention. Use `accept` for atomic admission; `accept_in_transaction` belongs inside a caller-owned transaction.
 - For server erasure, drive `erase` with `Eraser(remove, quiesced)`; match `Erasing`, `AwaitingWriters`, and `Erased`. Fencing stops new upload admission; admitted attempts may still dispatch. Quiescence requires no future local dispatch and no issued request able to publish. Worker death, timeout, or DELETE alone is insufficient.
 - Before server deployment, check schema compatibility: the write-attempt schema refuses earlier tombstone layouts without an in-place upgrade.
 
@@ -58,8 +58,8 @@ Handle capture failure separately from domain updates; surface stopped recording
 
 ## Verify
 
-Verify changed core claims on both targets. Exercise browser, native delivery, or archival in its own runtime when claimed.
+Verify changed core claims on both targets. Exercise claimed browser, native, or archival behavior in its own runtime.
 
 ## Sources
 
-[HexDocs](https://hexdocs.pm/retrace/0.1.0/) · [Capture and replay examples](https://github.com/gleam-dream/retrace/tree/2b8c877a634dd29e90d7f9e9d271012ccb0ddf2f/examples) · [Core API](https://github.com/gleam-dream/retrace/blob/2b8c877a634dd29e90d7f9e9d271012ccb0ddf2f/src/retrace.gleam) · [Server and erasure](https://github.com/gleam-dream/retrace/blob/2b8c877a634dd29e90d7f9e9d271012ccb0ddf2f/packages/retrace_server/README.md)
+[HexDocs](https://hexdocs.pm/retrace/0.1.0/) · [Capture and replay examples](https://github.com/gleam-dream/retrace/tree/retrace_frontend-v0.1.1/examples) · [Core API](https://github.com/gleam-dream/retrace/blob/retrace-v0.1.0/src/retrace.gleam) · [Server and erasure](https://github.com/gleam-dream/retrace/blob/retrace_server-v0.1.0/packages/retrace_server/README.md)
