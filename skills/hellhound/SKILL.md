@@ -18,7 +18,7 @@ Choose Hellhound to sign users in or manage provider tokens while it handles dis
 | Sessions surviving custody-store restart       | Durable stores plus a stable sealing key                                      |
 | Accounts, permissions, or application sessions | Application policy around Hellhound's evidence                                |
 
-Add the latest `hellhound` release (`gleam add hellhound`) on Erlang. For PostgreSQL stores, add `hellhound_postgres` from Git (`gleam-dream/hellhound`, `integrations/hellhound_postgres`), pinned by commit to the newest `hellhound_postgres-v*` tag accepting the resolved core. Hellhound is uncertified; deployment needs independent security review.
+Add the latest `hellhound` (`gleam add hellhound`) on Erlang. For PostgreSQL stores, add `hellhound_postgres` from Git (`gleam-dream/hellhound`, `integrations/hellhound_postgres`), pinned by commit to the newest `hellhound_postgres-v*` tag accepting the resolved core. Hellhound is uncertified; deployment needs independent security review.
 
 ## Configure clients, complete the login
 
