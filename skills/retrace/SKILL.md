@@ -20,9 +20,9 @@ What evidence is needed?
    └── PostgreSQL admission/object archival → retrace_server
 ```
 
-Use Hex `retrace` 0.1.0, `retrace_frontend` 0.1.1, and `retrace_server` 0.1.0 where imported; retain `manifest.toml`. Core supports Erlang/JavaScript; frontend targets JavaScript and server Erlang. Preserve a suitable existing recorder.
+Add the latest release of each imported package (`gleam add retrace`, `retrace_frontend`, `retrace_server`); retain `manifest.toml`. Core supports Erlang/JavaScript; frontend targets JavaScript and server Erlang. Preserve a suitable existing recorder.
 
-The unpublished `retrace_collector` 0.1.1 uses [Git+path](https://github.com/gleam-dream/retrace/blob/retrace_collector-v0.1.1/support/collector/README.md): ref `retrace_collector-v0.1.1`, path `support/collector`. `RETRACE_ALLOWED_ORIGINS` replaces the default browser origins (empty admits none) but filters only requests carrying `Origin`; without `RETRACE_COLLECTOR_TOKEN`, any local process can use every route. The packaged transport and viewer send no token; with one, use a custom transport, source, or proxy.
+The unpublished [`retrace_collector`](https://github.com/gleam-dream/retrace/blob/main/support/collector/README.md) installs from Git (`gleam-dream/retrace`, path `support/collector`, a `retrace_collector-v*` release tag). `RETRACE_ALLOWED_ORIGINS` replaces the default browser origins (empty admits none) but filters only requests carrying `Origin`; without `RETRACE_COLLECTOR_TOKEN`, any local process can use every route. The packaged transport and viewer send no token; with one, use a custom transport, source, or proxy.
 
 ## Record accepted, safe transitions
 
@@ -48,7 +48,6 @@ Handle capture failure apart from domain updates and surface stopped recording t
 - Distinguish local save, collector acknowledgement, and object archival. Verify session and final cursor before removing queued data; retries cannot repair an invalid first batch.
 - With the server, supply pool/object store and own migrations, archive workers, authentication, consent, and retention. Use `accept` for atomic admission; `accept_in_transaction` belongs in a caller-owned transaction.
 - For server erasure, drive `erase` with `Eraser(remove, quiesced)`; match `Erasing`, `AwaitingWriters`, and `Erased`. Fencing stops new upload admission; admitted attempts may still dispatch. Quiescence requires no future local dispatch or issued request able to publish. Worker death, timeout, or DELETE alone is insufficient.
-- Before server deployment, check schema compatibility: the write-attempt schema refuses earlier tombstone layouts without an in-place upgrade.
 
 ## Red flags
 
@@ -62,4 +61,4 @@ Verify core claims on both targets, and browser, native, or archival claims in t
 
 ## Sources
 
-[HexDocs](https://hexdocs.pm/retrace/0.1.0/) · [Capture and replay examples](https://github.com/gleam-dream/retrace/tree/retrace_frontend-v0.1.1/examples) · [Core API](https://github.com/gleam-dream/retrace/blob/retrace-v0.1.0/src/retrace.gleam) · [Server and erasure](https://github.com/gleam-dream/retrace/blob/retrace_server-v0.1.0/packages/retrace_server/README.md)
+[HexDocs](https://hexdocs.pm/retrace/) · [Capture and replay examples](https://github.com/gleam-dream/retrace/tree/main/examples) · [Core API](https://github.com/gleam-dream/retrace/blob/main/src/retrace.gleam) · [Server and erasure](https://github.com/gleam-dream/retrace/blob/main/packages/retrace_server/README.md)

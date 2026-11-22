@@ -35,7 +35,7 @@ What runtime responsibility exists?
 - A copy between processes loses sharing: a message, spawn closure or start argument costs its flat size, which can far exceed its heap size. Module literals and binaries over 64 bytes are not copied.
 - Capture small references, such as ids; keep static data in module constants or `persistent_term`.
 - Test each crossing term's copy size: `erts_debug:flat_size(Term) * erlang:system_info(wordsize)` bytes.
-- For codecs, follow the [json_blueprint guide](https://github.com/lostbean/json_blueprint/blob/main/docs/CODEC-PRACTICE.md); from 2.2.0 a codec copies at about its own size.
+- For codecs, follow the [json_blueprint guide](https://github.com/lostbean/json_blueprint/blob/main/docs/CODEC-PRACTICE.md); a codec copies at about its own size.
 
 ## Encode recovery dependencies
 
@@ -54,7 +54,7 @@ What runtime responsibility exists?
 
 Exercise the protocol's failure path, timeout, restart, and retained client handle. Confirm that a restarted process can recover the state its caller expects.
 
-When inspecting actors, check system-operation support against the pinned implementation. In `gleam_otp` 1.3.0, the focused probe reads state but `sys:trace` times out. Use bounded diagnostics; treat inspected state as private and mutate through the owning public API. Live attachment and investigation use `gleam-inspect` when available.
+When inspecting actors, check each system operation against the resolved `gleam_otp`; reading state can work where `sys:trace` times out. Use bounded diagnostics; treat inspected state as private and mutate through the owning public API. Live attachment and investigation use `gleam-inspect` when available.
 
 ## Red flags
 

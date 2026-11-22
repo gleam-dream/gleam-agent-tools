@@ -5,9 +5,9 @@ description: Serve and call typed MCP tools with Relay over stdio or Streamable 
 
 # Relay
 
-Choose Relay for MCP interoperability on Erlang: one typed tool definition supplies declaration, server decoding, and client calling. Relay implements revision `2026-07-28`; applications own business effects, durable execution, and retries.
+Choose Relay for MCP interoperability on Erlang: one typed tool definition supplies declaration, server decoding, and client calling. Relay implements the MCP revision its docs name; applications own business effects, durable execution, and retries.
 
-Use Hex `relay >= 0.2.2`, the first release that holds the server once, with `json_blueprint >= 2.2.0`; retain `manifest.toml`.
+Add the latest `relay` release (`gleam add relay`); retain `manifest.toml`.
 
 ## Abstraction decision tree
 
@@ -34,11 +34,11 @@ Expose resources, prompts, or completion with `server.with_resources`, `server.w
 
 ## Keep the catalog out of process copies
 
-HTTP endpoints and stdio servers hold the server, with its codecs and handlers, once in `persistent_term`; requests and tool workers read it uncopied. In-process clients and `runtime.start` copy the called tool per call. Earlier releases copy the whole server per request and call.
+HTTP endpoints and stdio servers hold the server, with its codecs and handlers, once in `persistent_term`; requests and tool workers read it uncopied. In-process clients and `runtime.start` copy the called tool per call.
 
 - Relay copies the body, arguments and your context per request and call. Keep catalogues, clients and codecs out of the context.
 - `register_tool` frees the previous snapshot, which scans the node; register rarely.
-- On json_blueprint 2.2 a codec copies at about its own size; build a run-time enum once, before the chain. The [codec practice](https://github.com/lostbean/json_blueprint/blob/main/docs/CODEC-PRACTICE.md) holds the rules; the `gleam-otp` skill holds the general process-copy rule.
+- A json_blueprint codec copies at about its own size; build a run-time enum once, before the chain. The [codec practice](https://github.com/lostbean/json_blueprint/blob/main/docs/CODEC-PRACTICE.md) holds the rules; the `gleam-otp` skill holds the general process-copy rule.
 
 ## Choose the transport honestly
 
@@ -66,8 +66,8 @@ HTTP endpoints and stdio servers hold the server, with its codecs and handlers, 
 
 ## Verify
 
-Check the consuming manifest and the relevant usage module. Validate protocol claims with the pinned schema or focused conformance cases; a passing server case proves no client or authorization interoperability.
+Check the consuming manifest and the relevant usage module. Validate protocol claims with the implemented revision's schema or focused conformance cases; a passing server case proves no client or authorization interoperability.
 
 ## Sources
 
-[HexDocs](https://relay.hexdocs.pm/0.2.2/) · [Public API](https://github.com/gleam-dream/relay/tree/v0.2.2/src/relay) · [Usage topics](https://github.com/gleam-dream/relay/tree/v0.2.2/examples/relay_usage) · [MCP specification](https://modelcontextprotocol.io/specification/2026-07-28)
+[HexDocs](https://relay.hexdocs.pm/) · [Public API](https://github.com/gleam-dream/relay/tree/main/src/relay) · [Usage topics](https://github.com/gleam-dream/relay/tree/main/examples/relay_usage) · [MCP specification](https://modelcontextprotocol.io/specification)

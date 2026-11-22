@@ -18,7 +18,7 @@ Choose HTTP Gun on Erlang when shared pooling, bounded response reads, owned bod
 | Several independent requests                                    | `batch` with explicit concurrency; results retain input order               |
 | Deterministic HTTP tests                                        | `testing.playback`, then `testing.verify`; cassettes for captured exchanges |
 
-Use Hex `http_gun` 0.2.0 on Erlang; retain the resolved manifest. Generic SSE parsing is not provided.
+Add the latest `http_gun` release (`gleam add http_gun`) on Erlang; retain the resolved manifest. Generic SSE parsing is not provided.
 
 ## Configure once, reuse the client
 
@@ -43,7 +43,6 @@ Use Hex `http_gun` 0.2.0 on Erlang; retain the resolved manifest. Generic SSE pa
 - Retain `error.status` and `error.headers` after a body-collection failure; the response head still informs handling.
 - Configure recording redaction before startup. Defaults remove common credential headers and replace listed credential query and form/JSON fields; add provider names, and `with_body` for other bodies.
 - `cassette.encode` applies no redaction: run `cassette.redact(script, policy)` on a hand-built or parsed script that can hold credentials. Keep the answers playback checks: `redaction.request_fields_only` stores response bodies, such as a JSON `code`, as received.
-- 0.2.0 reads only schema 3 cassettes; convert 0.1.x files on the commit its changelog names.
 - Choose recording or playback at startup. Finish a recording explicitly and handle its result; HTTP success does not confirm cassette publication.
 
 ## Red flags
@@ -55,4 +54,4 @@ Use Hex `http_gun` 0.2.0 on Erlang; retain the resolved manifest. Generic SSE pa
 
 ## Sources
 
-[HexDocs](https://hexdocs.pm/http_gun/0.2.0/) · [Public API and consumers](https://github.com/gleam-dream/http_gun/blob/v0.2.0/README.md), [body ownership](https://github.com/gleam-dream/http_gun/blob/v0.2.0/src/http_gun/body.gleam), [retry evidence](https://github.com/gleam-dream/http_gun/blob/v0.2.0/src/http_gun/error.gleam).
+[HexDocs](https://hexdocs.pm/http_gun/) · [Public API and consumers](https://github.com/gleam-dream/http_gun/blob/main/README.md), [body ownership](https://github.com/gleam-dream/http_gun/blob/main/src/http_gun/body.gleam), [retry evidence](https://github.com/gleam-dream/http_gun/blob/main/src/http_gun/error.gleam).

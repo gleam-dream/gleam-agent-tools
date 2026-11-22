@@ -18,24 +18,24 @@ Choose Hellhound to sign users in or manage provider tokens while it handles dis
 | Sessions surviving custody-store restart       | Durable stores plus a stable sealing key                                      |
 | Accounts, permissions, or application sessions | Application policy around Hellhound's evidence                                |
 
-Use Hex `hellhound` 0.2.3 on Erlang; install `hellhound_postgres` 0.1.0 from Git ref `hellhound_postgres-v0.1.0`, path `integrations/hellhound_postgres`. Deployment requires independent security review; Hellhound is not certified.
+Add the latest `hellhound` release (`gleam add hellhound`) on Erlang; install `hellhound_postgres` from Git (`gleam-dream/hellhound`, `integrations/hellhound_postgres`, a `hellhound_postgres-v*` tag). Deployment requires independent security review; Hellhound is not certified.
 
 ## Configure clients, complete the login
 
 - Register the exact callback URI with the issuer. Construct role-specific configuration from trusted settings; retain verified HTTPS and transaction-binding defaults.
-- Call `hellhound.new` once per configuration at setup and reuse each handle; it starts no processes. Start the handle or add `hellhound.supervised(client)` to the application's supervisor.
+- Call `hellhound.new` once per configuration at setup and reuse each handle; it starts no processes. Start the handle or add `hellhound.supervised(client)` to the application supervisor.
 - Handle `ProviderNotReady` during supervised discovery; a stable handle after restart does not mean metadata or memory sessions survived.
 - Use `begin_login` with `login_response`, then `complete_login` on the callback. Preserve its browser-binding cookie and callback input; never recreate state, nonce, or PKCE handling.
-- Map the verified `(issuer, subject)` to an application principal. Keep `session_reference` in a protected application session; check permission and origin on protected routes.
+- Map the verified `(issuer, subject)` to an application principal. Keep `session_reference` in a protected session; check permission and origin on protected routes.
 - Restore the session and obtain `access_token` before an outgoing request; concurrent refresh shares one exchange. Decide separately whether to repeat a resource request after a 401.
 - For JWT assertions or discovery-free token requests, use `hellhound/assertion` and `hellhound/exchange`. Create the client with `exchange.new` and add `exchange.supervised(client)` to the application supervisor before `perform`, which sends at most one request; the application owns reuse, expiry, and retries.
-- Omit JWK `alg` or `kid` instead of `null`, which 0.2.0 rejects.
+- Omit an unused JWK `alg` or `kid`; `null` is rejected.
 
 ## Preserve recovery authority
 
 - Match every projected `Action`: `Reauthenticate`, `RetryLater`, `Recover`, `FixConfiguration`, and `RejectRequest`. Keep the full error for recovery.
 - Pass the carried recovery to `recover_custody` or `recover_refresh`. Recovery can publish obtained custody without another exchange; never resend a possibly consumed authorization code or refresh token.
-- Diagnose with the `describe_*` functions; never log opaque token, session, or recovery values.
+- Diagnose with `describe_*`; never log opaque token, session, or recovery values.
 - End the application's session during logout. Inspect custody removal, token revocation, and provider redirection as separate outcomes.
 
 ## Own storage and shutdown
@@ -55,4 +55,4 @@ Use Hex `hellhound` 0.2.3 on Erlang; install `hellhound_postgres` 0.1.0 from Git
 
 ## Sources
 
-[HexDocs](https://hexdocs.pm/hellhound/0.2.3/) · [Public API and consumers](https://github.com/gleam-dream/hellhound/blob/v0.2.3/README.md), [application decisions](https://github.com/gleam-dream/hellhound/blob/v0.2.3/consumer/src/hellhound_reference/usage/responsibilities.gleam), [store contract](https://github.com/gleam-dream/hellhound/blob/v0.2.3/src/hellhound/store.gleam).
+[HexDocs](https://hexdocs.pm/hellhound/) · [Public API and consumers](https://github.com/gleam-dream/hellhound/blob/main/README.md), [application decisions](https://github.com/gleam-dream/hellhound/blob/main/consumer/src/hellhound_reference/usage/responsibilities.gleam), [store contract](https://github.com/gleam-dream/hellhound/blob/main/src/hellhound/store.gleam).

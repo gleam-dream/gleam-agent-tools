@@ -20,17 +20,17 @@ What delivery contract does the application require?
 
 ## Check compatibility before selection
 
-- Inspect the resolved manifest and public API. Both packages are experimental. Roar 0.1.0 uses Whisper's older router API and is source-incompatible with the inspected Whisper 0.2.0 API, despite its permissive dependency range.
+- Inspect the resolved manifest and public API. Both packages are experimental. Roar can target a Whisper API other than the resolved one, despite its permissive dependency range.
 - Do not recommend that combined installation or invent a working downgrade. Establish a normally resolved, compiled pair before selecting Roar for a new application.
 - Qualify Whisper alone on the selected target and resolved graph. The retained local probe bypassed resolution and used an out-of-range stdlib; it does not establish a supported installation.
-- Keep old router examples separate from Whisper 0.2 topic examples. In 0.2, `new_topic` returns a checked topic value; `subscribe` and `on` receive that value directly.
+- Keep router-API examples separate from topic-API examples. With topics, `new_topic` returns a checked topic value; `subscribe` and `on` receive that value directly.
 
 ## Own topics and subscriptions
 
 - Define one application-owned payload contract per topic name. The BEAM registry is node-wide and the JavaScript registry is module-wide; a topic is not request-private merely because its value is local.
 - Keep topic definitions and handles under one owner. `Whisper(a)` does not establish a global schema registry or validate foreign message representations.
 - Retain cancellation closures and invoke them when the consumer ends. Close topics only through their owner; normal consumer exit does not guarantee subscription cleanup.
-- Distinguish `Message`, `Empty`, and `Closed` in Whisper 0.2 receive results. An empty buffer is not a closed subscription; polling it does not provide backpressure.
+- Distinguish `Message`, `Empty`, and `Closed` in Whisper receive results. An empty buffer is not a closed subscription; polling it does not provide backpressure.
 - Avoid reusing a closed topic name while stale handles remain. Topic handles address names; an old handle can address a replacement. In the inspected JavaScript implementation, old subscription closures can also affect replacement subscribers.
 
 ## Bound work and preserve recovery
@@ -44,7 +44,7 @@ What delivery contract does the application require?
 
 ## Red flags
 
-- Roar 0.1 examples compiled against Whisper 0.2.
+- Roar examples written for a Whisper API other than the resolved one.
 - A dropped notification used as the sole record of a required action.
 - Buffer capacity presented as a mailbox or system memory bound.
 - Topic names treated as authorization or globally checked payload types.
@@ -54,4 +54,4 @@ What delivery contract does the application require?
 
 ## Sources
 
-[Whisper source](https://github.com/webermarci/whisper/tree/d98a7fa9ded4f58706f767c519a1db3a099e76bc), [Roar source](https://github.com/webermarci/roar/tree/4852f5396459f93b389f8663538558301a4b0595), [Roar overview](https://hexdocs.pm/roar/).
+[Whisper source](https://github.com/webermarci/whisper), [Roar source](https://github.com/webermarci/roar), [Roar overview](https://hexdocs.pm/roar/).

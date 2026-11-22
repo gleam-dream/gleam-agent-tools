@@ -24,11 +24,11 @@ Does work need durable admission and retained outcomes?
 
 ## Define and own the runtime
 
-- Inspect `gleam.toml`, the manifest, and public APIs. Use Hex `grind` 0.2.2 on Erlang with Gleam >=1.18. Retain the manifest and narrow Pog/pgo ranges.
+- Inspect `gleam.toml`, the manifest, and public APIs. Add the latest `grind` release (`gleam add grind`) on Erlang. Retain the manifest and narrow Pog/pgo ranges.
 - Define stable worker identities and versions with typed input/output/error codecs. Keep old stored jobs readable across deployments; changing callback meaning can require a version change even with matching types.
 - Register workers with `with_worker`; add `supervised` to the application supervisor. Pair script-owned `start` with `stop`.
 - Keep worker values small: each job copies a closure over the whole worker definition three times, and its handler keeps one while it runs. Apply the `gleam-otp` process-copy rule to the worker value.
-- Budget `admin.settle_due` copying its queue's settlement closures into the caller; since 0.2.2 no other call copies workers.
+- Budget `admin.settle_due` copying its queue's settlement closures into the caller; no other call copies workers.
 - Let Grind own its pool. Borrow `connection` when useful. Budget one extra reserved renewal connection per used queue; queue capacity is local to a consumer.
 - Select one migration owner: package migrations or Cigogne mirrors. Install the schema before starting consumers; use startup migration only where that role owns DDL.
 
@@ -57,4 +57,4 @@ Does work need durable admission and retained outcomes?
 
 ## Sources
 
-[HexDocs](https://hexdocs.pm/grind/0.2.2/) · [Consumer API and examples](https://github.com/gleam-dream/grind/tree/v0.2.2), [transactional resolution](https://github.com/gleam-dream/grind/blob/v0.2.2/src/grind/admin.gleam), [runtime and recovery design](https://github.com/gleam-dream/grind/blob/v0.2.2/docs/design/design.typ).
+[HexDocs](https://hexdocs.pm/grind/) · [Consumer API and examples](https://github.com/gleam-dream/grind), [transactional resolution](https://github.com/gleam-dream/grind/blob/main/src/grind/admin.gleam), [runtime and recovery design](https://github.com/gleam-dream/grind/blob/main/docs/design/design.typ).

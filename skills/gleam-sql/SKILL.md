@@ -21,7 +21,7 @@ Does PostgreSQL fit the application's persistence contract?
 
 ## Generate against the intended schema
 
-- Check package versions and targets. Research covered Squirrel 4.7.0, Pog 4.1.0, and Cigogne 5.0.6. Squirrel supports PostgreSQL >=16; Pog and Cigogne execute on Erlang.
+- Check resolved packages and targets against their docs, including the PostgreSQL versions Squirrel supports. Pog and Cigogne execute on Erlang.
 - A JavaScript application can use migration tooling without gaining a JavaScript database runtime.
 - Add Squirrel as a development dependency. Author one statement per `.sql` file in `src/**/sql/`; run `gleam run -m squirrel` to generate the neighboring `sql.gleam` module.
 - Apply the intended migrations before generating or checking. The generator interrogates a live database; use the same schema baseline in CI and deployment planning.

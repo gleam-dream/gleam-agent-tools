@@ -25,8 +25,8 @@ Does the operation need workflow coordination?
 
 ## Define once, execute with input
 
-- Inspect the resolved revision and public modules. Use Hex `saga` 0.2.0 on Erlang with Gleam >=1.18.
-- Install `saga_postgres` 0.1.0 from Git ref `saga_postgres-v0.1.0`, path `integrations/saga_postgres`.
+- Inspect the resolved revision and public modules. Add the latest `saga` release (`gleam add saga`) on Erlang.
+- Install `saga_postgres` from Git (`gleam-dream/saga`, path `integrations/saga_postgres`, a `saga_postgres-v*` release tag).
 - Build a reusable workflow with `define`. Its builder runs once; supply each request as input. Connect steps through typed ports, using `perform`, `both`, `all`, and `choose`.
 - Keep external clients and application policy in supplied callbacks. Use `effect` when a step needs its `EffectKey`; pass its idempotency key to an enforcing provider.
 - Use `undo` to reverse known completed work, `compensate` to choose a failed attempt's retry, replacement, abort, or hold.
@@ -44,7 +44,6 @@ Does the operation need workflow coordination?
 - Keep effect keys stable across attempts and recovery. A fresh local run has its own identity and does not deduplicate another run's effects.
 - Keep application commits and checkpoint commits separate, even on the same database. An absent checkpoint cannot prove the application write rolled back.
 - Own wakeups, unfinished-run discovery, and redelivery; durable storage starts no scheduler. A drive timeout stops that driver without cancelling saved execution.
-- Upgrade all nodes before 0.2.0 writes checkpoints and never roll back: 0.1.0 reads `CoordinatorCrashed` checkpoints as malformed.
 - Match storage to the failure model. Memory loses progress with its store/VM; file storage requires an existing canonical absolute directory and one VM, without power-loss durability.
 - With `saga_postgres`, own and supervise the borrowed pool, migrate once, and plan retention. Use a pooled handle, not a transaction-scoped connection.
 
@@ -59,4 +58,4 @@ Does the operation need workflow coordination?
 
 ## Sources
 
-[HexDocs](https://hexdocs.pm/saga/0.2.0/) · [Public workflow and consumer](https://github.com/gleam-dream/saga/tree/v0.2.0), [reporting lifetime](https://github.com/gleam-dream/saga/blob/v0.2.0/src/saga/reporting.gleam), [durability contract](https://github.com/gleam-dream/saga/blob/v0.2.0/src/saga/durable.gleam), [PostgreSQL adapter](https://github.com/gleam-dream/saga/tree/saga_postgres-v0.1.0/integrations/saga_postgres).
+[HexDocs](https://hexdocs.pm/saga/) · [Public workflow and consumer](https://github.com/gleam-dream/saga), [reporting lifetime](https://github.com/gleam-dream/saga/blob/main/src/saga/reporting.gleam), [durability contract](https://github.com/gleam-dream/saga/blob/main/src/saga/durable.gleam), [PostgreSQL adapter](https://github.com/gleam-dream/saga/tree/main/integrations/saga_postgres).

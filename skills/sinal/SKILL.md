@@ -23,7 +23,7 @@ What must the event accomplish?
 
 ## Define and observe
 
-- Check the resolved source. Use Hex `sinal` 0.1.0 on Erlang with Gleam >=1.18 and native telemetry >=1.4.2 and <2.
+- Check the resolved source. Add the latest `sinal` release (`gleam add sinal`) on Erlang; it builds on native `telemetry`.
 - Define one event name with separate measurement and metadata codecs; reuse that definition in emitters and observers. Compose record fields through `fields.include` and `fields.success`.
 - Keep custom getters/encoders total: they run in the producer and can raise before dispatch, even without observers or with forwarding. Optional observation does not make encoding infallible.
 - Write event names, field keys, and route prefixes in trusted source. They create permanent atoms. Put request IDs and other unbounded values in metadata values.
@@ -55,4 +55,4 @@ What must the event accomplish?
 
 ## Sources
 
-[HexDocs](https://hexdocs.pm/sinal/0.1.0/) · [Sinal public API and consumer examples](https://github.com/gleam-dream/sinal/tree/3b66f83855a3ce4e0979b3045dbd26888aea5065), [forwarder contract](https://github.com/gleam-dream/sinal/blob/3b66f83855a3ce4e0979b3045dbd26888aea5065/src/sinal/forwarder.gleam), [native telemetry](https://telemetry.hexdocs.pm/1.4.2/telemetry.html).
+[HexDocs](https://hexdocs.pm/sinal/) · [Sinal public API and consumer examples](https://github.com/gleam-dream/sinal), [forwarder contract](https://github.com/gleam-dream/sinal/blob/main/src/sinal/forwarder.gleam), [native telemetry](https://telemetry.hexdocs.pm/telemetry.html).

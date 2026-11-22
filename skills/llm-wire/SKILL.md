@@ -7,7 +7,7 @@ description: Call LLM providers and handle typed answers, tool requests, streami
 
 Choose LLM Wire on Erlang/OTP for common typed provider outcomes, preflight validation, and streaming while the application owns history, tools, and retries. A narrow provider client suffices without these shared contracts; Fabric adds retained execution. Generation adapters cover OpenAI Responses, Anthropic Messages, and Google GenerateContent.
 
-Use Hex `llm_wire` 0.2.0 with `json_blueprint >= 2.2.0`; retain the resolved `manifest.toml`.
+Add the latest `llm_wire` release (`gleam add llm_wire`); retain the resolved `manifest.toml`.
 
 ## Abstraction decision tree
 
@@ -36,8 +36,8 @@ Use `with_output(name, codec)` for decoded answers. Its codec must have a record
 - On `NeedsTools`, retain the returned `AssistantTurn`. Append `message.Assistant(turn)` and one `tool_result` for every call to the next request.
 - Preserve call ids, ordering, and opaque provider replay data when storing history. Use the message and turn codecs; rebuilding a turn from visible text loses information.
 - Keep authorization, effect identity, and tool errors in the application. A model request cannot authorize a business action.
-- Each call copies its tool list about five times ([measured](https://github.com/gleam-dream/llm_wire/blob/9059fdfa54c3d72eb489914926f3cea75b2e99f6/issues/hold-tools-once-per-call/PRD.md)), each `tool.new` copy with its input codec (about its own size from json_blueprint 2.2.0); the `with_output` codec stays in your process. For tools sent on many calls, use `from_contract` or `from_json_schema` tools, which copy schema only, with `decode_arguments`, and build run-time enums once ([codec guide](https://github.com/lostbean/json_blueprint/blob/v2.2.0/docs/CODEC-PRACTICE.md)).
-- In 0.2.0, every OpenAI tool call fails with `Protocol("Duplicate tool block completion")`; use another adapter for tools. On Anthropic, `prepare` refuses a thinking level while the last assistant message holds a tool call (`ThinkingInToolRound`); drop the level for tool-result rounds.
+- Each call copies its tool list about five times ([measured](https://github.com/gleam-dream/llm_wire/blob/main/issues/hold-tools-once-per-call/PRD.md)), each `tool.new` copy with its input codec (about its own size); the `with_output` codec stays in your process. For tools sent on many calls, use `from_contract` or `from_json_schema` tools, which copy schema only, with `decode_arguments`, and build run-time enums once ([codec guide](https://github.com/lostbean/json_blueprint/blob/main/docs/CODEC-PRACTICE.md)).
+- On Anthropic, `prepare` refuses a thinking level while the last assistant message holds a tool call (`ThinkingInToolRound`); drop the level for tool-result rounds.
 
 ## Own streams and retries
 
@@ -60,4 +60,4 @@ Check the manifest before using a signature. Validate changed request and replay
 
 ## Sources
 
-[HexDocs](https://hexdocs.pm/llm_wire/0.2.0/) · [Public API](https://github.com/gleam-dream/llm_wire/blob/v0.2.0/src/llm_wire.gleam) · [Consumer topics](https://github.com/gleam-dream/llm_wire/tree/v0.2.0/examples/consumer) · [Design](https://github.com/gleam-dream/llm_wire/tree/v0.2.0/docs/design)
+[HexDocs](https://hexdocs.pm/llm_wire/) · [Public API](https://github.com/gleam-dream/llm_wire/blob/main/src/llm_wire.gleam) · [Consumer topics](https://github.com/gleam-dream/llm_wire/tree/main/examples/consumer) · [Design](https://github.com/gleam-dream/llm_wire/tree/main/docs/design)

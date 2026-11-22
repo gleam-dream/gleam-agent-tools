@@ -7,7 +7,7 @@ description: Build and debug typed LLM agents and conditional graphs with Fabric
 
 Choose Fabric when a tool waits for approval or a lost runner must resume from retained actions and outcomes on Erlang/OTP; that justifies a store, live context and recovery owner.
 
-Use Hex `fabric` 0.5 with `json_blueprint >= 2.2.0`; retain `manifest.toml`. The PostgreSQL adapter installs from Git tag `fabric_postgres-v0.4.0`, path `integrations/fabric_postgres`.
+Add the latest `fabric` release (`gleam add fabric`); retain `manifest.toml`. The PostgreSQL adapter installs from Git (`gleam-dream/fabric`, path `integrations/fabric_postgres`, a `fabric_postgres-v*` release tag).
 
 ## Abstraction decision tree
 
@@ -37,7 +37,7 @@ Runs, tool bodies and model calls run in separate processes; a sent value is cop
 - Make subjects, names, and tables outside the builder; one made inside is remade per process.
 - Another name or version is refused (`AgentUnbuildable`), but `open`, `recover` and the sweeper ignore captures. A per-run capture makes a per-run agent: give it its own name, keep that name out of `sweeper.agent`, and recover its runs from an owner that re-derives the captures.
 - A `Run` handle holds the built agent: send the id and `open` it there.
-- On json_blueprint 2.2.0 a codec copies at about its own size. Build a run-time enum once before the chain and `codec.check` it; the [codec practice](https://github.com/lostbean/json_blueprint/blob/main/docs/CODEC-PRACTICE.md) has the rules.
+- A json_blueprint codec copies at about its own size. Build a run-time enum once before the chain and `codec.check` it; the [codec practice](https://github.com/lostbean/json_blueprint/blob/main/docs/CODEC-PRACTICE.md) has the rules.
 
 ## Declare effect meaning
 
@@ -68,4 +68,4 @@ Pin the dependency graph. Check lifecycle claims with scripted models and the wa
 
 ## Sources
 
-[HexDocs](https://hexdocs.pm/fabric/0.5.0/) · [Public API](https://github.com/gleam-dream/fabric/tree/main/src/fabric) · [Usage topics](https://github.com/gleam-dream/fabric/tree/main/examples/usage) · [Design and pending scope](https://github.com/gleam-dream/fabric/blob/main/docs/design/design.typ)
+[HexDocs](https://hexdocs.pm/fabric/) · [Public API](https://github.com/gleam-dream/fabric/tree/main/src/fabric) · [Usage topics](https://github.com/gleam-dream/fabric/tree/main/examples/usage) · [Design and pending scope](https://github.com/gleam-dream/fabric/blob/main/docs/design/design.typ)
