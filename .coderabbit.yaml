@@ -5,18 +5,13 @@
 # of coderabbit-config itself, and `repository` marks a rule beyond the catalog.
 #
 # Catalogs read:
-#   practice catalog (not public)  879841a61c3f83cd809edca9229c4a6bb7f909f8
-#   gleam-agent-tools (this repo)  6a9ea2f647e787a32d3c7fa88d9c58c5b81ae9d7
+#   practice catalog (not public)  a56636a4eed7a0d644b89f5bb7c7d7c9692e0887
+#   gleam-agent-tools (this repo)  d7b541cb885b3edbf25563b06aee97b28b66074f
 #
 # Governing skills: coderabbit-config (policy), writing, gate, testing,
 # python, dependency, git from the practice catalog; gleam-tooling from
 # gleam-agent-tools. The practice catalog's write-skill standard does not
 # govern this catalog: README.md sets its own skill standard.
-#
-# Governing dependency versions: no Gleam package is locked here. Pinned in
-# flake.lock: nixpkgs nixos-26.05 1f607aa79b63, home-manager release-26.05
-# 24f219058751, treefmt-nix 0d6d739a833b. Pinned in nix/agent-lsp.nix: the
-# agent-lsp fork 0.23.2-gleam-reliability-57d7a50 (rev 57d7a50949f1).
 language: en-US
 tone_instructions: >-
   Literal and concise. Report only defects you can evidence from the diff, its
@@ -114,9 +109,11 @@ reviews:
         - Flag a SKILL.md that lacks selection criteria, a decision tree or
           decision table, red flags, or primary sources.
         - Flag a changed technical claim (API name, signature, variant,
-          default, install line, version) that the cited primary source at
-          the named release does not support, and a source link that points
-          at a release other than the one the skill names.
+          default, install line) that the cited primary source does not
+          support.
+        - Flag a release version or version floor, an upgrade step, or a
+          defect workaround in a skill; the skill states lasting direction
+          and points to the package's docs and CHANGELOG for those.
         - Flag frontmatter whose `name` differs from its directory, and a
           description that does not say when to select the skill.
         - Flag a skill that takes over another skill's responsibility; the
