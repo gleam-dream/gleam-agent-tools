@@ -37,7 +37,7 @@ Runs, tool bodies and model calls run in separate processes; a sent value is cop
 - Make subjects, names, and tables outside the builder; one made inside is remade per process.
 - Another name or version is refused (`AgentUnbuildable`), but `open`, `recover` and the sweeper ignore captures. A per-run capture makes a per-run agent: give it its own name, keep that name out of `sweeper.agent`, and recover its runs from an owner that re-derives the captures.
 - A `Run` handle holds the built agent: send the id and `open` it there.
-- A json_blueprint codec copies at about its own size. Build a run-time enum once before the chain and `codec.check` it; see the [codec practice](https://github.com/lostbean/json_blueprint/blob/main/docs/CODEC-PRACTICE.md).
+- A json_blueprint codec copies at about its own size. Build a run-time enum once before the chain and `codec.check` it; see the [codec practice](https://github.com/gleam-dream/json_blueprint/blob/main/docs/CODEC-PRACTICE.md).
 
 ## Declare effect meaning
 

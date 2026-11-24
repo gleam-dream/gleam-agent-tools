@@ -38,7 +38,7 @@ HTTP endpoints and stdio servers hold the server, with its codecs and handlers, 
 
 - Relay copies the body, arguments and your context per request and call. Keep catalogues, clients and codecs out of the context.
 - `register_tool` frees the previous snapshot, which scans the node; register rarely.
-- A json_blueprint codec copies at about its own size; build a run-time enum once, before the chain. The [codec practice](https://github.com/lostbean/json_blueprint/blob/main/docs/CODEC-PRACTICE.md) holds the rules; the `gleam-otp` skill holds the general process-copy rule.
+- A json_blueprint codec copies at about its own size; build a run-time enum once, before the chain. The [codec practice](https://github.com/gleam-dream/json_blueprint/blob/main/docs/CODEC-PRACTICE.md) holds the rules; the `gleam-otp` skill holds the general process-copy rule.
 
 ## Choose the transport honestly
 

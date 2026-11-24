@@ -35,7 +35,7 @@ What runtime responsibility exists?
 - A copy between processes loses sharing: a message, spawn closure or start argument costs its flat size, which can far exceed its heap size. Module literals and binaries over 64 bytes are not copied.
 - Capture small references, such as ids; keep static data in module constants or `persistent_term`.
 - Test each crossing term's copy size: `erts_debug:flat_size(Term) * erlang:system_info(wordsize)` bytes.
-- For codecs, follow the [json_blueprint guide](https://github.com/lostbean/json_blueprint/blob/main/docs/CODEC-PRACTICE.md); a codec copies at about its own size.
+- For codecs, follow the [json_blueprint guide](https://github.com/gleam-dream/json_blueprint/blob/main/docs/CODEC-PRACTICE.md); a codec copies at about its own size.
 
 ## Encode recovery dependencies
 

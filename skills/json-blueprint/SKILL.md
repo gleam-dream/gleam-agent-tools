@@ -62,4 +62,4 @@ The `gleam-otp` skill owns the general rule: a process copy loses sharing, so bo
 
 ## Sources
 
-[Codec practice guide](https://github.com/lostbean/json_blueprint/blob/main/docs/CODEC-PRACTICE.md) · [HexDocs](https://hexdocs.pm/json_blueprint/) · [Source](https://github.com/lostbean/json_blueprint), [wire-format migration](https://github.com/lostbean/json_blueprint/blob/main/docs/MIGRATION.md).
+[Codec practice guide](https://github.com/gleam-dream/json_blueprint/blob/main/docs/CODEC-PRACTICE.md) · [HexDocs](https://hexdocs.pm/json_blueprint/) · [Source](https://github.com/gleam-dream/json_blueprint), [wire-format migration](https://github.com/gleam-dream/json_blueprint/blob/main/docs/MIGRATION.md).
