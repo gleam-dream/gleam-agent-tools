@@ -79,6 +79,13 @@ For an existing installation, move any selected skill directories to a backup be
 
 Register `gleam-agent-lsp` as the agent's stdio MCP command. The bridge starts outside a project; when a Gleam file is requested, its child uses that package's Nix development shell or the existing compiler on `PATH`. Development-shell startup output is kept off the protocol stream. Configuration does not install a global Gleam compiler.
 
+Entering a project's development shell runs that project's code. `nix develop` evaluates the flake and runs its `shellHook` as the user, and the agent chooses the directory when it calls `start_lsp`. Start the language server only in repositories whose flake is trusted. Two environment variables on the MCP command restrict this:
+
+- `GLEAM_AGENT_LSP_NO_NIX=1` never enters a development shell and uses the compiler on `PATH`.
+- `GLEAM_AGENT_LSP_TRUSTED_ROOTS` is a colon-separated list of absolute directories. A development shell is entered only for a flake at or below one of them; any other project uses the compiler on `PATH`, and the launcher reports the skipped flake on stderr.
+
+With neither variable set, every project flake is entered.
+
 Flake discovery stops at the project's Git root. An unrelated parent flake does not override a PATH compiler. Existing project lockfiles are preserved; a new project without a lockfile can enter its shell without writing one.
 
 The launcher disables the bridge's broad automatic watcher because it resets Gleam's diagnostic state. Refresh externally edited source with `get_diagnostics`, and restart the server after changing `gleam.toml`. The repaired fork remains pinned until the required fixes are available upstream.
