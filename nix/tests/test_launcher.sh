@@ -19,6 +19,7 @@ trusted="$work/trusted/project"
 other="$work/other/project"
 mkdir -p "$trusted/.git" "$trusted/package" "$other/.git" "$work/plain/.git"
 touch "$trusted/flake.nix" "$other/flake.nix"
+ln -s "$trusted" "$work/link"
 
 failures=0
 # check NAME DIRECTORY EXPECTED [VARIABLE=value ...]
@@ -42,12 +43,16 @@ check() {
 
 develop="nix develop $trusted --no-write-lock-file"
 
-check "a project flake starts its development shell" \
-  "$trusted/package" "$develop"
+check "a project flake with no trusted list starts the PATH compiler" \
+  "$trusted/package" "gleam lsp"
+for message in "$trusted" GLEAM_AGENT_LSP_TRUSTED_ROOTS "Gleam on PATH"; do
+  if ! grep -q "$message" "$work/stderr"; then
+    echo "not ok - the fallback message names: $message"
+    failures=$((failures + 1))
+  fi
+done
 check "a project without a flake starts the PATH compiler" \
   "$work/plain" "gleam lsp"
-check "GLEAM_AGENT_LSP_NO_NIX=1 starts the PATH compiler" \
-  "$trusted/package" "gleam lsp" GLEAM_AGENT_LSP_NO_NIX=1
 check "a root on the trusted list starts its development shell" \
   "$trusted/package" "$develop" \
   GLEAM_AGENT_LSP_TRUSTED_ROOTS="$work/missing:$work/trusted"
@@ -61,8 +66,7 @@ if ! grep -q "$other" "$work/stderr"; then
   echo "not ok - the refusal names the untrusted root"
   failures=$((failures + 1))
 fi
-check "GLEAM_AGENT_LSP_NO_NIX=1 overrides the trusted list" \
-  "$trusted" "gleam lsp" \
-  GLEAM_AGENT_LSP_NO_NIX=1 GLEAM_AGENT_LSP_TRUSTED_ROOTS="$work/trusted"
+check "a trusted root reached through a symbolic link starts its development shell" \
+  "$work/link/package" "$develop" GLEAM_AGENT_LSP_TRUSTED_ROOTS="$work/trusted"
 
 exit "$((failures > 0))"
