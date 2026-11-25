@@ -34,8 +34,17 @@ let
 in
 buildGoModule rec {
   pname = "agent-lsp";
-  # Synced upstream includes the path-confinement fix from PR #26. This fork
-  # also fixes Gleam roots, initialization, impact warnings and diagnostics.
+  # Fork owned by lostbean (github.com/lostbean/agent-lsp), pinned by exact
+  # commit. Upstream blackwell-systems/agent-lsp already contains the Gleam
+  # root fixes (PR #78) and the path-confinement fix (PR #26). The fork
+  # carries five fixes not yet upstream, sent as:
+  #   #82 fix(impact): report incomplete and failed symbol analysis
+  #   #85 fix(impact): reject unsupported analysis and advertise required capabilities
+  #   #83 fix(lsp): start the server for the changed files in blast_radius
+  #   #86 fix(lsp): keep files for an unstarted server off another language's server
+  #   #84 fix(diagnostics): reject stale publications after reopening documents
+  # Exit: switch src to owner = "blackwell-systems" at the first upstream
+  # release tag that contains all five, and remove this fork pin.
   version = "0.23.2-gleam-reliability-57d7a50";
 
   src = fetchFromGitHub {
