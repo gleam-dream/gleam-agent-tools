@@ -13,11 +13,19 @@ npx skills@latest add gleam-dream/gleam-agent-tools
 
 Choose the skills and agents interactively. Add `-g` to make them available across projects. See the [installer documentation](https://github.com/vercel-labs/skills#install-a-skill) for more options.
 
+That command installs whatever `main` holds when it runs. A skill is instruction to an agent that can run commands, so read what is installed, or install a commit already reviewed. The installer accepts a full commit hash after `@`, as its [source formats](https://github.com/vercel-labs/skills/blob/main/docs/commands.md#source-formats) describe:
+
+```sh
+npx skills@latest add gleam-dream/gleam-agent-tools@<full-commit-hash>
+```
+
+This repository has no release tags; the same form takes a tag when one exists. `skills@latest` is itself unpinned; replace `latest` with an installer version to fix that as well.
+
 ### Nix and Home Manager
 
 The optional flake provides `packages.<system>.agent-lsp`, a `gleam-agent-lsp` app, an `agent-lsp` overlay, and `homeManagerModules.default`. macOS and Linux packages use the same pinned bridge and launcher. Applications keep their own Gleam compiler and dependencies.
 
-Add this repository as a flake input. Reuse the consumer's existing inputs:
+Add this repository as a flake input. Reuse the consumer's existing inputs. The consumer's `flake.lock` records the commit, and only `nix flake update gleam-agent-tools` moves it; append `/<full-commit-hash>` to the URL to name the commit in `flake.nix` as well:
 
 ```nix
 inputs.gleam-agent-tools = {
@@ -81,9 +89,11 @@ Register `gleam-agent-lsp` as the agent's stdio MCP command. The bridge starts o
 
 Flake discovery stops at the project's Git root. An unrelated parent flake does not override a PATH compiler. Existing project lockfiles are preserved; a new project without a lockfile can enter its shell without writing one.
 
-The launcher disables the bridge's broad automatic watcher because it resets Gleam's diagnostic state. Refresh externally edited source with `get_diagnostics`, and restart the server after changing `gleam.toml`. The repaired fork remains pinned until the required fixes are available upstream.
+The launcher disables the bridge's broad automatic watcher because it resets Gleam's diagnostic state. Refresh externally edited source with `get_diagnostics`, and restart the server after changing `gleam.toml`. The bridge is built from a pinned commit of a [fork](https://github.com/lostbean/agent-lsp) of [agent-lsp](https://github.com/blackwell-systems/agent-lsp). The fork carries three fixes that upstream lacks; `nix/agent-lsp.nix` names them and the condition for returning to upstream.
 
-For a temporary installation, run `nix run github:gleam-dream/gleam-agent-tools#gleam-agent-lsp`. For local development, override the flake input with `--override-input gleam-agent-tools path:/absolute/path/to/gleam-agent-tools`.
+Registering the bridge gives the agent tools that write files, not only tools that read code. The pinned bridge exposes `apply_edit`, `safe_apply_edit`, `replace_symbol_body`, `safe_delete_symbol`, `rename_symbol`, `format_document` and `execute_command`, among others; its [tool reference](https://github.com/lostbean/agent-lsp/blob/57d7a50949f1745903cfb5b18287e0fc0c756853/docs/reference/tools.md) lists them all. Grant or deny those tools in the agent's own permission settings.
+
+For a temporary installation, run `nix run github:gleam-dream/gleam-agent-tools#gleam-agent-lsp`. That form runs the current `main`; `nix run github:gleam-dream/gleam-agent-tools/<full-commit-hash>#gleam-agent-lsp` runs a chosen commit. For local development, override the flake input with `--override-input gleam-agent-tools path:/absolute/path/to/gleam-agent-tools`.
 
 Run `nix fmt`, `nix flake check`, and `nix develop --command python nix/tests/test_mcp.py gleam-agent-lsp` before publishing. The flake checks build the package, verify enabled, disabled and selective Home Manager installations, and exercise MCP with a real Gleam compiler. The development-shell command also verifies project environment selection against a live Nix store; CI runs both commands.
 

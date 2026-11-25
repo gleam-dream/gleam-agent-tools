@@ -34,8 +34,17 @@ let
 in
 buildGoModule rec {
   pname = "agent-lsp";
-  # Synced upstream includes the path-confinement fix from PR #26. This fork
-  # also fixes Gleam roots, initialization, impact warnings and diagnostics.
+  # Built from a fork of blackwell-systems/agent-lsp. Upstream has merged the
+  # fork's path-confinement fix (PR #26) and its Gleam package detection and
+  # test-caller classification (PR #78). Three fixes exist only in the fork,
+  # with no upstream pull request yet:
+  # - impact analysis reports incomplete, failed and unsupported symbol
+  #   analysis instead of an empty result;
+  # - the selected server is initialized for impact queries and keeps its
+  #   configured routing after warm queries;
+  # - diagnostics published before a document was reopened are rejected.
+  # Return `src` to an upstream release once one contains all three, shown by
+  # nix/tests/test_mcp.py passing against it.
   version = "0.23.2-gleam-reliability-57d7a50";
 
   src = fetchFromGitHub {
