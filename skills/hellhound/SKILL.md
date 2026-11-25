@@ -1,6 +1,6 @@
 ---
 name: hellhound
-description: Integrate OIDC login, OAuth tokens, and access-token validation with Hellhound on Erlang/OTP. Use for authorization-code callbacks, token custody, refresh, resource servers, introspection, durable authentication stores, and logout.
+description: Integrate OIDC login, OAuth tokens, and access-token validation with Hellhound on Erlang/OTP. Use for authorization-code callbacks, token custody, refresh, permission checks from current claims, resource servers, introspection, durable authentication stores, and logout.
 ---
 
 # Hellhound
@@ -16,6 +16,7 @@ Choose Hellhound to sign users in or manage provider tokens while it handles dis
 | RFC 9068 JWT access-token validation           | Resource-server configuration and `hellhound/resource`                        |
 | Provider-observed token state or opaque tokens | `introspect`, with explicit availability handling                             |
 | Sessions surviving custody-store restart       | Durable stores plus a stable sealing key                                      |
+| Permissions from roles or groups in ID claims  | `current_identity` with an application-chosen `claims_age`                    |
 | Accounts, permissions, or application sessions | Application policy around Hellhound's evidence                                |
 
 Add the latest `hellhound` (`gleam add hellhound`) on Erlang. For PostgreSQL stores, add `hellhound_postgres` from Git (`gleam-dream/hellhound`, `integrations/hellhound_postgres`), pinned by commit to the newest `hellhound_postgres-v*` tag accepting the resolved core. Hellhound is uncertified; deployment needs independent security review.
@@ -26,10 +27,21 @@ Add the latest `hellhound` (`gleam add hellhound`) on Erlang. For PostgreSQL sto
 - Call `hellhound.new` once per configuration at setup and reuse each handle; it starts no processes. Start the handle or supervise it with `hellhound.supervised(client)`.
 - Handle `ProviderNotReady` during supervised discovery; a stable handle after restart does not mean metadata or memory sessions survived.
 - Use `begin_login` with `login_response`, then `complete_login` on the callback. Preserve its browser-binding cookie and callback input; never recreate state, nonce, or PKCE.
-- Map the verified `(issuer, subject)` to a principal. Keep `session_reference` in a protected session; check permission and origin on protected routes.
+- Map the verified `(issuer, subject)` to a principal. Keep `session_reference` in a protected session; check origin on protected routes.
 - Restore the session and obtain `access_token` before an outgoing request; concurrent refresh shares one exchange. Decide separately whether to repeat a resource request after a 401.
 - For JWT assertions or discovery-free token requests, use `hellhound/assertion` and `hellhound/exchange`. Create the client with `exchange.new`, supervise it with `exchange.supervised(client)` before `perform`, which sends at most one request; the application owns reuse, expiry, and retries.
 - In a signing JWK for `hellhound/assertion`, omit an unused `alg` or `kid`.
+
+## Authorize from current claims
+
+- Decide every permission drawn from claims through `current_identity(client, session, claims_age)`; `session_identity` is unchecked and decides nothing.
+- Build each bound once with `claims_age(client, duration)` from the client it is used with; the bound is application policy and differs per route when needed.
+- Request `offline_access` at login: past the bound the read renews with a refresh token, or answers `Reauthenticate`.
+- Type authorization helpers on `Current`, never `VerifiedIdentity`, and keep a `Current` only for its request. A missing roles claim means no roles.
+- On `Reauthenticate` from the read, call `logout` before redirecting; on `RetryLater` and `FixConfiguration`, deny the request and keep the session.
+- Confirm the provider evaluates claims again on refresh and returns an ID token; without one every read past the bound fails as `ClaimsNotRenewed`.
+- `authentication_time`, `acr` and `amr` read the login's values; `decode_claims` reads the current token's raw members.
+- On a long-lived connection, check on each incoming message and close on a timer when the claims pass the bound; never poll while idle.
 
 ## Preserve recovery authority
 
@@ -49,10 +61,11 @@ Add the latest `hellhound` (`gleam add hellhound`) on Erlang. For PostgreSQL sto
 ## Red flags
 
 - Using email as the stable account key or treating login as permission.
+- Deciding a permission from `session_identity`, or calling `logout` on `FixConfiguration`.
 - Converting `Recover` into a fresh token exchange.
 - Treating a resource POST as repeatable because refresh succeeded.
 - Adding PostgreSQL while losing the sealing key on restart.
 
 ## Sources
 
-[HexDocs](https://hexdocs.pm/hellhound/) · [Public API and consumers](https://github.com/gleam-dream/hellhound/blob/main/README.md), [application decisions](https://github.com/gleam-dream/hellhound/blob/main/consumer/src/hellhound_reference/usage/responsibilities.gleam), [store contract](https://github.com/gleam-dream/hellhound/blob/main/src/hellhound/store.gleam).
+[HexDocs](https://hexdocs.pm/hellhound/) · [Public API and consumers](https://github.com/gleam-dream/hellhound/blob/main/README.md), [application decisions](https://github.com/gleam-dream/hellhound/blob/main/consumer/src/hellhound_reference/usage/responsibilities.gleam), [authorization example](https://github.com/gleam-dream/hellhound/blob/main/consumer/src/hellhound_reference/usage/authorization.gleam), [store contract](https://github.com/gleam-dream/hellhound/blob/main/src/hellhound/store.gleam).
