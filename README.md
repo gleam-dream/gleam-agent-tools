@@ -122,4 +122,8 @@ Agents select and combine the guides a task needs. Package skills guide applicat
 - Check primary sources before changing technical claims. Use temporary code probes only when execution is needed to verify a claim.
 - Check metadata, links, API names, and responsibility boundaries. Keep experiments, downloaded dependencies, and validation output outside this repository.
 
-Uses the [Agent Skills format](https://agentskills.io/specification). See [NOTICE.md](NOTICE.md) for source acknowledgements and licence notices.
+Uses the [Agent Skills format](https://agentskills.io/specification).
+
+## Licence
+
+Licensed under the [Apache License, Version 2.0](LICENSE). Guidance adapted from `lostbean/skills` stays under its MIT licence; [NOTICE.md](NOTICE.md) names the sources and reproduces their notices.
