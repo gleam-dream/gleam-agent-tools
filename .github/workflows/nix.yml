@@ -23,3 +23,6 @@ jobs:
       - run: nix flake check --no-update-lock-file --print-build-logs
       - name: Verify project environment selection with a live Nix store
         run: nix develop --command python nix/tests/test_mcp.py gleam-agent-lsp
+      - name: Verify the functions library skills name against each library's pinned commit
+        if: matrix.runner == 'ubuntu-latest'
+        run: nix develop --command python nix/tests/check_skill_identifiers.py

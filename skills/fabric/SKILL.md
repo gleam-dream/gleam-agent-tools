@@ -1,6 +1,10 @@
 ---
 name: fabric
 description: Build and debug typed LLM agents and conditional graphs with Fabric. Use for application tools, policy, approvals, retained run state, cancellation, uncertain effects, and recovery in Gleam applications.
+metadata:
+  library: gleam-dream/fabric
+  library-ref: c9678bbf68bb04306b6a2302e75615e3e547f0d7
+  not-in-library: codec.check
 ---
 
 # Fabric

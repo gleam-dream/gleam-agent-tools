@@ -1,6 +1,9 @@
 ---
 name: hellhound
 description: Integrate OIDC login, OAuth tokens, and access-token validation with Hellhound on Erlang/OTP. Use for authorization-code callbacks, token custody, refresh, resource servers, introspection, durable authentication stores, and logout.
+metadata:
+  library: gleam-dream/hellhound
+  library-ref: 13c65db507acabaef7e5515ca2e6bcce5561fdce
 ---
 
 # Hellhound

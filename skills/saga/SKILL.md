@@ -1,6 +1,9 @@
 ---
 name: saga
 description: Build and debug typed workflows with Saga. Use for dependent steps, parallel work, retries, undo, compensation, cancellation, checkpointing, and interrupted-effect recovery.
+metadata:
+  library: gleam-dream/saga
+  library-ref: 39490d2fff1ed8e06baa4beee040689f1c1ad00a
 ---
 
 # Saga

@@ -1,6 +1,9 @@
 ---
 name: retrace
 description: Reconstruct frontend sessions from safe models and accepted messages with Retrace, especially Lustre updates. Use for typed checkpoints, capture, inert replay, historical builds, frontend delivery, and optional server archival.
+metadata:
+  library: gleam-dream/retrace
+  library-ref: 49f8f0194dca9f891cc28832b656bf8fe2be4f1b
 ---
 
 # Retrace
