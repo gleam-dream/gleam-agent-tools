@@ -13,21 +13,20 @@ Choose Hellhound to sign users in or hold provider tokens; it handles discovery,
 - Service-to-service OAuth: `client_credentials`, with an application-owned token cache.
 - RFC 9068 JWT access tokens: `hellhound/resource`.
 - Provider token state or opaque tokens: `introspect`, handling availability.
-- Sessions surviving a store restart: durable stores and a stable sealing key.
+- Sessions surviving a store restart: a durable custody store and a stable sealing key.
 - Permissions from roles in ID claims: `current_identity` with a `claims_age`.
-- Accounts and sessions: application policy around Hellhound's evidence.
 
 Add the latest `hellhound` on Erlang. For PostgreSQL, add `hellhound_postgres` from Git (`integrations/hellhound_postgres`), pinned to the newest `hellhound_postgres-v*` tag accepting the resolved core. Hellhound is uncertified; deployment needs a security review.
 
 ## Configure clients, complete the login
 
-- Register the exact callback URI; build configuration from trusted settings and keep the HTTPS and binding defaults.
-- Call `hellhound.new` once per configuration and reuse the handle; start it or supervise it with `hellhound.supervised`.
+- Register the exact callback URI; build configuration from trusted settings and keep the HTTPS defaults.
+- Call `hellhound.new` once per configuration and reuse the handle, started directly or under `hellhound.supervised`.
 - Handle `ProviderNotReady` during supervised discovery; a restarted handle keeps no metadata or memory sessions.
-- Use `begin_login` and `login_response`, then `complete_login` on the callback; keep its binding cookie and never recreate state, nonce, or PKCE.
-- Map the verified `(issuer, subject)` to a principal. Keep `session_reference` in a protected session; check permission and origin on protected routes.
-- Get `access_token` before each outgoing request; decide separately whether to repeat a resource request after a 401.
-- For JWT assertions or discovery-free token requests, supervise a `hellhound/exchange` client before `perform`, which sends at most one request; the application owns reuse and retries.
+- `begin_login` seals the pending login into the cookie `login_response` sets; pipe each callback response through `callback_response`, never recreating state, nonce, or PKCE.
+- Map the verified `(issuer, subject)` to a principal, keep `session_reference` in a protected session, and check permission and origin on protected routes.
+- Get `access_token` before each outgoing request; repeating a resource request after a 401 is a separate decision.
+- For JWT assertions or discovery-free token requests, supervise a `hellhound/exchange` client; `perform` sends at most one request, and the application owns reuse and retries.
 - In a signing JWK for `hellhound/assertion`, omit an unused `alg` or `kid`.
 
 ## Authorize from current claims
@@ -46,11 +45,11 @@ Add the latest `hellhound` on Erlang. For PostgreSQL, add `hellhound_postgres` f
 
 ## Own storage and shutdown
 
-- Use memory defaults when restart loss is acceptable; otherwise configure durable custody and transaction stores and keep the sealing key.
+- Use memory defaults when restart loss is acceptable; otherwise configure durable custody storage. Share one stable sealing key across callback nodes; rotate through `with_previous_sealing_keys`, keeping old keys for a login lifetime.
 - With the PostgreSQL adapter, the application owns migration, pool lifetime, capacity, backups, and key custody.
 - For a custom store, honor the atomic conditional-write contract: check deadlines under exclusive write authority after waiting, and keep uncertain commits. `testing.check_store` does not replace lock-wait tests.
-- Stop admission before shutdown, and supervised clients through their parent; a returned `stop` does not prove workers finished, so keep captured pools alive.
-- Test login and recovery against `hellhound/testing`; test resource audience, scope, and availability separately, since local validation cannot show revocation.
+- Stop admission before shutdown, and supervised clients through their parent; a returned `stop` proves no worker finished, so keep captured pools alive.
+- Test login and recovery against `hellhound/testing`; test resource audience, scope, and availability separately; local validation cannot show revocation.
 
 ## Red flags
 
