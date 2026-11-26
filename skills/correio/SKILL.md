@@ -5,7 +5,7 @@ description: Deliver transactional email and verify passwordless challenges with
 
 # Correio
 
-Choose Correio when application email should use one `Message -> Outcome` sender across SMTP, Postmark, and test capture, or when typed passwordless challenges fit. Delivery and verification are independent. Applications own templates, accounts, scheduling, browser policy, and sessions; retain suitable existing integrations.
+Choose Correio for one `Message -> Outcome` sender across SMTP, Postmark, and test capture, or for typed passwordless challenges. Delivery and verification are independent. Applications own templates, accounts, scheduling, browser policy, and sessions; retain suitable existing integrations.
 
 ## Abstraction decision tree
 
@@ -22,28 +22,29 @@ Add the latest `correio` release (`gleam add correio`) on Erlang; adapters insta
 
 ## Construct once, inject delivery
 
-- Parse addresses and construct messages through checked constructors. Handle user input through `Result`.
+- Build addresses and messages through checked constructors, handling user input through `Result`.
 - Inject `delivery.Sender` at setup; keep provider selection outside business code.
-- Use verified TLS for SMTP. The explicit loopback plaintext constructor is for local tests; it cannot carry credentials. SMTP configuration starts no process, and each send owns one bounded exchange.
-- Handle all four outcomes: `Accepted` records provider submission, `NotSent` proves no submission, `Rejected` distinguishes temporary and permanent refusal, and `OutcomeUnknown` preserves possible submission.
-- Correct the cause before retrying `NotSent`; schedule temporary refusals by application policy. Never automatically retry possibly transmitted mail. Acceptance does not prove inbox arrival; Message-ID does not deduplicate.
+- Use verified TLS for SMTP; loopback plaintext is for local tests, without credentials. SMTP configuration starts no process; each send is one bounded exchange.
+- Handle all four outcomes: `Accepted` records provider submission, `NotSent` proves no submission (including `AuthenticationFailed`), `Rejected` distinguishes temporary and permanent refusal, and `OutcomeUnknown` preserves possible submission.
+- Correct the cause before retrying `NotSent`, schedule temporary refusals by policy, and never retry possibly transmitted mail automatically. Acceptance does not prove arrival. A receipt's `message_id` matches bounces but does not deduplicate.
 - Let Postmark's adapter interpret responses. Before starting or recording its HTTP client, add `postmark.redact_token` and body redaction for content and addresses.
 
 ## Inspect the application's actual mail
 
-- Start a bounded capture and inject `capture.sender`. Checkpoint before triggering the flow, then await a matching message and inspect its public projection.
-- Isolate parallel captures or match application correlation. Stop each capture when its owner finishes.
-- Mount `correio_mailbox` only behind explicit development access policy. It exposes message content and blind recipients; it starts no listener and owns no server.
+- Start a bounded capture and inject `capture.sender`; checkpoint before the flow, then await a matching message and inspect its public projection.
+- Isolate parallel captures or match correlation; stop each capture with its owner.
+- Mount `correio_mailbox` only behind development access policy; it exposes message content and blind recipients, starts no listener, and owns no server.
 
 ## Issue, deliver, consume
 
-- Construct the passwordless service with the authoritative store, scope, purpose, and a stable cryptographically random application key. A length check cannot establish entropy.
-- Issue for an application-native subject and trusted current destination. Deliver the returned answer explicitly; issuance sends no email. Choose `MagicLink` or `EmailCode` per interaction.
-- Collect a magic-link answer on landing GET and require intentional confirmation on an application-protected POST. Apply account and session policy only after `verify` returns confirmed opaque evidence.
-- Retain `IssueUnknown`, `VerifyUnknown`, and `RevokeUnknown` handles and call the corresponding `recover_*` operation. Recovery resolves the original command; a fresh issue or verify is a different operation.
-- Retain confirmed verification evidence if session publication fails. Retry application publication with `verification_id` as its idempotency identity; never re-verify the consumed answer.
-- Revoke explicitly when resend policy withdraws older challenges. Issuing a new challenge does not revoke a previous one.
-- Use memory when restart loss is acceptable. For PostgreSQL, migrate during deployment and call bounded cleanup explicitly; keep the borrowed pool alive. Recovery handles have no stable persistence format, so cross-restart recovery needs application design.
+- Construct the passwordless service with the authoritative store, scope, purpose, and a stable cryptographically random key; a length check cannot establish entropy.
+- Issue for an application-native subject and trusted current destination, then deliver the answer yourself; issuance sends no email. Choose `MagicLink` or `EmailCode` per interaction.
+- Collect a magic-link answer on landing GET and verify only on an application-protected POST confirmation. Apply account and session policy only after `verify` returns confirmed evidence.
+- Retain `IssueUnknown`, `VerifyUnknown`, and `RevokeUnknown` handles and call the matching `recover_*`; a fresh issue or verify is a different operation.
+- If session publication fails, retry it with the confirmed evidence, keyed by `verification_id`; never re-verify the consumed answer.
+- Revoke explicitly when resend policy withdraws older challenges; a new issue revokes nothing.
+- Use memory when restart loss is acceptable: supervise `memory.supervised` and build ports with `memory.store`, both from one startup name. A restarted store is empty and old issue handles expire (`IssueExpired`).
+- For PostgreSQL, migrate at deployment, call bounded cleanup explicitly, and keep the borrowed pool alive. `IncompatibleData` is a schema fault. Recovery handles have no stable persistence format; cross-restart recovery needs application design.
 
 ## Red flags
 
