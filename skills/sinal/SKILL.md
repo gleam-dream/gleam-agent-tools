@@ -25,22 +25,23 @@ What must the event accomplish?
 
 - Check the resolved source. Add the latest `sinal` release (`gleam add sinal`) on Erlang; it builds on native `telemetry`.
 - Define one event name with separate measurement and metadata codecs; reuse that definition in emitters and observers. Compose record fields through `fields.include` and `fields.success`.
-- Keep custom getters/encoders total: they run in the producer and can raise before dispatch, even without observers or with forwarding. Optional observation does not make encoding infallible.
+- Keep custom getters/encoders total: they run in the producer and can raise before dispatch, even without observers or with forwarding.
 - Write event names, field keys, and route prefixes in trusted source. They create permanent atoms. Put request IDs and other unbounded values in metadata values.
-- Choose `observe` for an infallible handler, or `subscription`/`handler` plus `attach` for a registration plan. Retain attachments and detach them; use subscription scopes for temporary work.
-- Allocate stable handler IDs deliberately. Registrations are node-local; a copied old attachment can address a replacement that reuses its ID.
+- Choose `observe` for an infallible handler, or `subscription`/`handler` plus `attach` or `attach_all`. Use subscription scopes for temporary work.
+- A handler belongs to its attaching process and is detached when that process exits, even normally. Attach lasting handlers from a supervised process.
+- A restarted owner reclaims a stable node-local `with_id`. Keep the latest attachment: `detach` returns `Error(Nil)` for a gone registration and never removes a replacement.
 - Keep unrouted handlers short. They execute synchronously in the emitting process; handler order is unspecified. Callback I/O becomes emitter latency.
 - Check enum field codecs against every constructor; an exhaustive naming function does not prove the supplied list is complete.
-- Distinguish malformed foreign maps from callback failure. Malformed data skips that occurrence and normally preserves registration; a callback error or catchable exception removes the handler through native telemetry.
+- Distinguish malformed foreign maps from callback failure. Malformed data skips that occurrence and keeps the registration; a callback error or catchable exception removes the handler. Unlisted enum values and skipped invocations warn once per event; `sinal.diagnostics()` counts them.
 
 ## Forwarding and spans
 
-- Let the application supervise a forwarder and install routes at startup. Routes are node-global setup policy; changing them per request is unsuitable.
+- Supervise a forwarder and install routes at startup. Routes are node-global setup policy, never per-request.
 - Budget capacity for queued plus executing events. A full or unavailable forwarder drops and counts the event, with no inline fallback or retry. Shutdown does not drain.
 - Forwarding isolates handler work; it supplies neither whole-application memory bounds nor producer backpressure.
 - Treat forwarder acceptance and drop reports as best-effort diagnostics, never a durable receipt. Required commands and business outcomes need another authority.
 - Carry context in event metadata. Forwarded handlers execute in the forwarder; producer process-dictionary context is absent. Per-producer FIFO does not establish global ordering.
-- Keep spans around one local call. Spans bypass forwarding routes; a returned business `Error` is normal completion, while a raised call emits exception and re-raises.
+- Keep spans around one local call. A route matching a span's start, stop, or exception event forwards it; a returned business `Error` is normal completion, while a raised call emits exception and re-raises.
 - Convert native durations with explicit units. Use correlation to join observations; correlation alone supplies neither trace parentage nor authorization.
 
 ## Red flags
@@ -49,6 +50,7 @@ What must the event accomplish?
 - Database writes or network calls in a handler on a hot path.
 - Assuming every skipped event means the handler detached.
 - Leaking attachments after tests or request scopes.
+- Lasting handlers attached from a function that returns.
 - Treating forwarding as lossless delivery or shutdown draining.
 - Relying on the emitter's process identity after forwarding.
 - Using telemetry to decide whether a business commit happened.
