@@ -18,7 +18,7 @@ Choose Correio for one `Message -> Outcome` sender across SMTP, Postmark, and te
 | Magic link or email code           | `passwordless` over the application's native subject type  |
 | Shared durable challenge authority | `correio_postgres` with a named Pog pool and subject codec |
 
-Add the latest `correio` release (`gleam add correio`) on Erlang; adapters install from Git (`gleam-dream/correio`, path `adapters/<name>`): pin the newest `<name>-v*` tag whose gleam.toml accepts the resolved core, by its commit. Addresses exclude SMTPUTF8 mailboxes, quoted local parts, and address literals.
+Add the latest `correio` release on Erlang; adapters install from Git (`gleam-dream/correio`, path `adapters/<name>`): pin the newest `<name>-v*` tag whose gleam.toml accepts the resolved core (and, for `correio_postmark`, the resolved `http_gun`), by its commit. Addresses exclude SMTPUTF8 mailboxes, quoted local parts, and address literals.
 
 ## Construct once, inject delivery
 
@@ -33,7 +33,7 @@ Add the latest `correio` release (`gleam add correio`) on Erlang; adapters insta
 
 - Start a bounded capture and inject `capture.sender`; checkpoint before the flow, then await a matching message and inspect its public projection.
 - Isolate parallel captures or match correlation; stop each capture with its owner.
-- Mount `correio_mailbox` only behind development access policy; it exposes message content and blind recipients, starts no listener, and owns no server.
+- Mount `correio_mailbox` only behind development access policy; it exposes message content and blind recipients and starts no listener.
 
 ## Issue, deliver, consume
 
