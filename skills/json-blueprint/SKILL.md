@@ -26,7 +26,7 @@ What JSON boundary does the application need?
 
 ## Establish the API and wire contract
 
-- Codecs write unions as `tag`/`value` and enums as bare strings. Read stored legacy envelopes (`type`/`data`, `{"enum": …}`) with an application reader, or migrate the data before switching writers.
+- Codecs write unions as `tag`, plus `value` for a payload variant, and enums as bare strings. Read legacy envelopes (`type`/`data`, `{"enum": …}`) from stored data or peers with an application reader, or migrate both before switching writers.
 - Build records with `field`, `optional_field` and `success`, getters passed with `get:`. Keep callbacks synchronous and pure; schema discovery runs them with placeholders.
 - Distinguish omission, null and a value: `optional_field` over `nullable` yields `None`, `Some(None)` and `Some(Some(value))`.
 - Check runtime-derived definitions with `codec.check`; duplicate names, repeated labels and invalid bounds otherwise panic when used.
@@ -49,7 +49,7 @@ The `gleam-otp` skill owns the general rule: a process copy loses sharing, so bo
 - `codec.decoder` consumes parsed data; its producer owns duplicate keys, precision and limits.
 - Use `number` for exact values; JavaScript `codec.int()` rejects unsafe integers.
 - Treat `contract` as a finite Draft 2020-12 profile: annotation keywords load and are ignored; `$ref`, `$defs`, `format`, `pattern` and untagged unions are refused. Build `contract.decoder` once for many validated values.
-- Read schemas with `codec.view`, handling `OtherSchema` explicitly.
+- Read schemas with `codec.view`, handling `OtherSchema`.
 - Run the included generators from an explicit build task; regenerate, format and compile output on each target.
 
 ## Red flags

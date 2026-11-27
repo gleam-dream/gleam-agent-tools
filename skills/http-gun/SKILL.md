@@ -22,7 +22,7 @@ Add the latest `http_gun` release on Erlang and retain the resolved manifest; it
 
 ## Configure once, reuse the client
 
-- Start from `config.default()`. Use `http_gun.supervised(settings, name)` and `http_gun.named(name)` for shared application use. `start` links the client to its caller; stop supervised clients through their parent.
+- Start from `config.default()`. Use `http_gun.supervised(settings, name)` and `http_gun.named(name)` for shared use. `start` links the client to its caller; stop supervised clients through their parent.
 - Build a `Request(BitArray)`, call `send`, then inspect `buffered.response.status` before decoding `buffered.response.body`. An `Ok` transport result can contain a 404 or 503.
 - Use pool-sharing client views for per-call deadline, body limit, cancellation, destination, and correlation; a destination view narrows authority, never enlarges it.
 - Every call ends at a caller-enforced deadline, `with_timeout` (30 s by default) or `with_deadline`, also on `named` handles. Reopen long streams under a long timeout.
@@ -35,15 +35,15 @@ Add the latest `http_gun` release on Erlang and retain the resolved manifest; it
 - Read an explicit body from the process that opened it; copies share one cursor and transfer no read ownership.
 - Close every body from `open`, even after EOF or failed collection; any holder may close, and local cancellation cannot undo remote effects.
 - `body.next_within` returning `None` is an expired local wait, not EOF; the stream stays readable.
-- Bound application work separately; an HTTP timeout never interrupts decoding or sink work after completion.
+- Bound application work separately; the deadline never interrupts decoding or sink work, inside a `with_response` callback or after completion.
 
 ## Retry from evidence
 
 - Inspect failure kind and submission evidence; `NotSent` and `MaybeSent` differ in authority. Call `error.is_retryable(failure, idempotent:)` with the request's actual idempotency.
 - Apply backoff and attempt limits in the application; HTTP Gun never retries. Cancellation or `DeadlineExceeded` does not prove the server did nothing.
-- Retain `error.status` and `error.headers` after a body-collection failure; the response head still matters.
+- Retain `error.status` and `error.headers` after a body-collection failure.
 - Configure recording redaction before startup. Defaults remove common credential headers and replace listed credential query and form/JSON fields; add provider headers with `with_headers`, fields with `with_query_parameters` or `with_body_fields`, and `with_body` for other bodies.
-- `cassette.encode` does not redact: run `cassette.redact(script, policy)` on a hand-built or parsed script that can hold credentials. `redaction.request_fields_only` keeps the response bodies playback returns as received, tokens included; redact them before saving.
+- `cassette.encode` does not redact: run `cassette.redact(script, policy)` on a hand-built or parsed script that can hold credentials. To replay answers exactly, use `redaction.request_fields_only`: it keeps response bodies as received unless `with_body` rewrites them; redact tokens before saving.
 - Choose recording or playback at startup. Finish a recording explicitly and handle its result; HTTP success does not confirm cassette publication. Handle `NotAnswered` from `testing.verify`.
 
 ## Red flags
@@ -55,4 +55,4 @@ Add the latest `http_gun` release on Erlang and retain the resolved manifest; it
 
 ## Sources
 
-[HexDocs](https://hexdocs.pm/http_gun/) · [Public API and consumers](https://github.com/gleam-dream/http_gun/blob/main/README.md), [body ownership](https://github.com/gleam-dream/http_gun/blob/main/src/http_gun/body.gleam), [retry evidence](https://github.com/gleam-dream/http_gun/blob/main/src/http_gun/error.gleam).
+[HexDocs](https://hexdocs.pm/http_gun/) · [API and consumers](https://github.com/gleam-dream/http_gun/blob/main/README.md), [body ownership](https://github.com/gleam-dream/http_gun/blob/main/src/http_gun/body.gleam), [retry evidence](https://github.com/gleam-dream/http_gun/blob/main/src/http_gun/error.gleam).

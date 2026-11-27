@@ -5,7 +5,7 @@ description: Build and debug typed LLM agents and conditional graphs with Fabric
 
 # Fabric
 
-Choose Fabric when a tool waits for approval or a lost runner must resume from retained actions and outcomes on Erlang/OTP; that justifies a store, live context and recovery owner.
+Choose Fabric when a tool waits for approval or a lost runner must resume from retained actions and outcomes on Erlang/OTP, justifying a store, live context and recovery owner.
 
 Add the latest `fabric` release and retain `manifest.toml`. The PostgreSQL adapter installs from Git (`gleam-dream/fabric`, path `integrations/fabric_postgres`): pin the newest `fabric_postgres-v*` tag whose gleam.toml accepts the resolved core, by its commit.
 
@@ -22,7 +22,7 @@ Need explicit workflow compensation? → Saga
 
 ## Build the ordinary path
 
-1. Write one builder function that makes the spec: each tool from its `tool.Definition` and typed handler, the model, an explicit policy, and turn, concurrency, model-call and tool-body bounds (no whole-agent deadline). Pass it to `agent.build`, handling its errors.
+1. Write one builder that makes the spec: each tool from its `tool.Definition` and typed handler, the model, an explicit policy, and turn, concurrency, model-call and tool-body bounds. Pass it to `agent.build`, handling its errors.
 2. Start the store, keeping adapter resources under their owner's lifecycle.
 3. Start with a retained `RunId`, live context, prompt and correlation; a stable id lets a retry find the run.
 4. Read `fabric.snapshot` actions before treating a final answer as business success.
@@ -31,7 +31,7 @@ Use `llm.model` or `llm.configured_model`; a deterministic `model.Model` serves 
 
 ## Keep agents out of process copies
 
-Runs, tool bodies and model calls run in separate processes; a sent value is copied whole. Each process runs the builder; a tool's task gets only that tool.
+Runs, tool bodies and model calls run in separate processes; a sent value is copied whole. Each process that needs the agent runs the builder; a tool's task gets only that tool.
 
 - Capture small values the same for every run: a client, settings, ids loaded once. Never capture built tools or codecs; capture `agent.build` sub-agents.
 - Make subjects, names, and tables outside the builder, or each process remakes them.
@@ -49,7 +49,7 @@ Runs, tool bodies and model calls run in separate processes; a sent value is cop
 
 - Match status variants; denied or failed actions may precede `Finished(Completed(answer))`.
 - An await timeout or dropped handle cancels nothing; cancel explicitly.
-- Approval binds the exact request revision, current policy and configured verifier; check the credential with `approvers.check` or `graph.check_approval` before answering each request.
+- Make approvers once; pass that value to `agent.with_approvers` or `graph.with_approvers`. A proof from other approvers fails. Check each request's credential with `approvers.check` or `graph.check_approval` before answering it.
 - Use a database backend in production and supervise its recovery worker.
 - Retain an applied marker where a result must be incorporated once.
 
@@ -64,7 +64,7 @@ Runs, tool bodies and model calls run in separate processes; a sent value is cop
 
 ## Verify
 
-Pin the dependency graph. Check lifecycle claims with scripted models and the waiting, approval, and reconciliation consumers; bound `erts_debug:flat_size/1` of what crosses processes when agents are large.
+Check lifecycle claims with scripted models and the waiting, approval, and reconciliation consumers; bound `erts_debug:flat_size/1` of what crosses processes when agents are large.
 
 ## Sources
 

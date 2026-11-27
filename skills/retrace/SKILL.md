@@ -22,16 +22,16 @@ What evidence is needed?
 
 Add the latest release of each imported package and retain `manifest.toml`. Core runs on both targets, frontend on JavaScript, server on Erlang. Preserve a suitable existing recorder.
 
-The unpublished [`retrace_collector`](https://github.com/gleam-dream/retrace/blob/main/support/collector/README.md) installs from Git (`gleam-dream/retrace`, path `support/collector`): pin by commit the newest `retrace_collector-v*` tag, or run a checkout, whose gleam.toml accepts the resolved core. `RETRACE_ALLOWED_ORIGINS` replaces the default origins (empty admits none) and filters only requests with `Origin`; without `RETRACE_COLLECTOR_TOKEN`, any local process can use every route. The packaged transport and viewer send no token; with one, use a custom transport, source, or proxy.
+The unpublished [`retrace_collector`](https://github.com/gleam-dream/retrace/blob/main/support/collector/README.md) installs from Git (`gleam-dream/retrace`, path `support/collector`): pin by commit the newest `retrace_collector-v*` tag whose gleam.toml accepts the resolved core, or run such a checkout. `RETRACE_ALLOWED_ORIGINS` replaces the default origins (empty admits none) and filters only requests with `Origin`; without `RETRACE_COLLECTOR_TOKEN`, any local process can use every route. The packaged transport and viewer send no token; with one, use a custom transport, source, or proxy.
 
 ## Record accepted, safe transitions
 
 1. Project safe models and messages, without credentials or private values, before capture or encoding. A failed `capture.observe_projected` projection stops capture without recording the error.
 2. Use session and contract identities, a monotonic elapsed clock, and separate sessions for concurrent writers.
 3. With core, accept through the reducer, `record` the event, `checkpoint` the result, and retain the returned recorder. `resume` trusts the recovered checkpoint and grants no exclusive writer.
-4. In Lustre, start capture from `wire.Metadata` and a flush window, run its effects, and route its messages through `capture.update`. Pass the pre-transition model to `capture.observe`; exclude coordination messages from the domain stream.
-5. Frontend capture needs storage and an upload transport; for local-only recording or export, use core with application-owned storage (the viewer is independent) and never fake upload success.
-6. `record` numbers events without acknowledging persistence; commit cursor/checkpoint and outbox together for crash recovery.
+4. In Lustre, start capture from `wire.Metadata` and a flush window, run its effects, and route its messages through `capture.update`. Transitions before the session opens go unrecorded. Pass the pre-transition model to `capture.observe`; exclude coordination messages from the domain stream.
+5. Frontend capture needs storage and an upload transport; for local-only recording or export, use core with application-owned storage and never fake upload success.
+6. `record` numbers events without acknowledging persistence; commit cursor/checkpoint and outbox together.
 
 Handle capture failure apart from domain updates; surface it to dependent users.
 
@@ -39,7 +39,7 @@ Handle capture failure apart from domain updates; surface it to dependent users.
 
 - Supply a deterministic reducer and inert view; record external results as messages, never repeating live effects.
 - Match gap, duplicate, contract-mismatch, backwards-time, and reducer failures. A failed step keeps the prior player; fetch missing ranges or deduplicate explicitly.
-- Retain replay artifacts under their build identity; refuse missing or incompatible ones and never substitute today's reducer.
+- Retain replay artifacts under their build identity; refuse missing or incompatible ones, never substituting today's reducer.
 - Keep contract compatibility, build identity, artifact integrity, and viewer authorization separate. Identity strings do not prove authenticity.
 
 ## Deliver and archive explicitly

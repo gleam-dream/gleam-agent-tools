@@ -25,10 +25,10 @@ Does the operation need workflow coordination?
 
 - Add the latest `saga` release on Erlang; inspect the resolved revision and public modules.
 - For PostgreSQL, add `saga_postgres` from Git (`gleam-dream/saga`, path `integrations/saga_postgres`), pinned by commit to the newest `saga_postgres-v*` tag accepting the resolved core.
-- Build a reusable workflow with `define`, whose builder runs once, and supply each request as input. Connect steps through typed ports with `perform`, `both`, `all`, and `choose`.
+- Build a reusable workflow with `define`, whose builder runs once; supply each request as input. Connect steps through typed ports with `perform`, `both`, `all`, and `choose`.
 - Keep external clients and policy in supplied callbacks. Use `effect` when a step needs its `EffectKey`; pass its idempotency key to an enforcing provider.
 - Use `undo` for known completed work and `compensate` to choose a failed attempt's retry, replacement, abort, or hold.
-- Mark possibly completed errors with `unknown_when`; crashes and timeouts are already unknown. `on_unknown` decides unknown outcomes: default `Reconcile` ends the run `Unresolved` without undo, `RollBack` undoes.
+- Mark possibly completed errors with `unknown_when`; crashes and timeouts are already unknown. A `compensate` decision still applies: `Abort` rolls back. When no decision settles an unknown outcome, `on_unknown` does: default `Reconcile` ends the run `Unresolved` without undo; `RollBack` undoes. A timeout alone cannot justify replay or rollback.
 - Retain the typed terminal report with its cleanup failures and unknown-effect evidence; match each `AttemptFailure` an `Unresolved` holds. Render `outcome.summary` only for display; a `CoordinatorCrashed` cause is uncertain.
 - Keep every `Config` and step bound under 49.7 days; longer ones fail as `DurationTooLong` or, at `define`, `InvalidTimeout`. `execution.Infinity` lifts only the run deadline and default step timeout.
 
@@ -36,11 +36,11 @@ Does the operation need workflow coordination?
 
 - Cancel and `await` unfinished local `start` handles before dropping them. With `start_reporting`, receive the terminal report and monitor the coordinator; `await` returns `NotOwner`.
 - Use `reporting.run_owned` inside a per-invocation worker; its receiver monitors after return. `on_stopped` runs in a separate guarded worker. `rollback_within` bounds owner-loss startup waits and notification, not total execution; keep captured resources alive.
-- For durable execution, add versioned root/step codecs and recovery resolvers, give one business execution one stable ID, and call `start_or_reconnect` with compatible definition and identical encoded input. Drain pending and suspended executions before a release that changes the checkpoint format; it refuses older checkpoints.
+- For durable execution, add versioned root/step codecs and recovery resolvers, give one business execution one stable ID, and call `start_or_reconnect` with compatible definition and identical encoded input.
 - Resolve interrupted admitted actions from authoritative evidence: `Completed` restores a result, `NotSent` must prove absence, `MaybeSent` suspends. A missing or eventually consistent lookup proves nothing.
-- Keep effect keys stable across attempts and recovery; a fresh local run has its own keys, deduplicating no other run's effects.
+- Keep effect keys stable across attempts and recovery; a fresh local run's keys deduplicate no other run's effects.
 - Keep application and checkpoint commits separate, even on one database; an absent checkpoint cannot prove the application write rolled back.
-- Own wakeups, `durable.list` discovery per phase, and redelivery; durable storage starts no scheduler. A drive timeout stops only that driver, not saved execution.
+- Own wakeups, `durable.list` discovery per phase, and redelivery; durable storage starts no scheduler. A drive timeout stops only that driver.
 - Match storage to the failure model. Memory loses progress with its store/VM; file storage requires an existing canonical absolute directory and one VM, without power-loss durability. With `saga_postgres`, own and supervise the borrowed pool, migrate once, and plan retention. Use a pooled handle, not a transaction-scoped connection.
 
 ## Red flags
@@ -54,4 +54,4 @@ Does the operation need workflow coordination?
 
 ## Sources
 
-[HexDocs](https://hexdocs.pm/saga/) · [Public workflow and consumer](https://github.com/gleam-dream/saga), [reporting lifetime](https://github.com/gleam-dream/saga/blob/main/src/saga/reporting.gleam), [durability contract](https://github.com/gleam-dream/saga/blob/main/src/saga/durable.gleam), [PostgreSQL adapter](https://github.com/gleam-dream/saga/tree/main/integrations/saga_postgres).
+[HexDocs](https://hexdocs.pm/saga/) · [Public workflow and consumer](https://github.com/gleam-dream/saga), [reporting lifetime](https://github.com/gleam-dream/saga/blob/main/src/saga/reporting.gleam), [durability contract](https://github.com/gleam-dream/saga/blob/main/src/saga/durable.gleam), [PostgreSQL adapter](https://github.com/gleam-dream/saga/tree/main/integrations/saga_postgres), [upgrades](https://github.com/gleam-dream/saga/blob/main/docs/MIGRATION.md).

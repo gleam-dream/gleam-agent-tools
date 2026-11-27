@@ -23,7 +23,7 @@ What must the event accomplish?
 
 ## Define and observe
 
-- Check the resolved source. Add the latest `sinal` release (`gleam add sinal`) on Erlang; it builds on native `telemetry`.
+- Check the resolved source. Add the latest `sinal` release on Erlang; it builds on native `telemetry`.
 - Define one event name with separate measurement and metadata codecs; reuse that definition in emitters and observers. Compose record fields through `fields.include` and `fields.success`.
 - Keep custom getters/encoders total: they run in the producer and can raise before dispatch, even without observers or with forwarding.
 - Write event names, field keys, and route prefixes in trusted source. They create permanent atoms. Put request IDs and other unbounded values in metadata values.
@@ -32,7 +32,7 @@ What must the event accomplish?
 - A restarted owner reclaims a stable node-local `with_id`. Keep the latest attachment: `detach` returns `Error(Nil)` for a gone registration and never removes a replacement.
 - Keep unrouted handlers short. They execute synchronously in the emitting process; handler order is unspecified. Callback I/O becomes emitter latency.
 - Check enum field codecs against every constructor; an exhaustive naming function does not prove the supplied list is complete.
-- Distinguish malformed foreign maps from callback failure. Malformed data skips that occurrence and keeps the registration; a callback error or catchable exception removes the handler. Unlisted enum values and skipped invocations warn once per event; `sinal.diagnostics()` counts them.
+- Distinguish malformed foreign maps from callback failure. Malformed data skips that occurrence and keeps the registration unless `on_failure` crashes; a callback error or catchable exception removes the handler. Unlisted enum values and skipped `observe` or `subscription` invocations warn once per event; `sinal.diagnostics()` counts them.
 
 ## Forwarding and spans
 
@@ -50,11 +50,11 @@ What must the event accomplish?
 - Database writes or network calls in a handler on a hot path.
 - Assuming every skipped event means the handler detached.
 - Leaking attachments after tests or request scopes.
-- Lasting handlers attached from a function that returns.
+- Lasting handlers attached from a short-lived process.
 - Treating forwarding as lossless delivery or shutdown draining.
 - Relying on the emitter's process identity after forwarding.
 - Using telemetry to decide whether a business commit happened.
 
 ## Sources
 
-[HexDocs](https://hexdocs.pm/sinal/) · [Sinal public API and consumer examples](https://github.com/gleam-dream/sinal), [forwarder contract](https://github.com/gleam-dream/sinal/blob/main/src/sinal/forwarder.gleam), [native telemetry](https://telemetry.hexdocs.pm/telemetry.html).
+[HexDocs](https://hexdocs.pm/sinal/) · [API and consumers](https://github.com/gleam-dream/sinal), [forwarder contract](https://github.com/gleam-dream/sinal/blob/main/src/sinal/forwarder.gleam), [native telemetry](https://telemetry.hexdocs.pm/telemetry.html).
