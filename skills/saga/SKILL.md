@@ -40,7 +40,7 @@ Does the operation need workflow coordination?
 - Resolve interrupted admitted actions from authoritative evidence: `Completed` restores a result, `NotSent` must prove absence, `MaybeSent` suspends. A missing or eventually consistent lookup proves nothing.
 - Keep effect keys stable across attempts and recovery; a fresh local run's keys deduplicate no other run's effects.
 - Keep application and checkpoint commits separate, even on one database; an absent checkpoint cannot prove the application write rolled back.
-- Own wakeups, `durable.list` discovery per phase, and redelivery; durable storage starts no scheduler. A drive timeout stops only that driver.
+- Own wakeups, `durable.list` discovery per phase, and redelivery; durable storage starts no scheduler. A drive timeout kills its in-flight attempts; the next `drive` resumes from the last checkpoint.
 - Match storage to the failure model. Memory loses progress with its store/VM; file storage requires an existing canonical absolute directory and one VM, without power-loss durability. With `saga_postgres`, own and supervise the borrowed pool, migrate once, and plan retention. Use a pooled handle, not a transaction-scoped connection.
 
 ## Red flags
@@ -54,4 +54,4 @@ Does the operation need workflow coordination?
 
 ## Sources
 
-[HexDocs](https://hexdocs.pm/saga/) · [Public workflow and consumer](https://github.com/gleam-dream/saga), [reporting lifetime](https://github.com/gleam-dream/saga/blob/main/src/saga/reporting.gleam), [durability contract](https://github.com/gleam-dream/saga/blob/main/src/saga/durable.gleam), [PostgreSQL adapter](https://github.com/gleam-dream/saga/tree/main/integrations/saga_postgres), [upgrades](https://github.com/gleam-dream/saga/blob/main/docs/MIGRATION.md).
+[HexDocs](https://hexdocs.pm/saga/) · [Consumer](https://github.com/gleam-dream/saga), [reporting](https://github.com/gleam-dream/saga/blob/main/src/saga/reporting.gleam), [durability](https://github.com/gleam-dream/saga/blob/main/src/saga/durable.gleam), [PostgreSQL](https://github.com/gleam-dream/saga/tree/main/integrations/saga_postgres), [upgrades](https://github.com/gleam-dream/saga/blob/main/docs/MIGRATION.md).

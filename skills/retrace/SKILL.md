@@ -33,18 +33,18 @@ The unpublished [`retrace_collector`](https://github.com/gleam-dream/retrace/blo
 5. Frontend capture needs storage and an upload transport; for local-only recording or export, use core with application-owned storage and never fake upload success.
 6. `record` numbers events without acknowledging persistence; commit cursor/checkpoint and outbox together.
 
-Handle capture failure apart from domain updates; surface it to dependent users.
+Handle capture failure apart from domain updates and tell dependent users.
 
 ## Reconstruct without live effects
 
-- Supply a deterministic reducer and inert view; record external results as messages, never repeating live effects.
+- Supply a deterministic reducer and inert view; record external results as messages.
 - Match gap, duplicate, contract-mismatch, backwards-time, and reducer failures. A failed step keeps the prior player; fetch missing ranges or deduplicate explicitly.
 - Retain replay artifacts under their build identity; refuse missing or incompatible ones, never substituting today's reducer.
 - Keep contract compatibility, build identity, artifact integrity, and viewer authorization separate. Identity strings do not prove authenticity.
 
 ## Deliver and archive explicitly
 
-- Own frontend client startup/shutdown and invoke replay/viewer disposers.
+- Own client startup; stop through `capture.stop`'s effect, which saves the open batch first, and invoke replay/viewer disposers.
 - Distinguish local save, collector acknowledgement, and object archival. A rejection no retry can change discards that session's queue; a custom transport marks only such refusals `rejected`.
 - With the server, supply pool and object store; own migrations, archive workers, authentication, consent, and retention. Never log `open`'s write token. `accept` admits a `wire.Upload` atomically, `accept_in_transaction` inside a caller's transaction; answer `Unauthorized` like `NotFound`.
 - For server erasure, drive `erase` with `Eraser(remove, quiesced)` and match `Erasing`, `AwaitingWriters`, and `Erased`. Fencing stops new admission; admitted attempts can still dispatch. Quiescence means no future local dispatch or issued request can publish, which worker death, timeout, or DELETE alone does not prove.
@@ -61,4 +61,4 @@ Verify core claims on both targets and browser, native, or archival claims in th
 
 ## Sources
 
-[HexDocs](https://hexdocs.pm/retrace/) · [Capture and replay examples](https://github.com/gleam-dream/retrace/tree/main/examples) · [Core API](https://github.com/gleam-dream/retrace/blob/main/src/retrace.gleam) · [Server and erasure](https://github.com/gleam-dream/retrace/blob/main/packages/retrace_server/README.md)
+[HexDocs](https://hexdocs.pm/retrace/) · [Examples](https://github.com/gleam-dream/retrace/tree/main/examples) · [Core API](https://github.com/gleam-dream/retrace/blob/main/src/retrace.gleam) · [Server](https://github.com/gleam-dream/retrace/blob/main/packages/retrace_server/README.md)

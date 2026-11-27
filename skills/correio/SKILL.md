@@ -33,7 +33,7 @@ Add the latest `correio` release on Erlang; adapters install from Git (`gleam-dr
 
 - Start a bounded capture and inject `capture.sender`; checkpoint before the flow, then await a matching message and inspect its public projection.
 - Isolate parallel captures or match correlation; stop each capture with its owner.
-- Mount `correio_mailbox` only behind development access policy; it exposes content and blind recipients and starts no listener.
+- Mount `correio_mailbox` only behind development access policy; it exposes content and blind recipients, starts no listener, and owns no server.
 
 ## Issue, deliver, consume
 
@@ -55,4 +55,4 @@ Add the latest `correio` release on Erlang; adapters install from Git (`gleam-dr
 
 ## Sources
 
-[HexDocs](https://hexdocs.pm/correio/) · [API and consumers](https://github.com/gleam-dream/correio/blob/main/README.md), [passwordless evidence](https://github.com/gleam-dream/correio/blob/main/src/correio/passwordless.gleam), [Postmark ownership](https://github.com/gleam-dream/correio/blob/main/adapters/correio_postmark/README.md).
+[HexDocs](https://hexdocs.pm/correio/) · [Consumers](https://github.com/gleam-dream/correio/blob/main/README.md), [passwordless](https://github.com/gleam-dream/correio/blob/main/src/correio/passwordless.gleam), [Postmark](https://github.com/gleam-dream/correio/blob/main/adapters/correio_postmark/README.md).

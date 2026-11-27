@@ -45,7 +45,7 @@ Add the latest `hellhound` on Erlang. For PostgreSQL, add `hellhound_postgres` f
 
 ## Own storage and shutdown
 
-- Use memory defaults when restart loss is acceptable, otherwise durable custody storage. Share one stable sealing key across callback nodes; rotate through `with_previous_sealing_keys`, keeping each old key for a login lifetime and while custody records sealed with it exist.
+- Use memory defaults when restart loss is acceptable, otherwise durable custody storage. Share one stable sealing key across nodes that start or complete logins or read custody; rotate through `with_previous_sealing_keys`, keeping each old key for a login lifetime and while custody records sealed with it exist.
 - With `hellhound_postgres`, the application owns migration, pool lifetime, capacity, backups, and key custody.
 - For a custom store, honor the atomic conditional-write contract: check deadlines under exclusive write authority after waiting, and keep uncertain commits. `testing.check_store` replaces no lock-wait tests.
 - Stop admission before shutdown, and supervised clients through their parent; a returned `stop` does not prove workers finished, so keep captured pools alive.
@@ -56,7 +56,6 @@ Add the latest `hellhound` on Erlang. For PostgreSQL, add `hellhound_postgres` f
 - Using email as the account key, or treating login or `session_identity` as permission.
 - Converting `Recover` into a fresh token exchange.
 - Repeating a resource POST because refresh succeeded.
-- Adding PostgreSQL while losing the sealing key on restart.
 
 ## Sources
 
