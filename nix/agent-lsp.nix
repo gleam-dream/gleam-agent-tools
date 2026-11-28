@@ -17,24 +17,14 @@ let
 in
 buildGoModule rec {
   pname = "agent-lsp";
-  # Built from a fork of blackwell-systems/agent-lsp. Upstream has merged the
-  # fork's path-confinement fix (PR #26) and its Gleam package detection and
-  # test-caller classification (PR #78). Three fixes exist only in the fork,
-  # with no upstream pull request yet:
-  # - impact analysis reports incomplete, failed and unsupported symbol
-  #   analysis instead of an empty result;
-  # - the selected server is initialized for impact queries and keeps its
-  #   configured routing after warm queries;
-  # - diagnostics published before a document was reopened are rejected.
-  # Return `src` to an upstream release once one contains all three, shown by
-  # nix/tests/test_mcp.py passing against it.
-  version = "0.23.2-gleam-reliability-57d7a50";
+  version = "0.24.6";
 
   src = fetchFromGitHub {
-    owner = "lostbean";
+    owner = "blackwell-systems";
     repo = "agent-lsp";
-    rev = "57d7a50949f1745903cfb5b18287e0fc0c756853";
-    hash = "sha256-sRHF8WQ71/ESNdbmQG+r+xL3eLW8qgfNbc79IIpHNKM=";
+    # Tag v0.24.6.
+    rev = "46703fae29fc9d5e123417db5ba0cdad92e539b3";
+    hash = "sha256-HlcTT+uFAVXpDQP+DKmqrnP2nKcR4reqo5IZbeuj8qM=";
   };
 
   vendorHash = "sha256-aBokNk3GGCkMX5UYotiQHzWRKfHF6Tc0EA4hIj5XIKg=";
