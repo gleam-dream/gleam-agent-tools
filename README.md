@@ -19,7 +19,7 @@ That command installs whatever `main` holds when it runs. A skill is instruction
 npx skills@latest add gleam-dream/gleam-agent-tools@<full-commit-hash>
 ```
 
-This repository has no release tags; the same form takes a tag when one exists. `skills@latest` is itself unpinned; replace `latest` with an installer version to fix that as well.
+The same form takes a signed release tag, for example `gleam-dream/gleam-agent-tools@v0.1.0`. `skills@latest` is itself unpinned; replace `latest` with an installer version to fix that as well.
 
 ### Nix and Home Manager
 
