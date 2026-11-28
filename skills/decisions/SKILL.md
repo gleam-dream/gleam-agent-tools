@@ -26,28 +26,28 @@ Which store holds the record?
 
 ## Declare, decide, release
 
-- Add `decisions = ">= 0.3.0 and < 0.4.0"` from Hex; take `decisions_otp` at tag `decisions_otp-v0.3.0` and `decisions_postgres` at tag `decisions_postgres-v0.4.0` from `gleam-dream/decisions`, path `integrations/<package>`.
+- Take `decisions` from Hex; take `decisions_otp` and `decisions_postgres` by Git tag from `gleam-dream/decisions`, path `integrations/<package>`. The README and migration guide hold the ranges and tags.
 - Give each fact one source: `decisions.fact` (output), `decisions.signal` (recommendation), or `decisions.answer` (consulted point); `recommend` refuses others (`InvalidFacts`).
 - Build policies with `policy.new`; check `decisions.publishable` before storing. A condition over an absent or mistyped fact stops the reading and asks `otherwise`; proceeding needs a rule that holds.
 - `policy.known` is never unknown: `All([policy.known(x), ..])` skips its rule when `x` is absent; `When(Not(policy.known(answer)), Consult(point))` consults until answered.
 - Wire `decisions.consulting`; the consulted point's tool calls `decisions.inform`.
-- Admit with `recommend_once` under a key from the trigger, prefixed per point; call `decisions.happened`, then `decisions.expect`, in its transaction.
+- Admit with `recommend_once` under a key from the trigger, prefixed per point; call `decisions.happened`, then `decisions.expect`, in the transaction that receives the trigger, before the model runs.
 - Release only through the executor: it receives an opaque `Released` at most once, in the verb's transaction. Write the tool's rows on that transaction; for outside effects, write an instruction keyed by `decisions.key` and record its fate with `decisions.report`.
 - Put world checks in `decisions.checking`, thresholds in the policy. A tool stops with `Refuse`, `Unsure` or `Contended`; `decisions.stop_for` maps a nested refusal. Keep `ToolRefused` with `decisions.record_refusal` in a second transaction; retry `ToolUnsure`.
-- `decisions.showing` is the rule `open` uses to repeat a showing; a verdict ends it, so `open` then refuses.
+- `decisions.showing` is the rule `open` uses to repeat a showing; a verdict ends it, so `open` then refuses until another validator's correction lets the earlier validator open a new showing.
 - Read client text with `view.verdict` or `wire.parse`.
 - Build each bundle item with `vocabulary.item`, which refuses an empty name or a slash. Admit bundles with `decisions.recommend_bundle` or, across points, `decisions.recommend_member`. A member's id is `decisions.member_key`, "bundle/item"; percent-encode it in a URL path. The follower reads `decisions.members` and, once `decisions.is_complete` holds, recommends the follow-on under a key from the bundle.
 
 ## Transactions and runtimes
 
-- Run every verb inside a helper's opaque `Tx`: `memory.transaction`, decisions_otp's `store.transaction`, or `decisions_postgres.transaction`, `decisions_postgres.transaction_with`, `decisions_postgres.refusing`, `decisions_postgres.decide`. Helpers take the store or `Pool`, never a `Tx`; inside a body they open a separate transaction.
+- Run every verb inside a helper's opaque `Tx`: `memory.transaction`, decisions_otp's `store.transaction`, or `decisions_postgres.transaction`, `decisions_postgres.transaction_with`, `decisions_postgres.refusing`, `decisions_postgres.decide`. Helpers take the store or `Pool`, never a `Tx`. Inside a body, a nested `memory.transaction` rolls back with the outer body's error; other helpers open a separate transaction.
 - Put your own statements, and `grind.submit_in`, in `transaction_with`, on `decisions_postgres.connection`.
 - Roll back on every refusal; redeliver through `decisions.handling`.
 - Read a committed head outside verbs with `store.head` or `decisions_postgres.head`; `inspection().head` is test-only.
 - Run `decisions_postgres.migrate` at deploy with a DDL role, before any node writes (migration 2). Migrate Grind apart.
 - Register `decisions_postgres.wake_worker`, and `decisions_postgres.settlement_worker` for points from `decisions_postgres.following`, before Grind starts; then `decisions_postgres.sweep`. Followers use `decisions.read_record`.
 - Run verbs in your worker's Grind settlement through `decisions_postgres.with_settlement`.
-- Call models through `isolated.model`.
+- Call models through `decisions_otp`'s `isolated.model`.
 
 ## Red flags
 
