@@ -3,7 +3,7 @@ name: sinal
 description: Instrument Gleam applications with Sinal telemetry. Use for typed events, native telemetry interoperability, handler lifetime, spans, correlation, bounded forwarding, and observation overhead.
 metadata:
   library: gleam-dream/sinal
-  library-ref: 33347efa76202f97c7d595ce1667369c16e81a89
+  library-ref: d00541b16ca1a7aad39681a8a57e849c2656d40b
 ---
 
 # Sinal

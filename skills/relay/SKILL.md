@@ -3,7 +3,7 @@ name: relay
 description: Serve and call typed MCP tools with Relay over stdio or Streamable HTTP. Use for shared tool contracts, resources, prompts, completion, discovery, mounting, bearer verification, call controls, and delivery evidence in Gleam applications.
 metadata:
   library: gleam-dream/relay
-  library-ref: c1de397e69f6301fd6b27653c2f5a816064b5b8e
+  library-ref: 2491ebb65713e05a50917fe1747d18b5cc370be9
 ---
 
 # Relay

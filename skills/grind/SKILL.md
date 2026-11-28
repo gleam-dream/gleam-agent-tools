@@ -3,7 +3,7 @@ name: grind
 description: Build and debug durable PostgreSQL jobs with Grind. Use for typed workers, scheduling, retries, transactional submission, cancellation, uncertain effects, recovery, and retention.
 metadata:
   library: gleam-dream/grind
-  library-ref: eb58a584b3f8ea719f200b6e423844eaa9984d12
+  library-ref: b747917d0b17a3fb6b08909ce2c0d9b973794e86
 ---
 
 # Grind
