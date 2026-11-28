@@ -17,8 +17,8 @@ defect to report:
 
 - `main` changes only through a pull request. Direct pushes, force pushes and
   deletion of the branch are refused by a repository ruleset.
-- Maintainers merge a pull request only after its checks pass: the title
-  check, and the Nix checks on Linux and macOS.
+- A pull request merges only after its required checks pass. The ruleset
+  requires the title check and the Nix checks on Linux and macOS.
 - GitHub Actions used by the workflows are pinned to full commit hashes, and
   the workflows hold read-only repository permissions.
 
