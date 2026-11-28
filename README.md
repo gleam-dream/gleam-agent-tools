@@ -77,7 +77,9 @@ The default `skillDirectories` is `[ ".agents/skills" ]`, the [Codex user skill 
 
 For an existing installation, move any selected skill directories to a backup before activating Home Manager. Nix-managed guides are updated through the consumer's flake lock. The `npx skills` route remains available for independently managed guides.
 
-Register `gleam-agent-lsp` as the agent's stdio MCP command. The bridge starts outside a project; when a Gleam file is requested, its child uses that package's Nix development shell or the existing compiler on `PATH`. Development-shell startup output is kept off the protocol stream. Configuration does not install a global Gleam compiler.
+Register `gleam-agent-lsp` as the agent's stdio MCP command. The bridge starts outside a project; when a Gleam file is requested, its child uses the compiler on `PATH`, or the package's Nix development shell when the user trusts that project. Development-shell startup output is kept off the protocol stream. Configuration does not install a global Gleam compiler.
+
+Entering a project's development shell runs that project's code: `nix develop` evaluates the flake and runs its `shellHook` as the user, and the agent chooses the directory when it calls `start_lsp`. The launcher therefore enters a development shell only for a flake at or below a directory listed in `GLEAM_AGENT_LSP_TRUSTED_ROOTS`, a colon-separated list of absolute paths set on the MCP command. For any other project it uses the compiler on `PATH` and names the skipped flake on stderr. With the variable unset, no development shell is entered. To use project shells for your own repositories, set, for example, `GLEAM_AGENT_LSP_TRUSTED_ROOTS=$HOME/code/my-org`.
 
 Flake discovery stops at the project's Git root. An unrelated parent flake does not override a PATH compiler. Existing project lockfiles are preserved; a new project without a lockfile can enter its shell without writing one.
 
