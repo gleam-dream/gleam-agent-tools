@@ -1,6 +1,10 @@
 ---
 name: json-blueprint
 description: Define JSON codecs and schema contracts with JSON Blueprint. Use for bidirectional encoding, strict decoding, optional fields, exact numbers, runtime schema validation, generated or combinator codecs, codecs sent between processes, and wire-format migration.
+metadata:
+  library: gleam-dream/json_blueprint
+  library-ref: ad73271fb49b6fb075b8695299138f59c59ed7b6
+  not-in-library: context.source
 ---
 
 # JSON Blueprint

@@ -1,6 +1,10 @@
 ---
 name: http-gun
 description: Send and debug outgoing HTTP with HTTP Gun on Erlang/OTP. Use for pooled requests, streamed response bodies, deadlines, cancellation, destination policy, client certificates, and HTTP recording or playback.
+metadata:
+  library: gleam-dream/http_gun
+  library-ref: ec907be15ace9ac6b89fa54fc7addfcc67aab27c
+  not-in-library: buffered.response buffered.truncated
 ---
 
 # HTTP Gun

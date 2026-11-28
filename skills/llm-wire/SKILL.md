@@ -1,6 +1,9 @@
 ---
 name: llm-wire
 description: Call LLM providers and handle typed answers, tool requests, streaming, classification, and transcription with llm_wire. Use for provider request preparation, conversation replay, structured output, stream lifetimes, and retry decisions in Gleam applications.
+metadata:
+  library: gleam-dream/llm_wire
+  library-ref: 38b8198949c825aa13696c3138fd6705619b3684
 ---
 
 # LLM Wire

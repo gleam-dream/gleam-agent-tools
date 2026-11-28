@@ -132,6 +132,7 @@ Agents select and combine the guides a task needs. Package skills guide applicat
 - Keep each skill self-contained, under 650 words and 80 lines.
 - State lasting direction. Name no release version or floor, upgrade step, or defect workaround; point to the package's docs and CHANGELOG, which hold those.
 - Check primary sources before changing technical claims. Use temporary code probes only when execution is needed to verify a claim.
+- Record a library skill's repository and the commit it describes in frontmatter `metadata` (`library`, `library-ref`). CI checks every backticked `module.function` in the skill against that commit with `python nix/tests/check_skill_identifiers.py`; pass `--libraries <directory>` to use local checkouts. When a library changes, move `library-ref` and correct the skill in the same change. List a backticked `name.name` that is not a library function under `not-in-library`.
 - Check metadata, links, API names, and responsibility boundaries. Keep experiments, downloaded dependencies, and validation output outside this repository.
 
 Uses the [Agent Skills format](https://agentskills.io/specification).

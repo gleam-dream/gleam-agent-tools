@@ -1,6 +1,9 @@
 ---
 name: correio
 description: Deliver transactional email and verify passwordless challenges with Correio on Erlang. Use for SMTP, Postmark, captured-mail tests, magic links, email codes, and challenge recovery.
+metadata:
+  library: gleam-dream/correio
+  library-ref: c59f6bcb6e8247d41a240b4b4394c328a8f89eaa
 ---
 
 # Correio
