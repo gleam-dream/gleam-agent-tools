@@ -12,7 +12,7 @@ Modern codecs align typed JSON encoding, decoding and schema; `gleam/json` suffi
 ```text
 What JSON boundary does the application need?
 ├─ Known input without schema/encoding → gleam/json decoder
-├─ Legacy wire format or recursive types → json/blueprint (one-way Decoder)
+├─ Recursive types → value.parse, then walk the Value
 ├─ Typed values ↔ JSON and schema
 │  ├─ Fixed shape the generator supports; codec hot, long-lived
 │  │  or held by other processes → json/blueprint/codegen
@@ -26,7 +26,7 @@ What JSON boundary does the application need?
 
 ## Establish the API and wire contract
 
-- Preserve a legacy wire contract unless migrating it: legacy unions use `type`/`data`, modern ones `tag`/`value`.
+- Codecs write unions as `tag`, plus `value` for a payload variant, and enums as bare strings. Read legacy envelopes (`type`/`data`, `{"enum": …}`) from stored data or peers with an application reader, or migrate both before switching writers.
 - Build records with `field`, `optional_field` and `success`, getters passed with `get:`. Keep callbacks synchronous and pure; schema discovery runs them with placeholders.
 - Distinguish omission, null and a value: `optional_field` over `nullable` yields `None`, `Some(None)` and `Some(Some(value))`.
 - Check runtime-derived definitions with `codec.check`; duplicate names, repeated labels and invalid bounds otherwise panic when used.
@@ -41,17 +41,16 @@ The `gleam-otp` skill owns the general rule: a process copy loses sharing, so bo
 - A value used in several places of your own terms is copied once per place. Bound the `erts_debug:flat_size/1` of codec-holding terms sent between processes in an Erlang test, as a ratio to their in-heap size.
 - Generated codecs, module functions and literals, copy smaller and convert faster.
 - The typed generator lacks `float`, exact `Number` and `number_between`, run-time enums, unions, shared or recursive definitions, aliases, `custom`, `value`, arbitrary `try_map` and `String`-valued enums (use a custom type with `imap`). Its object codecs cannot finish a record continuation.
-- Generated modules import `gleam/json`, so declare `gleam_json` directly.
+- Generated modules import `gleam/json`, so declare `gleam_json` directly. Their `decode_<name>_json` uses the strict parser and its limits.
 
 ## Bounds, numbers, and schemas
 
-- Parse untrusted text with `value.default_limits()` and `value.with_max_bytes` (1 MiB default). The application owns depth and count policies.
+- Parse untrusted text within `value.default_limits()`: 1 MiB and 128 nesting levels. Change one bound with `value.with_max_bytes` or `value.with_max_depth`; handle `DepthLimitExceeded`. The application owns count policy.
 - `codec.decoder` consumes parsed data; its producer owns duplicate keys, precision and limits.
 - Use `number` for exact values; JavaScript `codec.int()` rejects unsafe integers.
-- Treat `contract` as a finite Draft 2020-12 profile: no recursive references, untagged unions or patterns.
-- Read schemas with `codec.view`, handling `OtherSchema` explicitly.
+- Treat `contract` as a finite Draft 2020-12 profile: annotation keywords load and are ignored; `$ref`, `$defs`, `format`, `pattern` and untagged unions are refused. Build `contract.decoder` once for many validated values.
+- Read schemas with `codec.view`, handling `OtherSchema`.
 - Run the included generators from an explicit build task; regenerate, format and compile output on each target.
-- Validate legacy schemas with the receiving validator.
 
 ## Red flags
 

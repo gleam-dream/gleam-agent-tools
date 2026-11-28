@@ -22,13 +22,13 @@ Need a provider call controlled by the application? → LLM Wire
 
 ## Prepare, execute, interpret
 
-1. Select an adapter and an available model. Supply credentials through live configuration.
+1. Select an adapter and an available model; supply credentials through live configuration.
 2. Build messages with `request`; add tools, output codecs, a thinking level, or reusable `generation.Settings`.
 3. Call `prepare` first; it validates and encodes without I/O. Handle unsupported settings and schemas there.
 4. Run with an application-owned HTTP Gun client. Share a supervised client in a service; stop a short-lived client on every exit path.
-5. Match every outcome: `Answer`, `NeedsTools`, `OutputLimited`, and `Refused`. A token-limited partial answer is incomplete. The token limit also counts thoughts; leave headroom with a thinking level.
+5. Match every outcome: `Answer`, `NeedsTools`, `OutputLimited`, `Refused`, and `UnrecognizedStop`, whose partial calls were never admitted. A token-limited partial answer is incomplete. The token limit also counts thoughts; leave headroom with a thinking level.
 
-Use `with_output(name, codec)` for decoded answers. Its codec must have a record root. Provider schema profiles differ; a valid Blueprint codec does not prove provider acceptance.
+Use `with_output(name, codec)`, whose codec needs a record root, for decoded answers. Provider schema profiles differ; a valid Blueprint codec proves no provider acceptance.
 
 ## Own the tool loop
 
@@ -41,11 +41,12 @@ Use `with_output(name, codec)` for decoded answers. Its codec must have a record
 
 ## Own streams and retries
 
-- Read a stream until `Done`, or close it when abandoning it. Keep one outstanding reader.
+- Read a stream until `Done` or close it; keep one outstanding reader.
 - `next_within` returning `TimedOut` is a read timeout: the stream stays readable and the call may continue.
-- Classify retry prospects with `advise(failure)`. LLM Wire never retries.
+- Classify retry prospects with `advise(failure)`; LLM Wire never retries. On `error.Status`, `status` is the HTTP status and `code` the provider's own code.
 - Inspect `sent`, `partial_output`, and optional usage; `output_tokens` includes thoughts. `MaybeSent` can mean paid remote work; missing usage does not mean zero tokens.
 - Bound attempts, backoff, and provider delay by one application deadline. `ProviderDelay` is uncapped advice; never sleep past the remaining budget.
+- Set the finite `with_call_timeout` to the longest call you accept. Transcription runs under the HTTP Gun view's timeout.
 
 Classification maps authored alternatives into native answers; confidence is provider evidence, not correctness. Neither classification nor transcription implies generation streaming, uploaded audio, or diarization.
 
