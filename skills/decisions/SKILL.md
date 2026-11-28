@@ -31,10 +31,10 @@ Which store holds the record?
 - Build policies with `policy.new`; check `decisions.publishable` first. A condition over an absent or mistyped fact asks `otherwise`; proceeding needs a rule that holds.
 - `policy.known` is never unknown: `All([policy.known(x), ..])` skips its rule when `x` is absent; `When(Not(policy.known(answer)), Consult(point))` consults until answered.
 - Wire `decisions.consulting`; the consulted tool calls `decisions.inform`.
-- Admit with `recommend_once` under a key from the trigger, prefixed per point; call `decisions.happened`, then `decisions.expect`, in the trigger's receiving transaction, before the model runs.
+- Admit with `recommend_once` under a key from the trigger, prefixed per point; call `decisions.happened`, then `decisions.expect`, in the trigger's transaction, before the model runs.
 - Release only through the executor: it receives an opaque `Released` at most once, in the verb's transaction, where the tool writes its rows; for outside effects, write an instruction keyed by `decisions.key` and record its fate with `decisions.report`.
 - Put world checks in `decisions.checking`, thresholds in the policy. A tool stops with `Refuse`, `Unsure` or `Contended`; `decisions.stop_for` maps refusals. Record `ToolRefused` with `decisions.record_refusal` in a second transaction; retry `ToolUnsure`.
-- `decisions.showing` is the rule `open` uses to repeat a showing; a verdict ends it, so `open` then refuses, until another validator's correction lets a new showing open.
+- `decisions.showing` is `open`'s rule for repeating a showing; a verdict ends it, so `open` then refuses, until another validator's correction lets a new showing open.
 - Read client text with `view.verdict` or `wire.parse`.
 - Build a bundle item with `vocabulary.item`, which refuses an empty name or slash. Admit bundles with `decisions.recommend_bundle` or, across points, `decisions.recommend_member`. A member's id is `decisions.member_key`, "bundle/item"; percent-encode it in a URL path. The follower reads `decisions.members`; once `decisions.is_complete` holds, it recommends the follow-on under a bundle key.
 
@@ -44,8 +44,8 @@ Which store holds the record?
 - Put your own statements and `grind.submit_in` in `transaction_with`, on `decisions_postgres.connection`.
 - Roll back on every refusal; redeliver through `decisions.handling`.
 - Read a committed head outside verbs with `store.head` or `decisions_postgres.head`; `inspection().head` is test-only.
-- Run `decisions_postgres.migrate` at deploy with a DDL role before any node writes. Migrate Grind apart.
-- Before Grind starts, register `decisions_postgres.wake_worker`, and `decisions_postgres.settlement_worker` for points from `decisions_postgres.following`; then `decisions_postgres.sweep`.
+- Run `decisions_postgres.migrate` at deploy with a DDL role before nodes write. Migrate Grind apart.
+- Before Grind starts, register `decisions_postgres.wake_worker`, and `decisions_postgres.settlement_worker` for points from `decisions_postgres.following`; then `decisions_postgres.sweep`. Followers use `decisions.read_record`.
 - Run verbs in your worker's Grind settlement through `decisions_postgres.with_settlement`.
 - Call models through `decisions_otp`'s `isolated.model`.
 
