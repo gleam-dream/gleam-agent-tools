@@ -9,42 +9,25 @@
   writeShellScript,
 }:
 let
-  projectLsp = writeShellScript "gleam-project-lsp" ''
-    # Agent LSP starts this child in the requested Gleam package. Only enter
-    # Nix here: the MCP bridge itself must also start in non-project chats.
-    root="$PWD"
-    while [ ! -f "$root/flake.nix" ] && [ ! -e "$root/.git" ] && [ "$root" != / ]; do
-      root=$(dirname "$root")
-    done
-    if [ -f "$root/flake.nix" ]; then
-      lock_flag=--no-update-lock-file
-      if [ ! -f "$root/flake.lock" ]; then
-        lock_flag=--no-write-lock-file
-      fi
-      # Preserve protocol stdout on fd 3 while the development shell starts.
-      exec ${lib.getExe nix} develop "$root" "$lock_flag" \
-        --command ${lib.getExe bash} -c 'exec 1>&3 3>&-; exec gleam lsp' 3>&1 1>&2
-    fi
-    if command -v gleam >/dev/null 2>&1; then
-      exec gleam lsp
-    fi
-    echo "No Gleam compiler found: provide a project Nix development shell or Gleam on PATH." >&2
-    exit 127
-  '';
+  projectLsp = writeShellScript "gleam-project-lsp" (
+    builtins.replaceStrings [ "@nix@" "@bash@" ] [ (lib.getExe nix) (lib.getExe bash) ] (
+      builtins.readFile ./gleam-project-lsp.sh
+    )
+  );
 in
 buildGoModule rec {
   pname = "agent-lsp";
-  # Fork owned by lostbean (github.com/lostbean/agent-lsp), pinned by exact
-  # commit. Upstream blackwell-systems/agent-lsp already contains the Gleam
-  # root fixes (PR #78) and the path-confinement fix (PR #26). The fork
-  # carries five fixes not yet upstream, sent as:
-  #   #82 fix(impact): report incomplete and failed symbol analysis
-  #   #85 fix(impact): reject unsupported analysis and advertise required capabilities
-  #   #83 fix(lsp): start the server for the changed files in blast_radius
-  #   #86 fix(lsp): keep files for an unstarted server off another language's server
-  #   #84 fix(diagnostics): reject stale publications after reopening documents
-  # Exit: switch src to owner = "blackwell-systems" at the first upstream
-  # release tag that contains all five, and remove this fork pin.
+  # Built from a fork of blackwell-systems/agent-lsp. Upstream has merged the
+  # fork's path-confinement fix (PR #26) and its Gleam package detection and
+  # test-caller classification (PR #78). Three fixes exist only in the fork,
+  # with no upstream pull request yet:
+  # - impact analysis reports incomplete, failed and unsupported symbol
+  #   analysis instead of an empty result;
+  # - the selected server is initialized for impact queries and keeps its
+  #   configured routing after warm queries;
+  # - diagnostics published before a document was reopened are rejected.
+  # Return `src` to an upstream release once one contains all three, shown by
+  # nix/tests/test_mcp.py passing against it.
   version = "0.23.2-gleam-reliability-57d7a50";
 
   src = fetchFromGitHub {

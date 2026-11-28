@@ -2,8 +2,28 @@
 
 ## Supported versions
 
-This repository is not published as a versioned package. Security fixes
-land on the `main` branch only; use the latest commit on `main`.
+This repository is not published as a versioned package and has no release
+tags. Security fixes land on the `main` branch only.
+
+Skill text is instruction to an agent that can run commands, and the Nix
+package builds a program the agent starts. Install from a commit you have
+reviewed, as the README describes, and move to a newer commit deliberately.
+After a security fix, move to a commit that contains it.
+
+## Changes to `main`
+
+Consumers of `main` can expect the following, and a departure from it is a
+defect to report:
+
+- `main` changes only through a pull request. Direct pushes, force pushes and
+  deletion of the branch are refused by a repository ruleset.
+- A pull request merges only after its required checks pass. The ruleset
+  requires the title check and the Nix checks on Linux and macOS.
+- GitHub Actions used by the workflows are pinned to full commit hashes, and
+  the workflows hold read-only repository permissions.
+
+Repository administrators can bypass the ruleset. A pinned commit protects a
+consumer from that; following `main` does not.
 
 ## Reporting a vulnerability
 
