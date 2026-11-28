@@ -1,5 +1,7 @@
 # Source acknowledgements
 
+This repository is licensed under the Apache License, Version 2.0; see [LICENSE](LICENSE). The licence covers the skills, the Nix code, the tests, and the documentation, except the adapted `lostbean/skills` guidance described below. That adapted guidance remains under the MIT licence of its source, whose copyright lines and permission notice are reproduced at the end of this file and must accompany any copy of it. Changes made here to that guidance are contributed under Apache-2.0.
+
 The foundation skills adapt portable language, library API, FFI ownership, and runtime-inspection guidance from [lostbean/skills](https://github.com/lostbean/skills/tree/477c0cd3bdfc3837e0d347c8e4607ea118ad6008). The original permission notice follows.
 
 The runtime-inspection guidance also adapts `lostbean/skills` commit `ce969335b4c94d3129217280c1c77081e55aa193`. Its MIT notice is retained below.
