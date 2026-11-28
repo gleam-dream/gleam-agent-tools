@@ -116,6 +116,7 @@ Run `nix fmt`, `nix flake check`, and `nix develop --command python nix/tests/te
 | [gleam-pubsub](skills/gleam-pubsub/SKILL.md)     | Whisper/Roar notifications and delivery limits             |
 | [grind](skills/grind/SKILL.md)                   | Durable jobs and uncertain-effect recovery                 |
 | [saga](skills/saga/SKILL.md)                     | Dependent workflows, compensation, and recovery            |
+| [decisions](skills/decisions/SKILL.md)           | Policies, verdicts, and gated releases made at most once   |
 | [sinal](skills/sinal/SKILL.md)                   | Typed telemetry with independent consumers                 |
 | [json-blueprint](skills/json-blueprint/SKILL.md) | Aligned JSON codecs and schemas                            |
 | [hellhound](skills/hellhound/SKILL.md)           | OIDC login, OAuth, and token custody                       |
