@@ -138,7 +138,14 @@ class LauncherTest(unittest.TestCase):
                 + "shellHook = ''printf 'Development environment ready\\n' ''; }; }) "
                 + "nixpkgs.legacyPackages; }; }\n"
             )
-            self.check_symbols(project, dict(os.environ, PATH="/not-provided"))
+            self.check_symbols(
+                project,
+                dict(
+                    os.environ,
+                    PATH="/not-provided",
+                    GLEAM_AGENT_LSP_TRUSTED_ROOTS=str(project),
+                ),
+            )
             self.assertFalse((project / "flake.lock").exists())
 
     def test_starts_without_project_or_compiler(self):

@@ -90,6 +90,10 @@
             inherit pkgs home-manager;
             module = self.homeManagerModules.default;
           };
+          launcher = pkgs.runCommand "gleam-agent-tools-launcher" { } ''
+            ${pkgs.runtimeShell} ${./nix/tests/test_launcher.sh} ${./nix/gleam-project-lsp.sh}
+            touch "$out"
+          '';
           gleam-mcp =
             pkgs.runCommand "gleam-agent-tools-mcp"
               {
